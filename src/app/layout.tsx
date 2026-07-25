@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { fontHeading, fontBody, fontMono, fontBengali } from "@/lib/fonts";
+import { fontHeading, fontSerif, fontBody, fontMono, fontBengali } from "@/lib/fonts";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -38,9 +38,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fontHeading.variable} ${fontBody.variable} ${fontMono.variable} ${fontBengali.variable}`}
+      className={`${fontHeading.variable} ${fontSerif.variable} ${fontBody.variable} ${fontMono.variable} ${fontBengali.variable}`}
     >
-      <body className="flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+      <body className="flex min-h-screen flex-col bg-[#FDFBF7] text-[#1E293B] antialiased dark:bg-[#0F172A] dark:text-[#FDFBF7]">
         <Navbar />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />

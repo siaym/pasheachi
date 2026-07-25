@@ -1,9 +1,17 @@
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono, Noto_Sans_Bengali } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono, Noto_Sans_Bengali, Newsreader } from "next/font/google";
 
 export const fontHeading = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-heading",
   weight: ["600", "700", "800"],
+  display: "swap",
+});
+
+export const fontSerif = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 

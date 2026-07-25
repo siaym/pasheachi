@@ -4,25 +4,27 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#10B981] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C25E00] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-[#10B981] text-white hover:bg-[#059669] shadow-md hover:shadow-glow-green hover:-translate-y-0.5",
+          "bg-[#1E293B] text-[#FDFBF7] hover:bg-[#0F172A] shadow-md hover:-translate-y-0.5 dark:bg-[#FDFBF7] dark:text-[#1E293B] dark:hover:bg-slate-200",
+        accent:
+          "bg-[#C25E00] text-white hover:bg-[#A34E00] shadow-md hover:-translate-y-0.5",
         secondary:
-          "border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100 dark:hover:bg-slate-800",
+          "border border-[#EADECC] bg-[#FFFFFF] text-[#1E293B] hover:bg-[#F4F0EA] hover:border-slate-300 dark:bg-[#1E293B] dark:border-slate-800 dark:text-[#FDFBF7] dark:hover:bg-slate-800",
         ghost:
-          "text-[#10B981] hover:bg-[#ECFDF5] dark:hover:bg-[#10B981]/10",
+          "text-[#1E293B] hover:bg-[#F4F0EA] dark:text-[#FDFBF7] dark:hover:bg-slate-800",
         danger:
-          "bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-red-500/20",
+          "bg-red-700 text-white hover:bg-red-800 shadow-sm",
         outline:
-          "border-2 border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-white",
+          "border-2 border-[#1E293B] text-[#1E293B] hover:bg-[#1E293B] hover:text-white dark:border-[#FDFBF7] dark:text-[#FDFBF7]",
       },
       size: {
         sm: "h-8 px-4 text-xs font-semibold",
         md: "h-10 px-5 text-sm font-semibold",
-        lg: "h-12 px-6 text-base font-semibold",
+        lg: "h-12 px-6 text-base font-bold",
         xl: "h-14 px-8 text-lg font-bold",
       },
     },
