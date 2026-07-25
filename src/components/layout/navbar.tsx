@@ -122,7 +122,7 @@ export function Navbar() {
 
             <Link 
               href="/create"
-              className="group relative flex items-center justify-center bg-[#A84D2A] text-[#F7F4ED] h-10 px-5 sm:px-6 rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-[#843B20] hover:shadow-paper-hover active:scale-95"
+              className="group relative hidden sm:flex items-center justify-center bg-[#A84D2A] text-[#F7F4ED] h-10 px-5 sm:px-6 rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-[#843B20] hover:shadow-paper-hover active:scale-95"
             >
               <span>Start a Campaign</span>
             </Link>
@@ -147,7 +147,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 10, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="lg:hidden rounded-2xl border border-[#1D2927] bg-[#FAF8F3] p-6 shadow-paper backdrop-paper mt-2"
+              className="lg:hidden rounded-2xl border border-[#1D2927] bg-[#FAF8F3]/85 backdrop-blur-3xl p-6 shadow-paper mt-2"
             >
               <nav className="flex flex-col gap-6 text-center">
                 {navLinks.map((link) => (
@@ -161,6 +161,9 @@ export function Navbar() {
                   </Link>
                 ))}
                 <div className="pt-6 mt-2 border-t border-[#D9D3C7] flex flex-col gap-4">
+                  <Link href="/create" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#F7F4ED] bg-[#A84D2A] py-3 rounded-full flex items-center justify-center">
+                    Start a Campaign
+                  </Link>
                   <Link href="/search" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927] flex items-center justify-center gap-2">
                     <Search className="h-4 w-4" /> Search
                   </Link>
