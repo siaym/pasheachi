@@ -9,16 +9,30 @@ import {
   Users, 
   Wallet, 
   Settings, 
-  Bell
+  Bell,
+  Megaphone,
+  PlusCircle,
+  Heart,
+  Rss,
+  LineChart,
+  MessageSquare,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DASHBOARD_NAV = [
-  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Donor Records", href: "/dashboard/donors", icon: Users },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "My Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
+  { name: "Create Campaign", href: "/create", icon: PlusCircle },
+  { name: "Supporters", href: "/dashboard/supporters", icon: Users },
+  { name: "Donations", href: "/dashboard/donations", icon: Heart },
+  { name: "Updates", href: "/dashboard/updates", icon: Rss },
+  { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
   { name: "Withdrawals", href: "/dashboard/withdrawals", icon: Wallet },
-  { name: "Notifications", href: "/notifications", icon: Bell },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Messages", href: "/dashboard/messages", icon: MessageSquare },
+  { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
+  { name: "Profile", href: "/dashboard/profile", icon: User },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export default function DashboardLayout({
