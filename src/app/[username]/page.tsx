@@ -29,7 +29,8 @@ export default function UserProfilePage({
   const { username } = use(params);
   const [activeTab, setActiveTab] = useState<"active" | "completed" | "achievements" | "about">("active");
 
-  const user = MOCK_USERS[username.toLowerCase()] || MOCK_USERS.siyam;
+  const cleanUsername = username.replace(/^(@|%40)/, "").toLowerCase();
+  const user = MOCK_USERS[cleanUsername] || MOCK_USERS.siyam;
 
   if (!user) {
     notFound();
@@ -46,7 +47,7 @@ export default function UserProfilePage({
   return (
     <div className="min-h-screen pb-20">
       {/* Cover Image Banner */}
-      <div className="relative h-48 sm:h-72 lg:h-80 w-full overflow-hidden bg-gradient-to-r from-[#10B981] via-[#059669] to-[#4F46E5]">
+      <div className="relative h-48 sm:h-72 lg:h-80 w-full overflow-hidden bg-gradient-to-r from-[#059669] via-[#10B981] to-[#4F46E5]">
         {user.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -92,7 +93,7 @@ export default function UserProfilePage({
                 )}
               </div>
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                @{user.username} • pasheachi.bro.bd/{user.username}
+                @{user.username} • pasheachi.bro.bd/@{user.username}
               </p>
 
               <p className="max-w-xl text-sm sm:text-base text-slate-700 dark:text-slate-300 pt-1">
@@ -196,7 +197,7 @@ export default function UserProfilePage({
           </button>
         </div>
 
-        {/* Pinned Campaign Banner (If active tab is 'active' and pinned campaign exists) */}
+        {/* Pinned Campaign Banner */}
         {activeTab === "active" && pinnedCampaign && (
           <div className="mb-10">
             <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#10B981]">

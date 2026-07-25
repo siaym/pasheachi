@@ -16,17 +16,30 @@ export function Logo({ className, iconOnly = false, variant = "auto" }: LogoProp
         className
       )}
     >
-      <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#10B981] via-[#059669] to-[#4F46E5] text-white shadow-md shadow-[#10B981]/20 transition-transform group-hover:scale-105">
+      {/* The Side-by-Side Arch Symbol ("Pashe Achi") */}
+      <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#059669] via-[#10B981] to-[#4F46E5] text-white shadow-md shadow-[#10B981]/25 transition-transform group-hover:scale-105">
         <svg
-          viewBox="0 0 24 24"
+          viewBox="0 0 32 32"
           fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
         >
-          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+          {/* Left Supporter Arch */}
+          <path
+            d="M6 24V14C6 9.58172 9.58172 6 14 6C17.3137 6 20.1504 8.01639 21.3431 10.8787"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+          {/* Right Dreamer Arch (leaning beside) */}
+          <path
+            d="M26 24V16C26 12.6863 23.3137 10 20 10C17.2386 10 14.8878 11.8687 14.1953 14.4118"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+          {/* Interlocking Connection Point */}
+          <circle cx="14" cy="14" r="2" fill="currentColor" />
         </svg>
       </div>
 

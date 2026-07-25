@@ -66,7 +66,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         {/* Creator Info & Time Left */}
         <div className="mb-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <Link
-            href={`/${campaign.creator.username}`}
+            href={`/@${campaign.creator.username}`}
             className="flex items-center gap-1.5 font-medium hover:text-[#10B981] transition-colors"
           >
             <span>by @{campaign.creator.username}</span>
@@ -79,7 +79,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         </div>
 
         {/* Title */}
-        <Link href={`/${campaign.creator.username}/${campaign.slug}`}>
+        <Link href={`/@${campaign.creator.username}/${campaign.slug}`}>
           <h3 className="line-clamp-2 text-lg font-extrabold leading-snug text-slate-900 transition-colors group-hover:text-[#10B981] dark:text-white">
             {campaign.title}
           </h3>
@@ -100,7 +100,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         <div className="mt-auto pt-2 flex flex-col gap-4">
           <AvatarStack count={campaign.supportersCount} />
 
-          <Link href={`/${campaign.creator.username}/${campaign.slug}`} className="w-full">
+          <Link href={`/@${campaign.creator.username}/${campaign.slug}`} className="w-full">
             <Button size="md" className="w-full font-bold">
               Support This Dream
             </Button>
