@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Paperclip, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { RevealText, FadeIn, PaperLift } from "@/components/ui/motion";
 
@@ -62,7 +62,7 @@ export function Hero() {
           </div>
 
           {/* Right Content - The Floating Editorial Card */}
-          <div className="lg:w-[50%] lg:absolute lg:top-0 lg:right-0 z-30 w-full flex justify-center lg:justify-end lg:-translate-y-8">
+          <div className="lg:w-[50%] lg:absolute lg:top-0 lg:right-0 z-30 w-full flex justify-center lg:justify-end lg:-translate-y-8 mt-12 lg:mt-0">
             <FadeIn delay={0.8} className="relative w-full max-w-[440px]">
               
               {/* Paper Clip (Decorative) */}

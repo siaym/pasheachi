@@ -232,8 +232,8 @@ export default function CampaignDetailPage({
           </div>
 
           {/* Sticky Support Card (Right 5 cols) */}
-          <div className="lg:col-span-5 relative">
-            <div className="sticky top-28 z-40">
+          <div className="lg:col-span-5 relative mt-12 lg:mt-0">
+            <div className="lg:sticky lg:top-28 z-40">
               <FadeIn delay={0.3}>
                 <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 sm:p-8 shadow-paper backdrop-paper">
                   

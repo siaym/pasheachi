@@ -115,7 +115,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         {/* Footer info: Supporters & Action */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <AvatarStack count={campaign.supportersCount} size="sm" />
+            <AvatarStack count={campaign.supportersCount} />
           </div>
 
           <Link href={`/@${campaign.creator.username}/${campaign.slug}`} className="flex-1">
