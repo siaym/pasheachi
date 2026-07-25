@@ -1,42 +1,42 @@
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/shared/section-header";
-import { UserPlus, Sparkles, Share2, Wallet } from "lucide-react";
+import { UserPlus, Sparkles, Share2, Wallet, ShieldCheck } from "lucide-react";
 
 const STEPS = [
   {
     step: "01",
-    title: "Create Account",
-    description: "Sign up in 30 seconds to claim your permanent profile URL (pasheachi.bro.bd/username).",
+    title: "Claim Permanent Profile",
+    description: "Claim your permanent URL (pasheachi.bro.bd/@username) in 30 seconds to showcase all your causes in one place.",
     icon: UserPlus,
   },
   {
     step: "02",
-    title: "Launch Campaign",
-    description: "Tell your story, upload images/documents, set a goal amount, and define optional milestones.",
+    title: "Tell Your Story",
+    description: "Upload photos, medical documents, set your target goal amount, and define optional fund milestones.",
     icon: Sparkles,
   },
   {
     step: "03",
-    title: "Share Link",
-    description: "Share your campaign link across Facebook, WhatsApp, LinkedIn, and social networks.",
+    title: "Share Everywhere",
+    description: "Share your campaign link across Facebook, WhatsApp, LinkedIn, and social networks with rich preview cards.",
     icon: Share2,
   },
   {
     step: "04",
     title: "Receive & Withdraw",
-    description: "Supporters back your dream via bKash/Nagad/Rocket. Withdraw directly to your account anytime.",
+    description: "Supporters back your dream via bKash, Nagad, Rocket, or Bank. Withdraw directly to your account anytime.",
     icon: Wallet,
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-24 bg-slate-50/50 dark:bg-slate-900/30">
+    <section id="how-it-works" className="py-16 sm:py-24 bg-slate-50/60 dark:bg-slate-900/40">
       <Container variant="wide">
         <SectionHeader
           badge="Simple Flow"
           title="How PasheAchi Works"
-          subtitle="Simple, transparent, and built for speed. Start receiving support in four straightforward steps."
+          subtitle="Simple, transparent, and built for trust. Start receiving support in four straightforward steps."
           centered
         />
 
@@ -52,11 +52,11 @@ export function HowItWorks() {
                 className="relative z-10 flex flex-col items-center text-center group"
               >
                 {/* Step Circle */}
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-md border border-slate-100 text-[#10B981] transition-transform duration-300 group-hover:scale-110 group-hover:shadow-glow-green dark:bg-slate-900 dark:border-slate-800">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-md border border-slate-100 text-[#10B981] transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow-green dark:bg-slate-900 dark:border-slate-800">
                   <Icon className="h-9 w-9" />
                 </div>
 
-                <span className="mb-2 inline-block rounded-full bg-[#ECFDF5] px-2.5 py-0.5 text-xs font-extrabold text-[#047857] dark:bg-[#10B981]/15 dark:text-[#6EE7B7]">
+                <span className="mb-2 inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-extrabold text-[#047857] dark:bg-emerald-950/50 dark:text-emerald-300">
                   STEP {item.step}
                 </span>
 
@@ -70,6 +70,21 @@ export function HowItWorks() {
               </div>
             );
           })}
+        </div>
+
+        {/* Handcrafted Trust Banner inside How It Works */}
+        <div className="mt-16 mx-auto max-w-3xl rounded-3xl border border-emerald-200/80 bg-white p-6 sm:p-8 shadow-xl dark:border-emerald-900/50 dark:bg-slate-900 flex flex-col sm:flex-row items-center gap-6">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-[#10B981] dark:bg-emerald-950/60">
+            <ShieldCheck className="h-7 w-7" />
+          </div>
+          <div>
+            <h4 className="text-base font-bold text-slate-900 dark:text-white">
+              Zero Platform Hold & Manual Transaction Security
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+              In Phase 1, every bKash, Nagad, and Rocket transaction is audited against official provider statements by our compliance team in Dhaka.
+            </p>
+          </div>
         </div>
       </Container>
     </section>
