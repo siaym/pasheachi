@@ -1,22 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Container } from "@/components/layout/container";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { formatCurrency } from "@/lib/utils";
-import {
-  Wallet,
-  ArrowLeft,
-  ArrowUpRight,
-  CheckCircle2,
-  Clock,
-  Building,
-  Smartphone,
-  X,
-} from "lucide-react";
+import { Wallet, X, CheckCircle2, Clock } from "lucide-react";
 
 const MOCK_WITHDRAWALS = [
   {
@@ -64,164 +51,180 @@ export default function WithdrawalsPage() {
   };
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 bg-slate-50/50 dark:bg-slate-950">
-      <Container variant="wide">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#10B981] mb-2 transition-colors"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
-            </Link>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-              Withdraw Funds
-            </h1>
-            <p className="text-sm text-slate-500">
-              Transfer your campaign earnings directly to your MFS or Bank account
-            </p>
-          </div>
-
-          <Button
-            size="lg"
-            onClick={() => setIsModalOpen(true)}
-            className="font-bold gap-2 shadow-lg shadow-[#10B981]/25"
-          >
-            <Wallet className="h-4 w-4" />
-            <span>Request Withdrawal</span>
-          </Button>
+    <div className="space-y-12">
+      {/* Header */}
+      <FadeIn className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-[#D9D3C7] pb-6">
+        <div>
+          <h1 className="font-editorial text-4xl sm:text-5xl text-[#1D2927] mb-2">
+            Fund <span className="italic text-[#8C7A5B]">Withdrawals</span>
+          </h1>
+          <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+            Transfer campaign earnings to your MFS or Bank
+          </p>
         </div>
+      </FadeIn>
 
-        {/* Balance Card */}
-        <div className="rounded-3xl bg-gradient-to-r from-[#10B981] via-[#059669] to-[#4F46E5] p-8 text-white mb-10 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-100">
+      {/* Balance Card - Paper Document Style */}
+      <FadeIn delay={0.1}>
+        <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] shadow-paper p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 relative overflow-hidden">
+          {/* Decorative stamp */}
+          <div className="absolute right-32 top-8 rotate-[15deg] opacity-20 pointer-events-none mix-blend-multiply hidden md:block">
+            <div className="w-24 h-24 rounded-full border-4 border-double border-[#A84D2A] flex items-center justify-center">
+              <span className="font-mono text-xs font-bold text-[#A84D2A] uppercase tracking-widest -rotate-[15deg]">Verified</span>
+            </div>
+          </div>
+          
+          <div className="relative z-10">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block">
               Available Balance (After 5% Platform Fee)
             </span>
-            <div className="text-4xl sm:text-5xl font-extrabold mt-1">
+            <div className="font-editorial text-5xl sm:text-6xl text-[#1D2927] mb-4">
               {formatCurrency(availableBalance)}
             </div>
-            <p className="text-xs text-emerald-100 mt-2">
-              Ready for instant payout request • Min withdrawal ৳500
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+              Ready for payout • Min withdrawal ৳500
             </p>
           </div>
 
-          <Button
-            size="lg"
+          <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-slate-900 text-white hover:bg-slate-800 font-bold shrink-0"
+            className="h-12 px-8 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest hover:bg-[#1D2927]/90 shadow-ink transition-all flex items-center gap-2 shrink-0 z-10"
           >
-            Withdraw Now
-          </Button>
-        </div>
+            <Wallet className="h-4 w-4" />
+            Request Payout
+          </button>
+        </PaperLift>
+      </FadeIn>
 
-        {/* Withdrawal History Table */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-            Withdrawal History
-          </h2>
+      {/* Withdrawal History Ledger */}
+      <FadeIn delay={0.2} className="space-y-4">
+        <h2 className="font-editorial text-2xl text-[#1D2927] border-b border-[#D9D3C7] pb-2">
+          Payout History
+        </h2>
 
-          <div className="rounded-3xl border border-slate-100 bg-white shadow-xl overflow-hidden dark:border-slate-800 dark:bg-slate-900">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider dark:bg-slate-950 dark:text-slate-400">
-                  <tr>
-                    <th className="p-4">Amount</th>
-                    <th className="p-4">Method</th>
-                    <th className="p-4">Account Number</th>
-                    <th className="p-4">Date</th>
-                    <th className="p-4">Status</th>
+        <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="bg-[#EAE5DB] text-[#1D2927] uppercase tracking-widest border-b border-[#1D2927]">
+                <tr>
+                  <th className="p-4 font-bold">Amount</th>
+                  <th className="p-4 font-bold">Method</th>
+                  <th className="p-4 font-bold">Account</th>
+                  <th className="p-4 font-bold">Date</th>
+                  <th className="p-4 font-bold text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#D9D3C7]">
+                {MOCK_WITHDRAWALS.map((w) => (
+                  <tr key={w.id} className="hover:bg-[#F7F4ED] transition-colors">
+                    <td className="p-4 font-bold text-[#1D2927]">
+                      {formatCurrency(w.amount)}
+                    </td>
+                    <td className="p-4 text-[#53605C] uppercase">{w.method}</td>
+                    <td className="p-4 text-[#8C7A5B]">{w.account}</td>
+                    <td className="p-4 text-[#53605C]">{w.date}</td>
+                    <td className="p-4 text-right">
+                      {w.status === "completed" && (
+                        <span className="inline-flex items-center gap-1 border border-[#1D2927] px-2 py-0.5 text-[#1D2927] font-bold bg-[#EAE5DB] text-[9px] uppercase tracking-widest">
+                          <CheckCircle2 className="h-3 w-3 text-[#10B981]" /> Completed
+                        </span>
+                      )}
+                      {w.status === "pending" && (
+                        <span className="inline-flex items-center gap-1 border border-[#A84D2A] px-2 py-0.5 text-[#A84D2A] font-bold bg-[#F7F4ED] text-[9px] uppercase tracking-widest">
+                          <Clock className="h-3 w-3" /> Pending
+                        </span>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
-                  {MOCK_WITHDRAWALS.map((w) => (
-                    <tr key={w.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
-                      <td className="p-4 font-extrabold text-slate-900 dark:text-white text-sm">
-                        {formatCurrency(w.amount)}
-                      </td>
-                      <td className="p-4 capitalize">{w.method}</td>
-                      <td className="p-4 text-slate-500 font-mono">{w.account}</td>
-                      <td className="p-4 text-slate-500">{w.date}</td>
-                      <td className="p-4">
-                        {w.status === "completed" && (
-                          <Badge variant="active">✅ Completed</Badge>
-                        )}
-                        {w.status === "pending" && (
-                          <Badge variant="pending">⏳ Pending (1-3 days)</Badge>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        </PaperLift>
+      </FadeIn>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div className="relative w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800 space-y-6">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="absolute right-5 top-5 text-slate-400 hover:text-slate-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
+      {/* Modal - Paper Form Style */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1D2927]/80 backdrop-blur-sm">
+          <PaperLift className="relative w-full max-w-md bg-[#FAF8F3] border border-[#D9D3C7] shadow-paper p-8 space-y-8 animate-in fade-in zoom-in duration-300">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="absolute right-6 top-6 text-[#1D2927] hover:text-[#A84D2A] transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
 
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Request Withdrawal
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Available balance: {formatCurrency(availableBalance)}
-                </p>
+            <div>
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#53605C] mb-2 pl-3 border-l-2 border-[#A84D2A]">
+                Form 104-B
+              </div>
+              <h3 className="font-editorial text-3xl text-[#1D2927]">
+                Withdrawal Slip
+              </h3>
+              <p className="font-mono text-xs uppercase tracking-widest text-[#53605C] mt-2">
+                Available: <span className="font-bold text-[#1D2927]">{formatCurrency(availableBalance)}</span>
+              </p>
+            </div>
+
+            <form onSubmit={handleRequest} className="space-y-6">
+              <div className="space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                  Payout Method
+                </label>
+                <select
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value)}
+                  className="h-12 w-full bg-transparent border-b border-[#D9D3C7] font-editorial text-xl italic text-[#1D2927] focus:outline-none focus:border-[#1D2927] cursor-pointer"
+                >
+                  <option value="bkash">bKash Personal</option>
+                  <option value="nagad">Nagad Personal</option>
+                  <option value="rocket">Rocket Personal</option>
+                  <option value="bank">Bank Transfer</option>
+                </select>
               </div>
 
-              <form onSubmit={handleRequest} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Payout Method
-                  </label>
-                  <select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                  >
-                    <option value="bkash">bKash Personal</option>
-                    <option value="nagad">Nagad Personal</option>
-                    <option value="rocket">Rocket Personal</option>
-                    <option value="bank">Bank Transfer</option>
-                  </select>
-                </div>
-
-                <Input
-                  label="Account Number *"
+              <div className="space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                  Account Number
+                </label>
+                <input
+                  type="text"
                   required
                   value={accountNo}
                   onChange={(e) => setAccountNo(e.target.value)}
+                  className="h-12 w-full bg-transparent border-b border-[#D9D3C7] font-mono text-xl text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
                 />
+              </div>
 
-                <Input
-                  label="Amount (৳) *"
+              <div className="space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                  Amount (৳)
+                </label>
+                <input
                   type="number"
                   required
                   placeholder="e.g. 15000"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
-                  helperText="Min ৳500 • Max ৳30,875"
+                  className="h-12 w-full bg-transparent border-b border-[#D9D3C7] font-mono text-xl text-[#1D2927] focus:outline-none focus:border-[#1D2927] placeholder:text-[#D9D3C7]"
                 />
+                <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] pt-1">
+                  Min ৳500 • Max ৳30,875
+                </p>
+              </div>
 
-                <Button size="lg" isLoading={submitting} type="submit" className="w-full font-bold">
-                  Confirm Withdrawal Request
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
-      </Container>
+              <button 
+                type="submit" 
+                disabled={submitting}
+                className="w-full h-12 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest hover:bg-[#1D2927]/90 shadow-ink transition-all mt-4"
+              >
+                {submitting ? "Processing..." : "Authorize Payout"}
+              </button>
+            </form>
+          </PaperLift>
+        </div>
+      )}
     </div>
   );
 }
