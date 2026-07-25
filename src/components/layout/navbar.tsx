@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import { Logo } from "@/components/shared/logo";
 
 export function Navbar() {
@@ -12,31 +12,32 @@ export function Navbar() {
   const pathname = usePathname();
   
   const { scrollY } = useScroll();
+  const smoothScrollY = useSpring(scrollY, { stiffness: 100, damping: 20, mass: 0.5 });
   
-  // Morphing values based on scroll
+  // Morphing values based on smooth scroll
   // Width shrinks slightly on desktop to become a compact pill
-  const navWidth = useTransform(scrollY, [0, 150], ["100%", "90%"]);
-  const navMaxWidth = useTransform(scrollY, [0, 150], ["1280px", "900px"]);
+  const navWidth = useTransform(smoothScrollY, [0, 150], ["100%", "90%"]);
+  const navMaxWidth = useTransform(smoothScrollY, [0, 150], ["1280px", "1024px"]);
   // Margin top gives it the floating effect
-  const navY = useTransform(scrollY, [0, 150], [16, 24]);
+  const navY = useTransform(smoothScrollY, [0, 150], [16, 24]);
   // Border radius goes from small/medium to fully rounded pill
-  const navRadius = useTransform(scrollY, [0, 150], ["12px", "9999px"]);
+  const navRadius = useTransform(smoothScrollY, [0, 150], ["12px", "9999px"]);
   // Background becomes slightly more opaque
-  const navBg = useTransform(scrollY, [0, 150], ["rgba(250, 247, 240, 0.7)", "rgba(250, 247, 240, 0.95)"]);
-  const navBorderColor = useTransform(scrollY, [0, 150], ["rgba(217, 211, 199, 0.5)", "rgba(29, 41, 39, 1)"]);
+  const navBg = useTransform(smoothScrollY, [0, 150], ["rgba(250, 247, 240, 0.7)", "rgba(250, 247, 240, 0.95)"]);
+  const navBorderColor = useTransform(smoothScrollY, [0, 150], ["rgba(217, 211, 199, 0.5)", "rgba(29, 41, 39, 1)"]);
   // Shadow deepens
   const navShadow = useTransform(
-    scrollY, 
+    smoothScrollY, 
     [0, 150], 
     [
       "0 4px 20px -5px rgba(29, 41, 39, 0.05), 0 2px 5px -2px rgba(29, 41, 39, 0.02)", 
       "0 24px 48px -12px rgba(29, 41, 39, 0.15), 0 8px 16px -6px rgba(29, 41, 39, 0.08)"
     ]
   );
-  const navBackdropBlur = useTransform(scrollY, [0, 150], ["blur(8px)", "blur(16px)"]);
+  const navBackdropBlur = useTransform(smoothScrollY, [0, 150], ["blur(8px)", "blur(16px)"]);
   // Padding shrinks
-  const navPaddingY = useTransform(scrollY, [0, 150], ["16px", "10px"]);
-  const navPaddingX = useTransform(scrollY, [0, 150], ["32px", "20px"]);
+  const navPaddingY = useTransform(smoothScrollY, [0, 150], ["16px", "10px"]);
+  const navPaddingX = useTransform(smoothScrollY, [0, 150], ["32px", "20px"]);
 
   const navLinks = [
     { label: "Explore", href: "/discover" },
@@ -59,7 +60,7 @@ export function Navbar() {
         }}
       >
         <motion.div
-          className="flex items-center justify-between"
+          className="flex items-center justify-between gap-4 lg:gap-8"
           style={{
             paddingTop: navPaddingY,
             paddingBottom: navPaddingY,
