@@ -45,17 +45,17 @@ export function HowItWorks() {
         </div>
 
         <div className="relative max-w-4xl mx-auto">
-          {/* Connecting Vertical Ink Line for Desktop */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-[#D9D3C7] -translate-x-1/2 z-0" />
+          {/* Connecting Vertical Ink Line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[#D9D3C7] -translate-x-1/2 z-0" />
 
           <div className="flex flex-col gap-12 sm:gap-24 relative z-10">
             {STEPS.map((item, idx) => {
               const isEven = idx % 2 === 0;
               return (
-                <div key={idx} className={`flex flex-col md:flex-row items-center gap-8 md:gap-16 ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                <div key={idx} className={`flex flex-row items-center gap-4 sm:gap-8 md:gap-16 ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
                   
                   {/* Content Side */}
-                  <div className={`flex-1 flex flex-col ${isEven ? 'md:text-right md:items-end' : 'md:text-left md:items-start'} text-center items-center`}>
+                  <div className={`flex-1 flex flex-col ${isEven ? 'text-right items-end' : 'text-left items-start'}`}>
                     <FadeIn delay={0.1}>
                       <span className="mb-4 inline-block font-mono text-[10px] font-bold tracking-[0.2em] text-[#A84D2A] bg-[#F7F4ED] border border-[#A84D2A] px-3 py-1">
                         PHASE {item.step}
@@ -70,14 +70,14 @@ export function HowItWorks() {
                   </div>
 
                   {/* Center Node */}
-                  <div className="hidden md:flex shrink-0 w-16 h-16 rounded-full border border-[#1D2927] bg-[#FAF8F3] items-center justify-center font-editorial text-2xl text-[#1D2927] shadow-sm relative">
+                  <div className="flex shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-[#1D2927] bg-[#FAF8F3] items-center justify-center font-editorial text-xl sm:text-2xl text-[#1D2927] shadow-sm relative">
                     {/* Horizontal connector to the line */}
-                    <div className={`absolute top-1/2 w-8 h-px bg-[#1D2927] ${isEven ? 'right-full' : 'left-full'}`}></div>
+                    <div className={`absolute top-1/2 w-4 sm:w-8 h-px bg-[#1D2927] ${isEven ? 'right-full' : 'left-full'}`}></div>
                     <span className="italic">{item.step}</span>
                   </div>
 
                   {/* Empty Spacer Side */}
-                  <div className="hidden md:block flex-1" />
+                  <div className="flex-1 block" />
                 </div>
               );
             })}
