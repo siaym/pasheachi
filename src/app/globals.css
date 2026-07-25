@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 243 75% 59%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 160 84% 39%;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+  }
+
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+
+    --card: 224 36% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --primary: 160 64% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 234 89% 74%;
+    --secondary-foreground: 222 47% 11%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
+
+    --muted: 223 30% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --border: 224 25% 20%;
+    --input: 224 25% 20%;
+    --ring: 160 64% 50%;
   }
 }
 
+@theme {
+  --color-brand-primary-50: #ECFDF5;
+  --color-brand-primary-100: #D1FAE5;
+  --color-brand-primary-200: #A7F3D0;
+  --color-brand-primary-300: #6EE7B7;
+  --color-brand-primary-400: #34D399;
+  --color-brand-primary-500: #10B981;
+  --color-brand-primary-600: #059669;
+  --color-brand-primary-700: #047857;
+  --color-brand-primary-800: #065F46;
+  --color-brand-primary-900: #064E3B;
+
+  --color-brand-secondary-50: #EEF2FF;
+  --color-brand-secondary-100: #E0E7FF;
+  --color-brand-secondary-200: #C7D2FE;
+  --color-brand-secondary-300: #A5B4FC;
+  --color-brand-secondary-400: #818CF8;
+  --color-brand-secondary-500: #4F46E5;
+  --color-brand-secondary-600: #4338CA;
+  --color-brand-secondary-700: #3730A3;
+
+  --color-brand-accent-50: #FFFBEB;
+  --color-brand-accent-100: #FEF3C7;
+  --color-brand-accent-500: #F59E0B;
+  --color-brand-accent-600: #D97706;
+
+  --font-heading: var(--font-heading), system-ui, sans-serif;
+  --font-body: var(--font-body), system-ui, sans-serif;
+  --font-mono: var(--font-mono), monospace;
+  --font-bengali: var(--font-bengali), sans-serif;
+
+  --shadow-glow-green: 0 0 24px rgba(16, 185, 129, 0.25);
+  --shadow-glow-indigo: 0 0 24px rgba(79, 70, 229, 0.25);
+  --shadow-card-hover: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .glass-panel {
+  background: rgba(21, 26, 45, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-nav {
+  background: rgba(11, 15, 26, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(42, 49, 80, 0.8);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #10B981 0%, #4F46E5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
