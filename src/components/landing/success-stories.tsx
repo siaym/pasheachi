@@ -80,7 +80,7 @@ export function SuccessStories() {
                       {current.location}
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 pb-20 md:pb-0 md:pr-48">
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-1">Raised</div>
                         <div className="font-mono text-xl text-[#1D2927]">{formatCurrency(current.amountRaised)}</div>
