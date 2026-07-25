@@ -27,7 +27,7 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="page-shell py-8 sm:py-12">
+    <div className="page-shell pt-32 pb-16 sm:pt-40 sm:pb-24">
       <Container variant="wide">
         {/* Welcome Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
