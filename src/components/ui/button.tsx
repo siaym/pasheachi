@@ -4,22 +4,22 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C25E00] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A84D2A] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-[#1E293B] text-[#FDFBF7] hover:bg-[#0F172A] shadow-md hover:-translate-y-0.5 dark:bg-[#FDFBF7] dark:text-[#1E293B] dark:hover:bg-slate-200",
+          "bg-[#1D2927] text-[#F7F4ED] hover:bg-[#121A19] shadow-sm hover:-translate-y-0.5 dark:bg-[#F7F4ED] dark:text-[#1D2927] dark:hover:bg-slate-200",
         accent:
-          "bg-[#C25E00] text-white hover:bg-[#A34E00] shadow-md hover:-translate-y-0.5",
+          "bg-[#A84D2A] text-white hover:bg-[#843B20] shadow-sm hover:-translate-y-0.5",
         secondary:
-          "border border-[#EADECC] bg-[#FFFFFF] text-[#1E293B] hover:bg-[#F4F0EA] hover:border-slate-300 dark:bg-[#1E293B] dark:border-slate-800 dark:text-[#FDFBF7] dark:hover:bg-slate-800",
+          "border border-[#D9D3C7] bg-[#FAF7F0] text-[#1D2927] hover:bg-[#F3EFE6] hover:border-[#9B9488] dark:bg-[#1D2927] dark:border-slate-800 dark:text-[#F7F4ED] dark:hover:bg-slate-800",
         ghost:
-          "text-[#1E293B] hover:bg-[#F4F0EA] dark:text-[#FDFBF7] dark:hover:bg-slate-800",
+          "text-[#1D2927] hover:bg-[#EAE5DB] hover:text-[#A84D2A] dark:text-[#F7F4ED] dark:hover:bg-slate-800",
         danger:
-          "bg-red-700 text-white hover:bg-red-800 shadow-sm",
+          "bg-red-800 text-white hover:bg-red-900 shadow-sm",
         outline:
-          "border-2 border-[#1E293B] text-[#1E293B] hover:bg-[#1E293B] hover:text-white dark:border-[#FDFBF7] dark:text-[#FDFBF7]",
+          "border-2 border-[#1D2927] text-[#1D2927] hover:bg-[#1D2927] hover:text-white dark:border-[#F7F4ED] dark:text-[#F7F4ED]",
       },
       size: {
         sm: "h-8 px-4 text-xs font-semibold",

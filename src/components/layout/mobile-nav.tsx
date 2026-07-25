@@ -17,7 +17,7 @@ export function MobileNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 border-t border-slate-200 px-4 py-2 backdrop-blur-xl dark:bg-slate-950/95 dark:border-slate-800">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#D9D3C7] bg-[#F7F4ED] px-4 py-2 md:hidden">
       <div className="flex items-center justify-around">
         {items.map((item) => {
           const Icon = item.icon;
@@ -28,7 +28,7 @@ export function MobileNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative -top-5 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#10B981] to-[#059669] text-white shadow-lg shadow-[#10B981]/30 active:scale-95"
+                className="relative -top-5 flex h-14 w-14 items-center justify-center rounded-full border-4 border-[#F7F4ED] bg-[#A84D2A] text-white shadow-[0_7px_18px_rgba(132,59,32,.22)] active:scale-95"
               >
                 <Icon className="h-7 w-7" />
               </Link>
@@ -42,8 +42,8 @@ export function MobileNav() {
               className={cn(
                 "flex flex-col items-center gap-1 text-[10px] font-semibold transition-colors",
                 isActive
-                  ? "text-[#10B981]"
-                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                  ? "text-[#A84D2A]"
+                  : "text-[#68726D] hover:text-[#1D2927]"
               )}
             >
               <Icon className="h-5 w-5" />

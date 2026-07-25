@@ -2,61 +2,46 @@
 
 @layer base {
   :root {
-    --background: 40 33% 98%; /* #FDFBF7 Warm Parchment */
-    --foreground: 222 33% 17%; /* #1E293B Deep Slate */
+    /* Paper & Ink Master Palette */
+    --paper-base: 43 31% 95%;      /* #F7F4ED Warm Cotton Paper */
+    --paper-surface: 43 35% 97%;   /* #FAF8F3 Warm Ivory */
+    --paper-card: 40 30% 98%;      /* #FAF7F0 Paper Card */
+    --paper-border: 38 20% 82%;    /* #D9D3C7 Paper Border */
+    --paper-border-subtle: 38 20% 90%; /* #EAE5DB Subtle Divider */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 33% 17%;
+    --ink-primary: 170 18% 14%;    /* #1D2927 Deep Ink Charcoal */
+    --ink-secondary: 165 8% 36%;   /* #53605C Muted Slate Ink */
+    --ink-muted: 165 5% 50%;       /* #68726D Light Ink */
 
-    --primary: 222 33% 17%; /* Charcoal primary button */
-    --primary-foreground: 40 33% 98%;
+    --terracotta: 17 61% 41%;      /* #A84D2A Burnt Terracotta */
+    --terracotta-hover: 17 61% 33%;/* #843B20 Dark Terracotta */
 
-    --secondary: 40 20% 94%; /* Warm Linen */
-    --secondary-foreground: 222 33% 17%;
+    --olive: 164 27% 28%;          /* #355C52 Muted Forest Olive */
+    --olive-light: 164 20% 94%;    /* #EDF2F0 Warm Olive Tint */
 
-    --accent: 29 100% 38%; /* #C25E00 Terracotta Warmth */
-    --accent-foreground: 0 0% 100%;
-
-    --trust: 114 40% 25%; /* #2D5A27 Forest Olive */
-
-    --muted: 40 15% 92%;
-    --muted-foreground: 215 16% 47%;
-
-    --border: 35 25% 88%; /* #EADECC Muted Linen */
-    --input: 35 25% 88%;
-    --ring: 29 100% 38%;
-
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
     --radius-full: 9999px;
   }
 
   .dark {
-    --background: 222 47% 7%; /* #0F172A Deep Midnight */
-    --foreground: 40 33% 98%;
+    --paper-base: 170 20% 8%;       /* #121A19 Deep Midnight Ink */
+    --paper-surface: 170 18% 11%;   /* #182220 Dark Slate */
+    --paper-card: 170 18% 14%;      /* #1D2927 Dark Card */
+    --paper-border: 170 12% 24%;    /* Dark Border */
+    --paper-border-subtle: 170 12% 18%;
 
-    --card: 224 36% 13%;
-    --card-foreground: 40 33% 98%;
+    --ink-primary: 43 31% 95%;     /* #F7F4ED Cream Text */
+    --ink-secondary: 40 15% 75%;
+    --ink-muted: 40 10% 60%;
 
-    --primary: 40 33% 98%;
-    --primary-foreground: 222 47% 7%;
+    --terracotta: 17 70% 55%;      /* Brighter Terracotta for dark */
+    --terracotta-hover: 17 70% 45%;
 
-    --secondary: 223 30% 18%;
-    --secondary-foreground: 40 33% 98%;
-
-    --accent: 29 100% 50%;
-    --accent-foreground: 222 47% 7%;
-
-    --trust: 114 40% 41%;
-
-    --muted: 223 30% 18%;
-    --muted-foreground: 215 20% 65%;
-
-    --border: 224 25% 20%;
-    --input: 224 25% 20%;
-    --ring: 29 100% 50%;
+    --olive: 164 35% 45%;
+    --olive-light: 170 20% 16%;
   }
 }
 
@@ -67,45 +52,77 @@
   --font-mono: var(--font-mono), monospace;
   --font-bengali: var(--font-bengali), sans-serif;
 
-  --color-parchment: #FDFBF7;
-  --color-charcoal: #1E293B;
-  --color-terracotta: #C25E00;
-  --color-[#2D5A27]: #2D5A27;
-  --color-linen: #F4F0EA;
+  --color-paper: #F7F4ED;
+  --color-paper-card: #FAF7F0;
+  --color-ink: #1D2927;
+  --color-terracotta: #A84D2A;
+  --color-olive: #355C52;
+  --color-border-paper: #D9D3C7;
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: hsl(var(--paper-base));
+  color: hsl(var(--ink-primary));
   font-family: var(--font-body);
   overflow-x: hidden;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   font-family: var(--font-heading);
+  letter-spacing: -0.02em;
 }
 
 .font-editorial {
   font-family: var(--font-serif);
 }
 
-/* Handcrafted Editorial Border & Card */
-.card-editorial {
-  background-color: #FFFFFF;
-  border: 1px solid #EADECC;
+/* Eyebrow Label */
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #A84D2A;
+}
+
+/* Handcrafted Paper Card */
+.paper-card {
+  background-color: #FAF7F0;
+  border: 1px solid #D9D3C7;
   border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.04);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(29, 41, 39, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dark .card-editorial {
-  background-color: #1E293B;
-  border: 1px solid #334155;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+.dark .paper-card {
+  background-color: #1D2927;
+  border: 1px solid #2F3E3B;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.card-editorial:hover {
+.paper-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(30, 41, 59, 0.08);
-  border-color: #C25E00;
+  border-color: #A84D2A;
+  box-shadow: 0 12px 32px rgba(29, 41, 39, 0.08);
+}
+
+/* Ink Underline Hover Effect */
+.ink-underline {
+  position: relative;
+}
+
+.ink-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #A84D2A;
+  transition: width 0.3s ease;
+}
+
+.ink-underline:hover::after {
+  width: 100%;
 }

@@ -16,33 +16,16 @@ export function Logo({ className, iconOnly = false, variant = "auto" }: LogoProp
         className
       )}
     >
-      {/* Symbol: The Intersecting Horizon Pillars ("Pashe Achi") */}
-      <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#1E293B] text-[#FDFBF7] shadow-md transition-transform group-hover:scale-105 dark:bg-[#FDFBF7] dark:text-[#1E293B]">
+      {/* Two Strokes — two people on the same ground, one always beside the other. */}
+      <div className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-[#D9D3C7] bg-[#FFFDF8] text-[#1D2927] transition-colors group-hover:border-[#A84D2A]">
         <svg
           viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6"
         >
-          {/* Supporter Leaning Pillar */}
-          <rect
-            x="8"
-            y="7"
-            width="5.5"
-            height="18"
-            rx="2.5"
-            transform="rotate(6 8 7)"
-            fill="currentColor"
-          />
-          {/* Dreamer Grounded Pillar */}
-          <rect
-            x="18.5"
-            y="7"
-            width="5.5"
-            height="18"
-            rx="2.5"
-            fill="#C25E00"
-          />
+          <path d="M9 23.5V10.3c0-1.75 1.1-2.8 2.4-2.8s2.35 1.05 2.35 2.8v13.2" stroke="currentColor" strokeWidth="4.3" strokeLinecap="round" />
+          <path d="M19 23.5V8.5c0-1.75 1.08-2.8 2.35-2.8 1.3 0 2.4 1.05 2.4 2.8v15" stroke="#A84D2A" strokeWidth="4.3" strokeLinecap="round" />
         </svg>
       </div>
 
@@ -50,17 +33,17 @@ export function Logo({ className, iconOnly = false, variant = "auto" }: LogoProp
         <div className="flex flex-col leading-none">
           <span
             className={cn(
-              "text-xl font-extrabold tracking-tight",
+              "text-xl font-bold tracking-[-0.04em]",
               variant === "light"
                 ? "text-white"
                 : variant === "dark"
                 ? "text-slate-900"
-                : "text-[#1E293B] dark:text-[#FDFBF7]"
+                : "text-[#1D2927]"
             )}
           >
-            Pashe<span className="text-[#C25E00]">Achi</span>
+            Pashe<span className="text-[#A84D2A]">Achi</span>
           </span>
-          <span className="mt-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          <span className="mt-0.5 text-[10px] font-medium text-[#68726d]">
             পাশে আছি
           </span>
         </div>

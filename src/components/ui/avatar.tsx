@@ -1,21 +1,35 @@
+"use client";
+
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+const avatarVariants = cva(
+  "relative flex shrink-0 overflow-hidden rounded-full font-bold bg-[#EAE5DB] text-[#1D2927] flex items-center justify-center border border-[#D9D3C7]",
+  {
+    variants: {
+      size: {
+        xs: "h-6 w-6 text-[10px]",
+        sm: "h-8 w-8 text-xs",
+        md: "h-10 w-10 text-sm",
+        lg: "h-12 w-12 text-base",
+        xl: "h-16 w-16 text-lg",
+        "2xl": "h-24 w-24 text-2xl sm:h-32 sm:w-32 sm:text-4xl",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
+);
+
+export interface AvatarProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof avatarVariants> {
   src?: string;
   alt?: string;
   name?: string;
-  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 }
-
-const sizeClasses = {
-  xs: "h-6 w-6 text-[10px]",
-  sm: "h-8 w-8 text-xs",
-  md: "h-10 w-10 text-sm",
-  lg: "h-14 w-14 text-base",
-  xl: "h-20 w-20 text-xl",
-  "2xl": "h-28 w-28 text-3xl",
-};
 
 export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, alt, name, size = "md", ...props }, ref) => {
@@ -24,20 +38,14 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     const getInitials = (n?: string) => {
       if (!n) return "P";
       const parts = n.trim().split(" ");
-      if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-      }
-      return n.substring(0, 2).toUpperCase();
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     };
 
     return (
       <div
         ref={ref}
-        className={cn(
-          "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold shadow-sm ring-2 ring-white dark:ring-slate-900",
-          sizeClasses[size],
-          className
-        )}
+        className={cn(avatarVariants({ size, className }))}
         {...props}
       >
         {src && !imageError ? (
@@ -49,9 +57,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-tr from-[#10B981] to-[#4F46E5] text-white">
-            {getInitials(name)}
-          </div>
+          <span>{getInitials(name)}</span>
         )}
       </div>
     );

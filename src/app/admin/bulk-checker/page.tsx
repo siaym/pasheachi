@@ -73,7 +73,7 @@ export default function BulkTransactionCheckerPage() {
   ];
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 bg-slate-900 text-white">
+    <div className="page-shell py-8 sm:py-12">
       <Container variant="wide">
         {/* Navigation */}
         <div className="flex items-center justify-between mb-6">
@@ -91,7 +91,7 @@ export default function BulkTransactionCheckerPage() {
             <Sparkles className="h-3.5 w-3.5" />
             <span>Automated Statement Auditor</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold">
+          <h1 className="text-3xl font-bold text-[#1D2927] sm:text-5xl">
             Bulk Transaction Checker Engine
           </h1>
           <p className="text-sm text-slate-400 mt-1">

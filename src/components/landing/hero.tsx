@@ -2,138 +2,53 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Heart, Wallet, CheckCircle2, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
 
 export function Hero() {
   const [claimHandle, setClaimHandle] = useState("");
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-32 bg-[#FDFBF7] dark:bg-[#0F172A]">
-      <Container variant="wide" className="relative z-10">
-        <div className="flex flex-col items-center text-center">
-          {/* Subtle Story Tag */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#EADECC] bg-[#F4F0EA] px-4 py-1.5 text-xs font-semibold text-[#1E293B] shadow-sm mb-8 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
-            <Heart className="h-3.5 w-3.5 text-[#C25E00]" />
-            <span>"পাশে আছি" — People Standing Beside People</span>
-          </div>
-
-          {/* Master Editorial Headline */}
-          <h1 className="max-w-5xl text-4xl sm:text-6xl lg:text-7xl font-editorial font-bold tracking-tight text-[#1E293B] dark:text-[#FDFBF7] leading-[1.08]">
-            Stand Beside <br className="hidden sm:inline" />
-            <span className="italic text-[#C25E00]">Every Dream.</span>
-          </h1>
-
-          {/* Subtitle Paragraph */}
-          <p className="mt-6 max-w-2xl text-base sm:text-xl leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
-            A handcrafted crowdfunding and support platform for Bangladesh. Back medical treatments, university tuition, travel, open source, emergency relief, and personal dreams.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <Link href="/discover" className="w-full sm:w-auto">
-              <Button size="xl" variant="accent" className="w-full sm:w-auto font-bold gap-2">
-                <span>Explore Causes</span>
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/create" className="w-full sm:w-auto">
-              <Button size="xl" variant="secondary" className="w-full sm:w-auto font-bold">
-                Start a Campaign
-              </Button>
-            </Link>
-          </div>
-
-          {/* Inline Profile Handle Claim Input */}
-          <div className="mt-10 w-full max-w-md">
+    <section className="border-b border-[#D9D3C7] bg-[#F7F4ED] py-14 sm:py-24">
+      <Container variant="wide">
+        <div className="grid items-end gap-12 lg:grid-cols-[1.12fr_.88fr] lg:gap-20">
+          <div>
+            <p className="eyebrow mb-6">People standing beside people</p>
+            <h1 className="max-w-3xl text-5xl font-bold leading-[.98] text-[#1D2927] sm:text-7xl lg:text-[5.4rem]">
+              Every dream deserves <em className="font-normal text-[#A84D2A]">someone beside it.</em>
+            </h1>
+            <p className="mt-7 max-w-xl text-base leading-7 text-[#53605C] sm:text-lg">
+              PasheAchi brings people together for medical care, education, community work, creative projects, and the moments that cannot wait.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link href="/discover"><Button size="lg" variant="accent">Find a cause <ArrowRight className="h-4 w-4" /></Button></Link>
+              <Link href="/about"><Button size="lg" variant="ghost">Why PasheAchi</Button></Link>
+            </div>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (claimHandle) window.location.href = `/signup?username=${claimHandle}`;
-              }}
-              className="relative flex items-center rounded-2xl border border-[#EADECC] bg-white p-2 shadow-sm focus-within:border-[#C25E00] focus-within:ring-2 focus-within:ring-[#C25E00]/20 transition-all dark:border-slate-800 dark:bg-slate-900"
+              onSubmit={(event) => { event.preventDefault(); if (claimHandle) window.location.href = `/signup?username=${claimHandle}`; }}
+              className="mt-12 max-w-md border-t border-[#D9D3C7] pt-6"
             >
-              <span className="pl-3 text-xs font-bold text-slate-400 select-none">
-                pasheachi.bro.bd/@
-              </span>
-              <input
-                type="text"
-                placeholder="your-name"
-                value={claimHandle}
-                onChange={(e) =>
-                  setClaimHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
-                }
-                className="h-9 flex-1 bg-transparent px-1 text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
-              />
-              <Button type="submit" size="sm" variant="default" className="shrink-0 font-bold text-xs">
-                Claim URL
-              </Button>
+              <label htmlFor="handle" className="text-xs font-semibold uppercase tracking-[.12em] text-[#53605C]">Your permanent place on PasheAchi</label>
+              <div className="mt-3 flex border-b border-[#9B9488] pb-2 focus-within:border-[#A84D2A]">
+                <span className="pt-1 text-sm text-[#68726D]">pasheachi.com/@</span>
+                <input id="handle" value={claimHandle} onChange={(event) => setClaimHandle(event.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))} placeholder="your-name" className="min-w-0 flex-1 bg-transparent px-1 text-sm font-semibold text-[#1D2927] outline-none placeholder:font-normal" />
+                <button type="submit" className="text-sm font-semibold text-[#A84D2A] hover:text-[#843B20]">Claim it</button>
+              </div>
             </form>
           </div>
 
-          {/* Handcrafted Editorial Cause Card Preview */}
-          <div className="mt-16 w-full max-w-4xl">
-            <div className="card-editorial p-6 sm:p-8 text-left space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EADECC] pb-6 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                  <Avatar
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80"
-                    name="Rina Akter"
-                    size="md"
-                  />
-                  <div>
-                    <div className="text-sm font-bold text-[#1E293B] dark:text-[#FDFBF7]">
-                      Rina Akter • pasheachi.bro.bd/@rina
-                    </div>
-                    <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-[#2D5A27]" />
-                      <span>NID Verified Creator • Dhaka</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                  <span>12 days left</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-xl sm:text-2xl font-editorial font-bold text-[#1E293B] dark:text-[#FDFBF7]">
-                  Help Rina's Mother Get Urgent Surgery
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                  My mother requires an immediate open-heart procedure at National Heart Foundation. Every contribution brings us one step closer to saving her life.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <div className="flex justify-between text-xs font-bold text-[#1E293B] dark:text-[#FDFBF7]">
-                  <span className="text-[#2D5A27]">৳34,500 raised (69%)</span>
-                  <span>Goal: ৳50,000</span>
-                </div>
-                <div className="h-2.5 w-full rounded-full bg-[#F4F0EA] dark:bg-slate-800 overflow-hidden">
-                  <div className="h-full rounded-full bg-[#2D5A27] w-[69%]" />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                  <Wallet className="h-4 w-4 text-[#2D5A27]" />
-                  <span>Manual bKash & Nagad Audit Verified</span>
-                </div>
-
-                <Link href="/@rina/medical-fund-mother">
-                  <Button variant="accent" size="md" className="font-bold gap-1.5">
-                    <span>Support This Dream</span>
-                    <ArrowUpRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
+          <aside className="relative border-y border-[#D9D3C7] py-7 sm:py-10 lg:mb-2">
+            <div className="absolute left-0 top-0 h-1 w-16 bg-[#A84D2A]" />
+            <p className="eyebrow">A story in progress</p>
+            <h2 className="mt-5 text-3xl font-bold leading-tight text-[#1D2927]">Help Rina&apos;s mother receive urgent cardiac care.</h2>
+            <p className="mt-4 text-sm leading-6 text-[#53605C]">A verified request from Dhaka, supported by 142 neighbours, friends and strangers.</p>
+            <div className="mt-8 flex items-end justify-between border-b border-[#D9D3C7] pb-4">
+              <div><p className="text-3xl font-bold text-[#1D2927]">৳34,500</p><p className="mt-1 text-xs text-[#68726D]">raised of ৳50,000</p></div>
+              <p className="text-sm font-semibold text-[#355C52]">69% funded</p>
             </div>
-          </div>
+            <div className="mt-5 flex items-center justify-between gap-4 text-xs text-[#53605C]"><span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#355C52]" />Identity checked</span><Link href="/@rina/medical-fund-mother" className="inline-flex items-center gap-1 font-semibold text-[#A84D2A]">Read story <ArrowUpRight className="h-3.5 w-3.5" /></Link></div>
+          </aside>
         </div>
       </Container>
     </section>

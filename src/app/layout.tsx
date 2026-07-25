@@ -40,7 +40,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${fontHeading.variable} ${fontSerif.variable} ${fontBody.variable} ${fontMono.variable} ${fontBengali.variable}`}
     >
-      <body className="flex min-h-screen flex-col bg-[#FDFBF7] text-[#1E293B] antialiased dark:bg-[#0F172A] dark:text-[#FDFBF7]">
+      <body className="flex min-h-screen flex-col bg-[#F7F4ED] text-[#1D2927] antialiased">
         <Navbar />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />

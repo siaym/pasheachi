@@ -27,12 +27,12 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 bg-slate-50/50 dark:bg-slate-950">
+    <div className="page-shell py-8 sm:py-12">
       <Container variant="wide">
         {/* Welcome Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-[#1D2927] sm:text-5xl">
               Welcome back, {user.name} 👋
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400">

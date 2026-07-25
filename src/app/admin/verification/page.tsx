@@ -86,7 +86,7 @@ export default function VerificationQueuePage() {
   });
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 bg-slate-900 text-white">
+    <div className="page-shell py-8 sm:py-12">
       <Container variant="wide">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between mb-6">

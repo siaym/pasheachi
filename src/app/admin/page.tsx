@@ -18,16 +18,16 @@ import {
 
 export default function AdminDashboardPage() {
   return (
-    <div className="min-h-screen py-8 sm:py-12 bg-slate-900 text-white">
+    <div className="page-shell py-8 sm:py-12">
       <Container variant="wide">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-800">
+        <div className="mb-8 flex flex-col justify-between gap-4 border-b border-[#D9D3C7] pb-6 sm:flex-row sm:items-center">
           <div>
             <div className="flex items-center gap-2">
               <Badge variant="verified">Admin Console</Badge>
               <span className="text-xs text-slate-400">PasheAchi Operations</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold mt-1">
+            <h1 className="mt-2 text-3xl font-bold text-[#1D2927] sm:text-5xl">
               Admin Overview & Audit Dashboard
             </h1>
           </div>
@@ -49,8 +49,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Admin Navigation Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-slate-800">
-          <Link href="/admin" className="px-4 py-2 rounded-full text-xs font-bold bg-[#10B981] text-white">
+        <div className="mb-8 flex items-center gap-2 overflow-x-auto border-b border-[#D9D3C7] pb-4">
+          <Link href="/admin" className="rounded-lg bg-[#1D2927] px-4 py-2 text-xs font-bold text-white">
             Overview
           </Link>
           <Link href="/admin/verification" className="px-4 py-2 rounded-full text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800">
