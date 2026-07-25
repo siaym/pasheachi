@@ -3,82 +3,74 @@
 import { useState } from "react";
 import { Container } from "@/components/layout/container";
 import { CATEGORIES } from "@/lib/constants";
-import { FadeIn, RevealText, PaperLift, InkDivider } from "@/components/ui/motion";
+import { FadeIn, RevealText, PaperLift } from "@/components/ui/motion";
 import {
   Check,
   ArrowRight,
   ArrowLeft,
   Upload,
   Plus,
-  Trash2,
-  HelpCircle,
   Paperclip,
+  CreditCard,
+  Building,
+  FileText,
+  User,
+  ShieldCheck,
+  Smartphone,
+  Monitor,
+  Tablet
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CreateCampaignPage() {
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [loading, setLoading] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   // Form states
   const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [category, setCategory] = useState("medical");
   const [goalAmount, setGoalAmount] = useState("");
-  const [duration, setDuration] = useState("30");
+  const [deadline, setDeadline] = useState("30");
+  const [tags, setTags] = useState("");
 
-  const [shortDesc, setShortDesc] = useState("");
-  const [fullStory, setFullStory] = useState("");
-
+  const [story, setStory] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-
-  const [milestones, setMilestones] = useState<{ title: string; amount: string }[]>([
-    { title: "Phase 1 Initial Preparation", amount: "10000" },
-  ]);
-
-  const addMilestone = () => {
-    setMilestones([...milestones, { title: "", amount: "" }]);
-  };
-
-  const removeMilestone = (idx: number) => {
-    setMilestones(milestones.filter((_, i) => i !== idx));
-  };
 
   const handleSubmit = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      window.location.href = "/siyam";
+      router.push("/dashboard/campaigns");
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 relative overflow-hidden">
-      {/* Background Decorative Typewriter Text */}
-      <div className="absolute top-20 left-10 text-[200px] font-editorial italic text-[#D9D3C7]/20 pointer-events-none -rotate-6 select-none leading-none -z-10">
-        Draft
-      </div>
-
+    <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#F8FAFC]">
       <Container variant="standard" className="relative z-10">
         
         {/* Header Section */}
         <div className="mb-12 text-center max-w-2xl mx-auto">
           <FadeIn>
             <div className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#53605C] mb-4">
-              FORM № 409-C <span className="mx-2 text-[#D9D3C7]">|</span> APPLICATION FOR SUPPORT
+              FORM № 409-C <span className="mx-2 text-[#D9D3C7]">|</span> CAMPAIGN AUTHORIZATION
             </div>
           </FadeIn>
           <h1 className="font-editorial text-5xl sm:text-6xl font-medium leading-[1.1] text-[#1D2927] mb-4">
-            <RevealText>Start Your Campaign</RevealText>
+            <RevealText>Create Campaign</RevealText>
           </h1>
           <FadeIn delay={0.2}>
             <p className="text-[#53605C]">
-              Complete this document accurately to register your cause in the global index.
+              Complete this 5-step application to submit your campaign for verification.
             </p>
           </FadeIn>
         </div>
 
-        {/* Wizard Form Wrapper (Physical Application Sheet) */}
-        <FadeIn delay={0.3} className="max-w-3xl mx-auto">
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] shadow-paper p-8 sm:p-12 relative min-h-[600px] flex flex-col">
+        {/* Wizard Form Wrapper */}
+        <FadeIn delay={0.3} className="max-w-4xl mx-auto">
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] shadow-paper p-8 sm:p-12 relative min-h-[700px] flex flex-col">
             
             {/* Top Corner Tape */}
             <div className="absolute -top-3 right-12 w-20 h-6 bg-[#EAE5DB] opacity-80 rotate-[3deg] z-10 shadow-sm border border-[#D9D3C7]/50"></div>
@@ -94,11 +86,11 @@ export default function CreateCampaignPage() {
                 Page {step} of 5
               </div>
               <div className="font-editorial text-2xl text-[#1D2927]">
-                {step === 1 && "I. Primary Details"}
-                {step === 2 && "II. Narrative & Context"}
-                {step === 3 && "III. Visual Evidence"}
-                {step === 4 && "IV. Budget Breakdown"}
-                {step === 5 && "V. Final Declaration"}
+                {step === 1 && "I. Campaign Information"}
+                {step === 2 && "II. The Story"}
+                {step === 3 && "III. Verification Documents"}
+                {step === 4 && "IV. Payment Information"}
+                {step === 5 && "V. Final Preview"}
               </div>
               <div className="font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
                 SEC-0{step}
@@ -108,7 +100,7 @@ export default function CreateCampaignPage() {
             {/* Form Content Area */}
             <div className="flex-1">
               
-              {/* STEP 1: BASICS */}
+              {/* STEP 1: CAMPAIGN INFO */}
               {step === 1 && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="relative">
@@ -121,6 +113,19 @@ export default function CreateCampaignPage() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-2xl text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                      Subtitle (Short summary) *
+                    </label>
+                    <input
+                      required
+                      placeholder="Briefly state the core objective..."
+                      value={subtitle}
+                      onChange={(e) => setSubtitle(e.target.value)}
+                      className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-xl text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -155,20 +160,34 @@ export default function CreateCampaignPage() {
                     </div>
                   </div>
 
-                  <div className="relative">
-                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
-                      Campaign Duration *
-                    </label>
-                    <select
-                      value={duration}
-                      onChange={(e) => setDuration(e.target.value)}
-                      className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm uppercase tracking-widest text-[#1D2927] focus:outline-none cursor-pointer transition-colors"
-                    >
-                      <option value="15">15 days</option>
-                      <option value="30">30 days (Standard limit)</option>
-                      <option value="60">60 days</option>
-                      <option value="90">90 days (Extended)</option>
-                    </select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="relative">
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                        Campaign Deadline *
+                      </label>
+                      <select
+                        value={deadline}
+                        onChange={(e) => setDeadline(e.target.value)}
+                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm uppercase tracking-widest text-[#1D2927] focus:outline-none cursor-pointer transition-colors"
+                      >
+                        <option value="15">15 days</option>
+                        <option value="30">30 days</option>
+                        <option value="60">60 days</option>
+                        <option value="90">90 days</option>
+                      </select>
+                    </div>
+
+                    <div className="relative">
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                        Tags (Comma separated)
+                      </label>
+                      <input
+                        placeholder="e.g. medical, emergency, surgery"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -176,176 +195,201 @@ export default function CreateCampaignPage() {
               {/* STEP 2: STORY */}
               {step === 2 && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="relative">
-                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
-                      Short Summary (2 Sentences) *
-                    </label>
-                    <input
-                      required
-                      placeholder="Briefly state the core objective..."
-                      value={shortDesc}
-                      onChange={(e) => setShortDesc(e.target.value)}
-                      className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-xl text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none transition-colors"
-                    />
-                  </div>
-
+                  
                   <div className="relative">
                     <label className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-3">
-                      <span>Full Narrative Context *</span>
-                      <span className="text-[#8C7A5B] flex items-center gap-1"><HelpCircle className="w-3 h-3"/> Be specific</span>
+                      <span>Campaign Story (Rich Text) *</span>
                     </label>
+                    <div className="border border-[#1D2927] bg-white p-2 mb-2 flex gap-2 overflow-x-auto">
+                      <button className="px-3 py-1 bg-[#EAE5DB] font-bold text-xs text-[#1D2927]">B</button>
+                      <button className="px-3 py-1 bg-[#EAE5DB] italic text-xs text-[#1D2927]">I</button>
+                      <button className="px-3 py-1 bg-[#EAE5DB] underline text-xs text-[#1D2927]">U</button>
+                      <button className="px-3 py-1 border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">H1</button>
+                      <button className="px-3 py-1 border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">H2</button>
+                    </div>
                     <div className="relative">
-                      {/* Ruled lines background effect for the textarea */}
-                      <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(transparent 95%, #EAE5DB 95%)', backgroundSize: '100% 32px' }}></div>
                       <textarea
-                        rows={10}
+                        rows={8}
                         required
-                        placeholder="Detail the circumstances, the need, and the impact..."
-                        value={fullStory}
-                        onChange={(e) => setFullStory(e.target.value)}
-                        className="w-full bg-transparent relative z-10 font-editorial text-lg text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none resize-none leading-[32px]"
+                        placeholder="Tell your story. Why are you raising funds? How will they be used?"
+                        value={story}
+                        onChange={(e) => setStory(e.target.value)}
+                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-lg text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none resize-none leading-relaxed"
                       />
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="relative">
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
+                        Image Gallery (Cover & Details) *
+                      </label>
+                      <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#1D2927] bg-[#EAE5DB]/50 cursor-pointer hover:bg-[#EAE5DB] transition-colors">
+                        <Upload className="h-6 w-6 text-[#1D2927] mb-2" />
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
+                          Upload Images
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
+                        Video Link (Optional)
+                      </label>
+                      <input
+                        placeholder="https://youtube.com/watch?v=..."
+                        value={videoUrl}
+                        onChange={(e) => setVideoUrl(e.target.value)}
+                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors mb-4"
+                      />
+                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
+                        Additional Attachments
+                      </label>
+                      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#1D2927] border border-[#D9D3C7] p-2 hover:bg-[#EAE5DB] cursor-pointer w-fit">
+                        <Plus className="h-3 w-3" /> Add PDF / Doc
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* STEP 3: MEDIA */}
+              {/* STEP 3: VERIFICATION DOCUMENTS */}
               {step === 3 && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="relative">
-                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
-                      Primary Photograph (Cover Image) *
-                    </label>
-                    <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed border-[#1D2927] bg-[#EAE5DB]/50 cursor-pointer hover:bg-[#EAE5DB] transition-colors">
-                      <div className="w-16 h-16 border-2 border-[#1D2927] flex items-center justify-center rounded-full mb-4 bg-[#FAF8F3]">
-                        <Upload className="h-6 w-6 text-[#1D2927]" />
-                      </div>
-                      <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#1D2927] mb-2">
-                        Attach Physical Image
-                      </span>
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B] text-center max-w-xs">
-                        JPG or PNG. Ensure the image is clear and provides visual evidence of the cause.
-                      </span>
-                    </div>
+                  
+                  <div className="bg-[#EAE5DB] p-4 border-l-4 border-[#1D2927] mb-6">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] leading-relaxed flex items-start gap-2">
+                      <ShieldCheck className="h-4 w-4 shrink-0 text-[#1D2927]" />
+                      PasheAchi requires strict manual verification for all campaigns to ensure authenticity. Please upload the necessary legal and medical documents depending on your category.
+                    </p>
                   </div>
 
-                  <div className="relative">
-                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
-                      Video Evidence Link (Optional)
-                    </label>
-                    <input
-                      placeholder="https://youtube.com/watch?v=..."
-                      value={videoUrl}
-                      onChange={(e) => setVideoUrl(e.target.value)}
-                      className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <PaperLift className="border border-[#D9D3C7] p-6 bg-[#FAF8F3] hover:border-[#1D2927] transition-colors cursor-pointer group">
+                      <User className="h-6 w-6 text-[#1D2927] mb-3 group-hover:scale-110 transition-transform" />
+                      <h3 className="font-bold text-sm text-[#1D2927] mb-1">National ID (NID) *</h3>
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-4">Required for all campaigns</p>
+                      <button className="h-8 px-4 border border-[#1D2927] font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 w-full justify-center">
+                        <Upload className="h-3 w-3" /> Upload File
+                      </button>
+                    </PaperLift>
+
+                    <PaperLift className="border border-[#D9D3C7] p-6 bg-[#FAF8F3] hover:border-[#1D2927] transition-colors cursor-pointer group">
+                      <FileText className="h-6 w-6 text-[#A84D2A] mb-3 group-hover:scale-110 transition-transform" />
+                      <h3 className="font-bold text-sm text-[#1D2927] mb-1">Medical Documents</h3>
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-4">Prescriptions, hospital bills</p>
+                      <button className="h-8 px-4 border border-[#1D2927] font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 w-full justify-center">
+                        <Upload className="h-3 w-3" /> Upload File
+                      </button>
+                    </PaperLift>
+
+                    <PaperLift className="border border-[#D9D3C7] p-6 bg-[#FAF8F3] hover:border-[#1D2927] transition-colors cursor-pointer group">
+                      <Building className="h-6 w-6 text-[#1D2927] mb-3 group-hover:scale-110 transition-transform" />
+                      <h3 className="font-bold text-sm text-[#1D2927] mb-1">NGO / Business Reg.</h3>
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-4">Trade license, NGO cert</p>
+                      <button className="h-8 px-4 border border-[#1D2927] font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 w-full justify-center">
+                        <Upload className="h-3 w-3" /> Upload File
+                      </button>
+                    </PaperLift>
+
+                    <PaperLift className="border border-[#D9D3C7] p-6 bg-[#FAF8F3] hover:border-[#1D2927] transition-colors cursor-pointer group">
+                      <User className="h-6 w-6 text-[#1D2927] mb-3 group-hover:scale-110 transition-transform" />
+                      <h3 className="font-bold text-sm text-[#1D2927] mb-1">Student ID</h3>
+                      <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-4">For education campaigns</p>
+                      <button className="h-8 px-4 border border-[#1D2927] font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 w-full justify-center">
+                        <Upload className="h-3 w-3" /> Upload File
+                      </button>
+                    </PaperLift>
                   </div>
+
                 </div>
               )}
 
-              {/* STEP 4: MILESTONES */}
+              {/* STEP 4: PAYMENT INFO */}
               {step === 4 && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <p className="font-mono text-xs text-[#53605C] leading-relaxed mb-6">
-                    Break down your goal amount into logical phases. This builds trust by showing exactly how funds will be allocated.
-                  </p>
+                  <div className="bg-[#FAF8F3] border border-[#1D2927] p-8">
+                    <h3 className="font-editorial text-2xl text-[#1D2927] mb-2 flex items-center gap-2">
+                      <CreditCard className="h-6 w-6" /> Payment Information
+                    </h3>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-8">
+                      PasheAchi collects funds securely and holds them until withdrawal is requested.
+                    </p>
 
-                  <div className="border border-[#1D2927] bg-[#FAF8F3]">
-                    <div className="grid grid-cols-[1fr,120px,40px] gap-0 border-b border-[#1D2927] bg-[#EAE5DB] font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
-                      <div className="p-3 border-r border-[#1D2927]">Milestone Description</div>
-                      <div className="p-3 border-r border-[#1D2927]">Amount (৳)</div>
-                      <div className="p-3 text-center">X</div>
-                    </div>
-                    
-                    {milestones.map((m, idx) => (
-                      <div key={idx} className="grid grid-cols-[1fr,120px,40px] gap-0 border-b border-[#D9D3C7] last:border-0 group">
-                        <div className="border-r border-[#1D2927]">
-                          <input
-                            placeholder="e.g. Pre-op Diagnostic Tests"
-                            value={m.title}
-                            onChange={(e) => {
-                              const updated = [...milestones];
-                              updated[idx].title = e.target.value;
-                              setMilestones(updated);
-                            }}
-                            className="w-full bg-transparent p-3 font-editorial text-lg text-[#1D2927] placeholder:text-[#D9D3C7] placeholder:italic focus:outline-none"
-                          />
-                        </div>
-                        <div className="border-r border-[#1D2927]">
-                          <input
-                            type="number"
-                            placeholder="0"
-                            value={m.amount}
-                            onChange={(e) => {
-                              const updated = [...milestones];
-                              updated[idx].amount = e.target.value;
-                              setMilestones(updated);
-                            }}
-                            className="w-full bg-transparent p-3 font-mono text-sm text-[#1D2927] focus:outline-none text-right"
-                          />
-                        </div>
-                        <div className="flex items-center justify-center bg-[#EAE5DB]/30 group-hover:bg-[#A84D2A]/10 transition-colors">
-                          {milestones.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeMilestone(idx)}
-                              className="text-[#A84D2A] hover:scale-110 transition-transform"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          )}
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-bold text-sm text-[#1D2927] mb-2">Supported Payment Methods</h4>
+                        <div className="flex gap-2">
+                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">bKash</span>
+                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">Nagad</span>
+                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">Bank Transfer</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={addMilestone}
-                    className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors"
-                  >
-                    <Plus className="h-4 w-4" /> Add Row
-                  </button>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#1D2927] mb-2">Verification Process</h4>
+                        <p className="text-sm text-[#53605C] leading-relaxed">
+                          Once a donor makes a payment, it enters a "Pending" state. Our system verifies the transaction reference with the payment gateway. Once verified, the funds are added to your "Verified Balance" and can be requested for withdrawal. A standard 5% platform fee applies to verified funds.
+                        </p>
+                      </div>
+
+                      <div className="bg-[#EAE5DB] p-4 border-l-4 border-[#A84D2A]">
+                        <h4 className="font-bold text-sm text-[#1D2927] mb-1">Campaign Instructions</h4>
+                        <p className="text-xs text-[#53605C]">
+                          No further setup is required on your part. A 'Donate Now' button will automatically be added to your public campaign page, handling the entire checkout process.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* STEP 5: REVIEW & SUBMIT */}
               {step === 5 && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="border border-[#1D2927] bg-[#FAF8F3] p-8 relative">
-                    {/* Watermark */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none overflow-hidden">
-                      <div className="text-[150px] font-bold uppercase tracking-tighter -rotate-45 whitespace-nowrap">
-                        DRAFT
-                      </div>
+                  <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4 mb-4">
+                    <h3 className="font-editorial text-2xl text-[#1D2927]">Live Preview</h3>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setPreviewMode("mobile")} className={`p-2 border transition-colors ${previewMode === "mobile" ? "border-[#1D2927] bg-[#EAE5DB]" : "border-transparent"}`}>
+                        <Smartphone className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => setPreviewMode("tablet")} className={`p-2 border transition-colors ${previewMode === "tablet" ? "border-[#1D2927] bg-[#EAE5DB]" : "border-transparent"}`}>
+                        <Tablet className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => setPreviewMode("desktop")} className={`p-2 border transition-colors ${previewMode === "desktop" ? "border-[#1D2927] bg-[#EAE5DB]" : "border-transparent"}`}>
+                        <Monitor className="h-4 w-4" />
+                      </button>
                     </div>
-
-                    <h3 className="font-editorial text-2xl text-[#1D2927] border-b border-dashed border-[#D9D3C7] pb-4 mb-6">
-                      Application Summary
-                    </h3>
-                    
-                    <div className="space-y-4 font-mono text-sm text-[#1D2927]">
-                      <div className="flex justify-between border-b border-[#EAE5DB] pb-2">
-                        <span className="text-[#8C7A5B] uppercase tracking-widest text-[10px]">Title:</span>
-                        <span className="font-bold">{title || "Untitled Application"}</span>
+                  </div>
+                  
+                  {/* Mocked Preview Container */}
+                  <div className={`mx-auto border-4 border-[#1D2927] bg-white rounded-lg overflow-hidden relative transition-all duration-500 ${
+                    previewMode === "mobile" ? "w-[320px] h-[568px]" : 
+                    previewMode === "tablet" ? "w-[768px] h-[600px]" : 
+                    "w-full h-[600px]"
+                  }`}>
+                    {/* Fake browser bar */}
+                    <div className="h-6 border-b border-[#D9D3C7] bg-[#FAF8F3] flex items-center px-2 gap-1">
+                      <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                      <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                      <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                    </div>
+                    {/* Preview Content */}
+                    <div className="p-6 overflow-y-auto h-full space-y-4">
+                      <div className="h-48 bg-[#EAE5DB] w-full flex items-center justify-center text-[#53605C] font-mono text-xs uppercase">
+                        Cover Image
                       </div>
-                      <div className="flex justify-between border-b border-[#EAE5DB] pb-2">
-                        <span className="text-[#8C7A5B] uppercase tracking-widest text-[10px]">Target Funds:</span>
-                        <span className="font-bold text-[#A84D2A]">৳{goalAmount || "0"}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-[#EAE5DB] pb-2">
-                        <span className="text-[#8C7A5B] uppercase tracking-widest text-[10px]">Category:</span>
-                        <span className="font-bold uppercase">{category}</span>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <span className="text-[#8C7A5B] uppercase tracking-widest text-[10px]">Duration:</span>
-                        <span className="font-bold">{duration} Days</span>
+                      <h1 className="font-editorial text-3xl text-[#1D2927]">{title || "Untitled Campaign"}</h1>
+                      <p className="text-[#53605C] text-sm">{subtitle || "No subtitle provided."}</p>
+                      <div className="h-2 w-full bg-[#EAE5DB]"></div>
+                      <p className="font-mono text-xs text-[#A84D2A] uppercase">Goal: ৳{goalAmount || "0"}</p>
+                      <div className="mt-8 border-t border-[#D9D3C7] pt-4">
+                        <p className="text-sm">{story || "Your story will appear here..."}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#EAE5DB] p-6 border-l-4 border-[#1D2927]">
+                  <div className="bg-[#EAE5DB] p-6 border-l-4 border-[#1D2927] mt-8">
                     <label className="flex items-start gap-4 cursor-pointer group">
                       <div className="relative flex items-center justify-center mt-0.5">
                         <input type="checkbox" required className="peer sr-only" />
@@ -353,7 +397,7 @@ export default function CreateCampaignPage() {
                         <Check className="absolute text-[#F7F4ED] w-3 h-3 opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
                       </div>
                       <span className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] leading-relaxed">
-                        I hereby declare that all information provided in this document is genuine, truthful, and backed by verifiable evidence. I understand that falsification will result in immediate termination of the application.
+                        I hereby declare that all information provided in this document is genuine, truthful, and backed by verifiable evidence. I understand that falsification will result in immediate termination of the application and potential legal action.
                       </span>
                     </label>
                   </div>
@@ -371,10 +415,10 @@ export default function CreateCampaignPage() {
                   onClick={() => setStep((s) => (s - 1) as any)}
                   className="h-12 px-6 border border-[#1D2927] bg-transparent text-[#1D2927] font-bold font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-all"
                 >
-                  <ArrowLeft className="h-4 w-4" /> Previous Section
+                  <ArrowLeft className="h-4 w-4" /> Previous
                 </button>
               ) : (
-                <div></div> // Empty div for flex spacing
+                <div></div>
               )}
 
               {step < 5 ? (
@@ -393,7 +437,7 @@ export default function CreateCampaignPage() {
                   disabled={loading}
                   className="h-14 px-10 border border-[#A84D2A] bg-[#A84D2A] text-[#F7F4ED] font-bold font-mono text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#A84D2A] transition-all shadow-ink active:scale-[0.98] disabled:opacity-50"
                 >
-                  {loading ? "Processing..." : "Sign & Submit Application"}
+                  {loading ? "Publishing..." : "Submit for Verification"}
                 </button>
               )}
             </div>
