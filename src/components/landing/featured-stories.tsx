@@ -1,108 +1,129 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { SectionHeader } from "@/components/shared/section-header";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import { MOCK_CAMPAIGNS } from "@/data/mock";
 import { calculateProgress, formatCurrency } from "@/lib/utils";
+import { FadeIn, RevealText, InkDivider, PaperLift } from "@/components/ui/motion";
 
 export function FeaturedStories() {
   const featured = MOCK_CAMPAIGNS.slice(0, 3);
 
   return (
-    <section id="featured-stories" className="py-16 sm:py-24 bg-[#F7F4ED] dark:bg-[#121A19]">
+    <section id="featured-stories" className="py-20 sm:py-32 bg-transparent border-b border-[#D9D3C7]">
       <Container variant="wide">
-        <SectionHeader
-          badge="Real People • Real Stories"
-          title="Featured Stories in Progress"
-          subtitle="Behind every campaign is a human story. Every contribution brings someone closer to their dream."
-          centered
-        />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <div className="max-w-2xl">
+            <FadeIn>
+              <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#A84D2A] mb-6">
+                <span className="h-px w-8 bg-[#A84D2A]"></span>
+                <span className="font-mono">Featured Dreams</span>
+              </div>
+            </FadeIn>
+            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-medium leading-[1.1] text-[#1D2927]">
+              <RevealText>Real People.</RevealText>
+              <RevealText><span className="italic text-[#8C7A5B] font-light">Real</span> Stories.</RevealText>
+            </h2>
+          </div>
+          <FadeIn delay={0.2} className="max-w-md text-base leading-relaxed text-[#53605C] font-medium border-l border-[#D9D3C7] pl-6">
+            Behind every campaign is a human story. Every contribution brings someone closer to a moment that changes everything.
+          </FadeIn>
+        </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featured.map((campaign) => {
+        <InkDivider className="mb-8 hidden md:block opacity-30" />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#D9D3C7] bg-[#F7F4ED]/80 backdrop-blur-md shadow-paper">
+          {featured.map((campaign, index) => {
             const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
             return (
-              <div
+              <FadeIn
                 key={campaign.id}
-                className="paper-card flex flex-col overflow-hidden group p-6 space-y-5"
+                delay={0.1 * index}
+                className={`group flex flex-col p-8 sm:p-10 ${index !== featured.length - 1 ? 'border-b md:border-b-0 md:border-r border-[#D9D3C7]' : ''}`}
               >
                 {/* Media Container */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={campaign.imageUrl}
-                    alt={campaign.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <Badge variant="primary">{campaign.category.toUpperCase()}</Badge>
-                  </div>
-                </div>
-
-                {/* Creator Header */}
-                <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4 dark:border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={campaign.creator.avatarUrl}
-                      name={campaign.creator.name}
-                      size="sm"
+                <PaperLift className="relative aspect-[4/3] w-full overflow-hidden border border-[#1D2927] p-1 bg-[#FAF8F3]">
+                  <div className="relative h-full w-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={campaign.imageUrl}
+                      alt={campaign.title}
+                      className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
-                    <div>
-                      <div className="text-xs font-bold text-[#1D2927] dark:text-[#F7F4ED]">
-                        {campaign.creator.name}
-                      </div>
-                      <div className="text-[10px] text-slate-500 flex items-center gap-1">
-                        <ShieldCheck className="h-3 w-3 text-[#355C52]" />
-                        <span>@{campaign.creator.username}</span>
-                      </div>
+                    <div className="absolute inset-0 bg-[#8C7A5B]/20 mix-blend-multiply pointer-events-none transition-opacity group-hover:opacity-0"></div>
+                  </div>
+                  {/* Category Stamp */}
+                  <div className="absolute top-4 left-4 bg-[#F7F4ED] border border-[#1D2927] px-3 py-1 text-[10px] uppercase font-bold tracking-widest text-[#1D2927]">
+                    {campaign.category}
+                  </div>
+                </PaperLift>
+
+                {/* Creator Info */}
+                <div className="mt-8 flex items-center justify-between border-b border-[#D9D3C7] pb-4">
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#1D2927]">
+                      {campaign.creator.name}
+                    </div>
+                    <div className="text-[10px] font-mono text-[#53605C] mt-1">
+                      @{campaign.creator.username}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-1 text-xs text-slate-500 font-semibold">
-                    <Clock className="h-3.5 w-3.5 text-[#A84D2A]" />
-                    <span>{campaign.daysLeft}d left</span>
+                  <div className="text-right">
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-[#8C7A5B]">
+                      Time Left
+                    </div>
+                    <div className="text-xs font-bold text-[#1D2927] mt-1">
+                      {campaign.daysLeft} Days
+                    </div>
                   </div>
                 </div>
 
                 {/* Story Title & Description */}
-                <div className="space-y-2 flex-1">
+                <div className="py-6 flex-1">
                   <Link href={`/@${campaign.creator.username}/${campaign.slug}`}>
-                    <h3 className="text-lg font-bold leading-snug text-[#1D2927] transition-colors group-hover:text-[#A84D2A] dark:text-white">
+                    <h3 className="font-editorial text-2xl font-medium leading-snug text-[#1D2927] transition-colors group-hover:text-[#A84D2A]">
                       {campaign.title}
                     </h3>
                   </Link>
-                  <p className="line-clamp-2 text-xs leading-relaxed text-[#53605C] dark:text-slate-400">
+                  <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-[#53605C]">
                     {campaign.description}
                   </p>
                 </div>
 
                 {/* Progress Bar & Amount */}
-                <div className="space-y-2 pt-2 border-t border-[#D9D3C7] dark:border-slate-800">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-[#355C52]">{progress}% funded</span>
-                    <span className="text-[#1D2927] dark:text-white">
-                      {formatCurrency(campaign.raisedAmount)} of {formatCurrency(campaign.goalAmount)}
-                    </span>
+                <div className="pt-6 border-t border-[#D9D3C7]">
+                  <div className="flex justify-between items-end mb-3">
+                    <div>
+                      <p className="font-mono text-lg font-medium text-[#1D2927]">
+                        {formatCurrency(campaign.raisedAmount)}
+                      </p>
+                      <p className="text-[10px] font-bold tracking-widest text-[#53605C] mt-1 uppercase">
+                        Raised of {formatCurrency(campaign.goalAmount)}
+                      </p>
+                    </div>
+                    <span className="font-mono text-xs font-bold text-[#A84D2A]">{progress}%</span>
                   </div>
-                  <Progress value={progress} size="md" />
+                  {/* Custom Sharp Progress Bar */}
+                  <div className="h-1.5 w-full bg-[#EAE5DB] border border-[#D9D3C7] overflow-hidden">
+                    <div 
+                      className="h-full bg-[#1D2927] transition-all duration-1000 origin-left"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
                 </div>
 
                 {/* Action Link */}
-                <div className="pt-1">
+                <div className="mt-8">
                   <Link
                     href={`/@${campaign.creator.username}/${campaign.slug}`}
-                    className="inline-flex items-center justify-between w-full text-xs font-bold text-[#A84D2A] hover:text-[#843B20] transition-colors"
+                    className="inline-flex items-center justify-between w-full h-12 px-6 border border-[#1D2927] text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors"
                   >
-                    <span className="ink-underline">Read Full Story & Support</span>
-                    <ArrowUpRight className="h-4 w-4" />
+                    <span>Read Full Story</span>
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-              </div>
+              </FadeIn>
             );
           })}
         </div>
@@ -110,3 +131,5 @@ export function FeaturedStories() {
     </section>
   );
 }
+
+

@@ -1,12 +1,105 @@
-import { CheckCircle2, ShieldCheck, Smartphone, Building2 } from "lucide-react";
-import { Container } from "@/components/layout/container";
+"use client";
 
-const safeguards = [
-  { icon: Smartphone, title: "Payment review", description: "Every manual bKash, Nagad and Rocket transfer is checked against its transaction record." },
-  { icon: ShieldCheck, title: "Identity review", description: "Campaign owners build a visible, permanent reputation with verified identity details." },
-  { icon: Building2, title: "Payout controls", description: "Clear withdrawal steps and an audit trail make funds easy to understand." },
+import { CheckCircle2, ShieldCheck, FileSearch, Building2 } from "lucide-react";
+import { Container } from "@/components/layout/container";
+import { FadeIn, RevealText, InkDivider } from "@/components/ui/motion";
+
+const SAFEGUARDS = [
+  { icon: FileSearch, title: "Audit Trail", description: "Every bKash, Nagad and Rocket transfer is manually verified against official transaction statements." },
+  { icon: ShieldCheck, title: "Identity Verification", description: "Campaign owners must provide government ID and relevant documentation (e.g. hospital bills) before any withdrawal." },
+  { icon: Building2, title: "Transparent Payouts", description: "We do not hold funds indefinitely. Withdrawals are processed directly to the creator's verified account with full public ledgers." },
 ];
 
+export function TrustStamp({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative flex items-center justify-center w-32 h-32 rounded-full border border-[#1D2927] ${className}`}>
+      <div className="absolute inset-2 border border-dashed border-[#1D2927] rounded-full animate-[spin_60s_linear_infinite]" />
+      <div className="absolute inset-4 rounded-full bg-[#1D2927] text-[#F7F4ED] flex flex-col items-center justify-center text-center p-2 shadow-paper">
+        <ShieldCheck className="h-5 w-5 mb-1" />
+        <span className="font-mono text-[8px] uppercase tracking-widest leading-tight">Verified<br/>Trust</span>
+      </div>
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+        <path id="curve" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="transparent" />
+        <text className="text-[7.5px] font-mono tracking-widest uppercase fill-[#1D2927]">
+          <textPath href="#curve" startOffset="0">
+            • PasheAchi Trust & Safety • Dhaka Bangladesh
+          </textPath>
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export function TrustSection() {
-  return <section className="bg-[#1D2927] py-16 text-[#FFFDF8] sm:py-24"><Container variant="wide"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow text-[#DAB29E]">Trust is the product</p><h2 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl">Clear enough to trust with someone&apos;s story.</h2><p className="mt-6 max-w-md text-sm leading-7 text-[#C2CBC4]">PasheAchi is designed for the moments when money needs to move with care. We explain what is checked, who is responsible, and what happens next.</p><div className="mt-8 space-y-3 text-sm text-[#DCE1D9]"><span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#DAB29E]" />Manual transaction review</span><span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-[#DAB29E]" />Visible campaign identity</span></div></div><div className="divide-y divide-[#53605C] border-y border-[#53605C]">{safeguards.map(({ icon: Icon, title, description }) => <div key={title} className="flex gap-5 py-6"><Icon className="mt-1 h-5 w-5 shrink-0 text-[#DAB29E]" /><div><h3 className="text-xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm leading-6 text-[#C2CBC4]">{description}</p></div></div>)}</div></div></Container></section>;
+  return (
+    <section className="py-24 sm:py-32 bg-[#FAF8F3] border-b border-[#D9D3C7] relative overflow-hidden">
+      <Container variant="wide">
+        <div className="grid gap-16 lg:grid-cols-12 items-start">
+          
+          {/* Left: The Manifesto */}
+          <div className="lg:col-span-5 relative">
+            <FadeIn>
+              <div className="editorial-stamp mb-6">
+                Our Commitment
+              </div>
+              <h2 className="font-editorial text-4xl sm:text-5xl font-medium leading-[1.1] text-[#1D2927]">
+                <RevealText>Trust is not</RevealText>
+                <RevealText><span className="italic text-[#8C7A5B] font-light">a feature.</span></RevealText>
+                <RevealText>It is the product.</RevealText>
+              </h2>
+              <p className="mt-6 text-sm leading-relaxed text-[#53605C] max-w-md font-medium">
+                PasheAchi is built for moments when money must move with care. We are uncompromising in our verification because the people who rely on us cannot afford doubt.
+              </p>
+              
+              <div className="mt-12">
+                <TrustStamp className="hidden lg:flex" />
+              </div>
+            </FadeIn>
+          </div>
+
+          {/* Right: The Logistics */}
+          <div className="lg:col-span-7">
+            <FadeIn delay={0.2} className="border border-[#1D2927] bg-[#F7F4ED] p-8 sm:p-12 shadow-paper">
+              <h3 className="font-mono text-xs uppercase tracking-widest text-[#A84D2A] mb-8">
+                How we protect the community
+              </h3>
+              
+              <div className="flex flex-col gap-8">
+                {SAFEGUARDS.map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={idx} className="flex gap-6">
+                      <div className="shrink-0 mt-1">
+                        <div className="flex items-center justify-center h-10 w-10 rounded-full border border-[#D9D3C7] bg-[#FAF8F3]">
+                          <Icon className="h-4 w-4 text-[#1D2927]" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#1D2927] text-lg mb-2">{item.title}</h4>
+                        <p className="text-sm text-[#53605C] leading-relaxed max-w-lg">{item.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <InkDivider className="my-8" />
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                  <CheckCircle2 className="h-4 w-4 text-[#A84D2A]" />
+                  <span>Manual Transaction Review</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                  <CheckCircle2 className="h-4 w-4 text-[#A84D2A]" />
+                  <span>Visible Campaign Identity</span>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+
+        </div>
+      </Container>
+    </section>
+  );
 }

@@ -1,24 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Plus, Menu, X } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Logo } from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  
+  const { scrollY } = useScroll();
+  
+  // Morphing values based on scroll
+  // Width shrinks slightly on desktop to become a compact pill
+  const navWidth = useTransform(scrollY, [0, 150], ["100%", "90%"]);
+  const navMaxWidth = useTransform(scrollY, [0, 150], ["1280px", "900px"]);
+  // Margin top gives it the floating effect
+  const navY = useTransform(scrollY, [0, 150], [16, 24]);
+  // Border radius goes from small/medium to fully rounded pill
+  const navRadius = useTransform(scrollY, [0, 150], ["12px", "9999px"]);
+  // Background becomes slightly more opaque
+  const navBg = useTransform(scrollY, [0, 150], ["rgba(250, 247, 240, 0.7)", "rgba(250, 247, 240, 0.95)"]);
+  const navBorderColor = useTransform(scrollY, [0, 150], ["rgba(217, 211, 199, 0.5)", "rgba(29, 41, 39, 1)"]);
+  // Shadow deepens
+  const navShadow = useTransform(
+    scrollY, 
+    [0, 150], 
+    [
+      "0 4px 20px -5px rgba(29, 41, 39, 0.05), 0 2px 5px -2px rgba(29, 41, 39, 0.02)", 
+      "0 24px 48px -12px rgba(29, 41, 39, 0.15), 0 8px 16px -6px rgba(29, 41, 39, 0.08)"
+    ]
+  );
+  const navBackdropBlur = useTransform(scrollY, [0, 150], ["blur(8px)", "blur(16px)"]);
+  // Padding shrinks
+  const navPaddingY = useTransform(scrollY, [0, 150], ["16px", "10px"]);
+  const navPaddingX = useTransform(scrollY, [0, 150], ["32px", "20px"]);
 
   const navLinks = [
     { label: "Explore", href: "/discover" },
@@ -29,94 +47,133 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-4 z-50 px-4 sm:px-6">
-      {/* Floating Centered Paper Card Container */}
-      <div
-        className={`mx-auto max-w-6xl transition-all duration-300 rounded-full border border-[#D9D3C7] bg-[#FAF7F0]/90 backdrop-blur-md px-4 sm:px-6 py-2.5 shadow-lg shadow-[#1D2927]/5 dark:border-slate-800 dark:bg-slate-900/90 ${
-          scrolled ? "shadow-xl border-[#9B9488]" : ""
-        }`}
+    <motion.header 
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
+      style={{ y: navY }}
+    >
+      <motion.div
+        className="flex flex-col w-full pointer-events-auto origin-top"
+        style={{ 
+          width: navWidth,
+          maxWidth: navMaxWidth,
+        }}
       >
-        <div className="flex items-center justify-between gap-4">
+        <motion.div
+          className="flex items-center justify-between"
+          style={{
+            paddingTop: navPaddingY,
+            paddingBottom: navPaddingY,
+            paddingLeft: navPaddingX,
+            paddingRight: navPaddingX,
+            backgroundColor: navBg,
+            borderColor: navBorderColor,
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderRadius: navRadius,
+            boxShadow: navShadow,
+            backdropFilter: navBackdropBlur,
+            WebkitBackdropFilter: navBackdropBlur,
+          }}
+        >
           {/* Brand Logo */}
           <Logo />
 
           {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#1D2927] dark:text-[#F7F4ED]">
+          <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => {
-              const active = pathname === link.href;
+              const active = pathname === link.href || (pathname === '/' && link.href.includes('#') && false); // Simplified active state for hash links
               return (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`ink-underline transition-colors ${
-                    active ? "text-[#A84D2A] font-bold" : "hover:text-[#A84D2A]"
+                  className={`relative text-xs font-bold uppercase tracking-widest transition-colors ${
+                    active ? "text-[#A84D2A]" : "text-[#1D2927] hover:text-[#A84D2A]"
                   }`}
                 >
-                  {link.label}
+                  {/* Subtle paper lift on hover */}
+                  <motion.span 
+                    className="inline-block relative z-10"
+                    whileHover={{ y: -1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  >
+                    {link.label}
+                  </motion.span>
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#A84D2A] transition-all duration-300 origin-left ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                  {/* Hover pseudo element handled by CSS class for link if needed, but we use a distinct line */}
+                  <div className="ink-underline absolute inset-0 w-full h-full pointer-events-none"></div>
                 </Link>
               );
             })}
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/search"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[#1D2927] hover:bg-[#EAE5DB] transition-colors dark:text-white"
+              className="group hidden sm:flex items-center justify-center text-[#1D2927]"
               aria-label="Search"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" />
             </Link>
 
-            <Link href="/login" className="hidden sm:inline-block">
-              <Button size="sm" variant="ghost" className="font-semibold text-xs">
-                Sign In
-              </Button>
+            <Link href="/login" className="hidden sm:inline-block text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors relative">
+              <span className="ink-underline">Sign In</span>
             </Link>
 
-            <Link href="/create">
-              <Button size="sm" variant="accent" className="font-bold text-xs gap-1.5 shadow-sm">
-                <Plus className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Start Campaign</span>
-                <span className="sm:hidden">Create</span>
-              </Button>
+            <Link 
+              href="/create"
+              className="group relative flex items-center justify-center bg-[#A84D2A] text-[#F7F4ED] h-10 px-5 sm:px-6 rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all hover:bg-[#843B20] hover:shadow-paper-hover active:scale-95"
+            >
+              <span>Start a Campaign</span>
             </Link>
 
             {/* Mobile Toggle Button */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-full text-[#1D2927] hover:bg-[#EAE5DB] dark:text-white"
+              className="lg:hidden flex items-center justify-center text-[#1D2927]"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#D9D3C7] mt-3 pt-3 pb-2 space-y-2 text-center dark:border-slate-800">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-semibold text-[#1D2927] hover:text-[#A84D2A] dark:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-2 flex justify-center gap-3">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button size="sm" variant="secondary" className="w-full font-semibold">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 10, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="lg:hidden rounded-2xl border border-[#1D2927] bg-[#FAF8F3] p-6 shadow-paper backdrop-paper mt-2"
+            >
+              <nav className="flex flex-col gap-6 text-center">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A]"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="pt-6 mt-2 border-t border-[#D9D3C7] flex flex-col gap-4">
+                  <Link href="/search" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927] flex items-center justify-center gap-2">
+                    <Search className="h-4 w-4" /> Search
+                  </Link>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927]">
+                    Sign In
+                  </Link>
+                </div>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.header>
   );
 }
+

@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { Container } from "@/components/layout/container";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { MOCK_USERS, MOCK_CAMPAIGNS } from "@/data/mock";
+import { FadeIn, RevealText, PaperLift, InkDivider } from "@/components/ui/motion";
 import {
   MapPin,
   Globe,
@@ -18,6 +15,7 @@ import {
   Heart,
   Calendar,
   CheckCircle2,
+  Paperclip,
 } from "lucide-react";
 import { use } from "react";
 
@@ -45,249 +43,242 @@ export default function UserProfilePage({
   const pinnedCampaign = userCampaigns.find((c) => c.isPinned);
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Cover Image Banner */}
-      <div className="relative h-48 sm:h-72 lg:h-80 w-full overflow-hidden bg-gradient-to-r from-[#059669] via-[#10B981] to-[#4F46E5]">
+    <div className="min-h-screen pb-20 pt-20">
+      {/* Dossier Banner Image */}
+      <div className="relative h-64 sm:h-80 w-full overflow-hidden border-b-2 border-[#1D2927]">
+        <div className="absolute inset-0 bg-[#D9D3C7] z-0"></div>
         {user.coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.coverUrl}
-            alt={`${user.name} cover`}
-            className="h-full w-full object-cover"
-          />
+          <div className="absolute inset-0 z-10 grayscale opacity-80 mix-blend-multiply">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={user.coverUrl}
+              alt={`${user.name} cover`}
+              className="h-full w-full object-cover"
+            />
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {/* Film grain texture overlay */}
+        <div className="absolute inset-0 z-20 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+        
+        {/* Decorative Tape */}
+        <div className="absolute -bottom-4 right-1/4 w-32 h-8 bg-[#EAE5DB] opacity-80 rotate-[-2deg] z-30 shadow-sm border border-[#D9D3C7]/50"></div>
       </div>
 
-      <Container variant="wide">
+      <Container variant="wide" className="relative z-40">
         {/* Profile Header Info */}
-        <div className="relative -mt-16 sm:-mt-24 mb-8 flex flex-col sm:flex-row items-start justify-between gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
-            {/* Avatar */}
-            <div className="relative">
-              <Avatar
-                src={user.avatarUrl}
-                name={user.name}
-                size="2xl"
-                className="ring-4 ring-white dark:ring-slate-900 shadow-xl"
-              />
+        <div className="relative -mt-20 sm:-mt-24 mb-12 flex flex-col sm:flex-row items-start justify-between gap-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 sm:gap-8">
+            
+            {/* Passport Style Avatar */}
+            <PaperLift className="relative w-40 h-40 sm:w-48 sm:h-48 bg-[#FAF8F3] border-2 border-[#D9D3C7] p-2 sm:p-3 shadow-paper rotate-[-2deg] shrink-0">
+              <div className="absolute -top-3 -left-2 z-50 text-[#8C7A5B] rotate-[-15deg]">
+                <Paperclip className="h-8 w-8 stroke-[1.5]" />
+              </div>
+              <div className="w-full h-full relative overflow-hidden border border-[#1D2927] grayscale transition-all duration-700 hover:grayscale-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={user.avatarUrl || "https://i.pravatar.cc/300"}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-[#A84D2A]/10 mix-blend-multiply pointer-events-none"></div>
+              </div>
               {user.verified && (
-                <div className="absolute bottom-2 right-2">
-                  <Badge variant="verified" className="p-1.5 shadow-md">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </Badge>
+                <div className="absolute -bottom-4 -right-4 z-50 rotate-[15deg]">
+                  <div className="flex flex-col items-center justify-center w-12 h-12 rounded-full border border-dashed border-[#A84D2A] bg-[#FAF8F3] text-[#A84D2A] shadow-sm">
+                    <CheckCircle2 className="h-4 w-4 mb-0.5" />
+                  </div>
                 </div>
               )}
-            </div>
+            </PaperLift>
 
-            {/* Name & Bio */}
-            <div className="space-y-1 sm:mb-2">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+            {/* Name & Metadata */}
+            <div className="space-y-3 pt-4 sm:pt-0 sm:pb-4">
+              <FadeIn>
+                <h1 className="font-editorial text-4xl sm:text-5xl font-medium leading-[1.1] text-[#1D2927]">
                   {user.name}
                 </h1>
-                {user.verified && (
-                  <Badge variant="verified" className="text-xs">
-                    {user.verificationBadgeType || "Verified"} ✓
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                @{user.username} • pasheachi.bro.bd/@{user.username}
-              </p>
+              </FadeIn>
+              
+              <FadeIn delay={0.1}>
+                <div className="font-mono text-xs uppercase tracking-widest text-[#53605C] flex flex-wrap gap-4 items-center">
+                  <span className="font-bold text-[#A84D2A]">@{user.username}</span>
+                  <span className="w-1 h-1 rounded-full bg-[#D9D3C7]"></span>
+                  <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {user.location}</span>
+                  {user.socialLinks?.website && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-[#D9D3C7]"></span>
+                      <a href={user.socialLinks.website} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-[#1D2927] transition-colors">
+                        <Globe className="h-3 w-3" /> {user.socialLinks.website.replace("https://", "")}
+                      </a>
+                    </>
+                  )}
+                </div>
+              </FadeIn>
 
-              <p className="max-w-xl text-sm sm:text-base text-slate-700 dark:text-slate-300 pt-1">
-                {user.bio}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400 pt-2">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-[#10B981]" />
-                  {user.location}
-                </span>
-                {user.socialLinks?.website && (
-                  <a
-                    href={user.socialLinks.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 text-[#10B981] hover:underline"
-                  >
-                    <Globe className="h-3.5 w-3.5" />
-                    {user.socialLinks.website.replace("https://", "")}
-                  </a>
-                )}
-              </div>
+              <FadeIn delay={0.2} className="pt-2">
+                <div className="flex gap-8 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+                  <div><span className="font-bold text-[#1D2927] text-sm">{user.followersCount}</span> Followers</div>
+                  <div><span className="font-bold text-[#1D2927] text-sm">{user.followingCount}</span> Following</div>
+                  <div><span className="font-bold text-[#A84D2A] text-sm">{userCampaigns.length}</span> Campaigns</div>
+                </div>
+              </FadeIn>
             </div>
           </div>
 
-          {/* Action CTAs */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Button size="md" className="flex-1 sm:flex-initial font-bold gap-2">
-              <Heart className="h-4 w-4 fill-white" />
-              <span>Support</span>
-            </Button>
-            <Button size="md" variant="secondary" className="gap-2">
-              <Share2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Share</span>
-            </Button>
-            <Button size="md" variant="secondary" aria-label="QR Code">
+          {/* Action CTAs (Stamped Pills) */}
+          <div className="flex items-center gap-3 w-full sm:w-auto sm:self-end sm:pb-4">
+            <button className="h-10 px-6 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink active:scale-[0.98]">
+              <Heart className="h-3 w-3" /> Support
+            </button>
+            <button className="h-10 px-4 border border-[#D9D3C7] bg-transparent text-[#1D2927] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all active:scale-[0.98]">
+              <Share2 className="h-3 w-3" /> Share
+            </button>
+            <button className="h-10 px-3 border border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all active:scale-[0.98]" aria-label="QR Code">
               <QrCode className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Stats Bar */}
-        <div className="mb-8 flex items-center gap-6 text-sm font-semibold text-slate-600 dark:text-slate-400">
-          <div>
-            <span className="font-extrabold text-slate-900 dark:text-white">{user.followersCount}</span> Followers
-          </div>
-          <div>
-            <span className="font-extrabold text-slate-900 dark:text-white">{user.followingCount}</span> Following
-          </div>
-          <div>
-            <span className="font-extrabold text-[#10B981]">{userCampaigns.length}</span> Campaigns
-          </div>
+        {/* Manila Folder Navigation Tabs */}
+        <div className="flex items-end gap-1 sm:gap-2 border-b-2 border-[#1D2927] pt-8">
+          {[
+            { id: "active", label: `Active (${activeCampaigns.length})` },
+            { id: "completed", label: `Completed (${completedCampaigns.length})` },
+            { id: "achievements", label: "Records" },
+            { id: "about", label: "Dossier" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`relative px-4 sm:px-6 pt-3 pb-2.5 font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all
+                border-t-2 border-x-2 rounded-t-sm
+                ${activeTab === tab.id 
+                  ? "border-[#1D2927] bg-[#F7F4ED] text-[#1D2927] z-10 top-[2px]" 
+                  : "border-[#D9D3C7] bg-[#EAE5DB] text-[#8C7A5B] hover:bg-[#FAF8F3] hover:text-[#1D2927]"
+                }`}
+            >
+              {tab.label}
+              {/* This covers the bottom border to make it look like a connected folder tab */}
+              {activeTab === tab.id && (
+                <div className="absolute -bottom-[4px] left-0 right-0 h-[4px] bg-[#F7F4ED]"></div>
+              )}
+            </button>
+          ))}
         </div>
 
-        {/* Tabs Navigation */}
-        <div className="mb-8 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-px">
-          <button
-            type="button"
-            onClick={() => setActiveTab("active")}
-            className={`pb-3 px-4 text-sm font-bold transition-colors relative ${
-              activeTab === "active"
-                ? "text-[#10B981] border-b-2 border-[#10B981]"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400"
-            }`}
-          >
-            Active Campaigns ({activeCampaigns.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("completed")}
-            className={`pb-3 px-4 text-sm font-bold transition-colors relative ${
-              activeTab === "completed"
-                ? "text-[#10B981] border-b-2 border-[#10B981]"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400"
-            }`}
-          >
-            Completed ({completedCampaigns.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("achievements")}
-            className={`pb-3 px-4 text-sm font-bold transition-colors relative ${
-              activeTab === "achievements"
-                ? "text-[#10B981] border-b-2 border-[#10B981]"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400"
-            }`}
-          >
-            Achievements
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("about")}
-            className={`pb-3 px-4 text-sm font-bold transition-colors relative ${
-              activeTab === "about"
-                ? "text-[#10B981] border-b-2 border-[#10B981]"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400"
-            }`}
-          >
-            About
-          </button>
-        </div>
-
-        {/* Pinned Campaign Banner */}
-        {activeTab === "active" && pinnedCampaign && (
-          <div className="mb-10">
-            <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#10B981]">
-              <span>📌 Pinned Campaign</span>
-            </div>
-            <div className="max-w-2xl">
-              <CampaignCard campaign={pinnedCampaign} />
-            </div>
-          </div>
-        )}
-
-        {/* Tab Content: Active */}
-        {activeTab === "active" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeCampaigns.map((c) => (
-              <CampaignCard key={c.id} campaign={c} />
-            ))}
-            {activeCampaigns.length === 0 && (
-              <div className="col-span-full py-12 text-center text-slate-500">
-                No active campaigns at the moment.
+        {/* Folder Content Area */}
+        <div className="pt-10 pb-12">
+          <FadeIn>
+            {/* Pinned Campaign Banner */}
+            {activeTab === "active" && pinnedCampaign && (
+              <div className="mb-12 border-b border-dashed border-[#D9D3C7] pb-12">
+                <div className="mb-4 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#A84D2A]"></span> Priority File
+                </div>
+                <div className="max-w-2xl">
+                  <CampaignCard campaign={pinnedCampaign} />
+                </div>
               </div>
             )}
-          </div>
-        )}
 
-        {/* Tab Content: Completed */}
-        {activeTab === "completed" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {completedCampaigns.map((c) => (
-              <CampaignCard key={c.id} campaign={c} />
-            ))}
-            {completedCampaigns.length === 0 && (
-              <div className="col-span-full py-12 text-center text-slate-500">
-                No completed campaigns yet.
+            {/* Tab Content: Active */}
+            {activeTab === "active" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {activeCampaigns.map((c) => (
+                  <div key={c.id} className="h-full">
+                    <CampaignCard campaign={c} />
+                  </div>
+                ))}
+                {activeCampaigns.length === 0 && (
+                  <div className="col-span-full py-16 text-center font-mono text-sm uppercase tracking-widest text-[#8C7A5B]">
+                    No active files at the moment.
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Tab Content: Achievements */}
-        {activeTab === "achievements" && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-[#F59E0B]">
-                <Trophy className="h-6 w-6" />
+            {/* Tab Content: Completed */}
+            {activeTab === "completed" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {completedCampaigns.map((c) => (
+                  <div key={c.id} className="h-full opacity-80 hover:opacity-100 transition-opacity">
+                    <CampaignCard campaign={c} />
+                  </div>
+                ))}
+                {completedCampaigns.length === 0 && (
+                  <div className="col-span-full py-16 text-center font-mono text-sm uppercase tracking-widest text-[#8C7A5B]">
+                    No completed records found.
+                  </div>
+                )}
               </div>
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white">First Campaign</h4>
-                <p className="text-xs text-slate-500">Launched first cause on PasheAchi</p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex items-center gap-3 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-[#10B981]">
-                <Heart className="h-6 w-6" />
+            {/* Tab Content: Achievements (Stamped Certificates) */}
+            {activeTab === "achievements" && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {[
+                  { icon: Trophy, title: "First Campaign", desc: "Launched first cause", color: "text-[#8C7A5B]" },
+                  { icon: Heart, title: "100+ Supporters", desc: "Backed by 100 donors", color: "text-[#A84D2A]" },
+                  { icon: Calendar, title: "Verified Identity", desc: "NID & Background checked", color: "text-[#1D2927]" }
+                ].map((cert, idx) => (
+                  <PaperLift key={idx} className="flex flex-col items-center text-center p-8 bg-[#FAF8F3] border border-[#D9D3C7] shadow-sm">
+                    <div className="flex h-16 w-16 items-center justify-center border-2 border-dashed border-[#D9D3C7] rounded-full mb-6">
+                      <cert.icon className={`h-8 w-8 ${cert.color}`} />
+                    </div>
+                    <h4 className="font-editorial text-2xl text-[#1D2927] mb-2">{cert.title}</h4>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">{cert.desc}</p>
+                    
+                    <div className="mt-8 border-t border-[#D9D3C7] pt-4 w-full text-center">
+                      <span className="font-script text-xl text-[#A84D2A] -rotate-2 inline-block">Official</span>
+                    </div>
+                  </PaperLift>
+                ))}
               </div>
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white">100+ Supporters</h4>
-                <p className="text-xs text-slate-500">Backed by 100 generous donors</p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex items-center gap-3 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-[#4F46E5]">
-                <Calendar className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="font-bold text-slate-900 dark:text-white">Verified Creator</h4>
-                <p className="text-xs text-slate-500">NID & identity checked</p>
-              </div>
-            </div>
-          </div>
-        )}
+            {/* Tab Content: About (Typed Letter) */}
+            {activeTab === "about" && (
+              <PaperLift className="max-w-3xl mx-auto bg-[#FAF8F3] border border-[#D9D3C7] p-8 sm:p-12 shadow-paper relative">
+                {/* Decorative Tape */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-[#EAE5DB] opacity-70 rotate-[-1deg] z-10"></div>
+                
+                <div className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] text-right mb-12">
+                  Document ID: USR-{user.id.toUpperCase()}<br/>
+                  Dated: {new Date().toLocaleDateString('en-GB')}
+                </div>
 
-        {/* Tab Content: About */}
-        {activeTab === "about" && (
-          <div className="max-w-2xl rounded-2xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              About {user.name}
-            </h3>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              {user.bio}
-            </p>
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs text-slate-500">
-              <p>📍 Location: {user.location}</p>
-              <p>🏷️ Category: {user.category}</p>
-              <p>✓ Account Status: Verified Creator</p>
-            </div>
-          </div>
-        )}
+                <h3 className="font-editorial text-4xl text-[#1D2927] mb-8">
+                  Background Dossier
+                </h3>
+                
+                <p className="font-mono text-sm leading-loose text-[#1D2927] mb-12 whitespace-pre-wrap">
+                  {user.bio}
+                </p>
+
+                <div className="border-t-2 border-dashed border-[#D9D3C7] pt-8 font-mono text-xs space-y-4 text-[#1D2927]">
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-widest text-[#8C7A5B]">Primary Location:</span>
+                    <span className="font-bold">{user.location}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-widest text-[#8C7A5B]">Primary Category:</span>
+                    <span className="font-bold">{user.category}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-widest text-[#8C7A5B]">Verification Status:</span>
+                    <span className="font-bold text-[#A84D2A]">Fully Verified Identity</span>
+                  </div>
+                </div>
+
+                <div className="mt-16 text-right">
+                  <div className="w-48 border-b border-[#1D2927] ml-auto mb-2"></div>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">Authorized Signature</span>
+                </div>
+              </PaperLift>
+            )}
+          </FadeIn>
+        </div>
       </Container>
     </div>
   );

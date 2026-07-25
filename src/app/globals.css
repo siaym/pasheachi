@@ -2,46 +2,30 @@
 
 @layer base {
   :root {
-    /* Paper & Ink Master Palette */
-    --paper-base: 43 31% 95%;      /* #F7F4ED Warm Cotton Paper */
-    --paper-surface: 43 35% 97%;   /* #FAF8F3 Warm Ivory */
-    --paper-card: 40 30% 98%;      /* #FAF7F0 Paper Card */
-    --paper-border: 38 20% 82%;    /* #D9D3C7 Paper Border */
-    --paper-border-subtle: 38 20% 90%; /* #EAE5DB Subtle Divider */
+    /* Master Paper & Ink Palette */
+    --paper-cotton: 43 31% 95%;       /* #F7F4ED Soft Cotton Paper */
+    --paper-ivory: 43 35% 97%;        /* #FAF8F3 Warm Ivory */
+    --paper-card: 40 30% 98%;         /* #FAF7F0 Paper Surface */
+    --paper-border: 38 20% 82%;       /* #D9D3C7 Linen Gray Border */
+    --paper-border-subtle: 38 20% 90%;/* #EAE5DB Subtle Linen Divider */
 
-    --ink-primary: 170 18% 14%;    /* #1D2927 Deep Ink Charcoal */
-    --ink-secondary: 165 8% 36%;   /* #53605C Muted Slate Ink */
-    --ink-muted: 165 5% 50%;       /* #68726D Light Ink */
+    --ink-charcoal: 170 18% 14%;      /* #1D2927 Deep Ink Charcoal */
+    --ink-slate: 165 8% 36%;         /* #53605C Muted Ink */
+    --ink-muted: 165 5% 50%;         /* #68726D Light Ink */
 
-    --terracotta: 17 61% 41%;      /* #A84D2A Burnt Terracotta */
-    --terracotta-hover: 17 61% 33%;/* #843B20 Dark Terracotta */
+    --terracotta: 17 61% 41%;        /* #A84D2A Burnt Terracotta */
+    --terracotta-hover: 17 61% 33%;  /* #843B20 Dark Terracotta */
 
-    --olive: 164 27% 28%;          /* #355C52 Muted Forest Olive */
-    --olive-light: 164 20% 94%;    /* #EDF2F0 Warm Olive Tint */
+    --olive: 164 27% 28%;            /* #355C52 Muted Forest Olive */
+    --olive-light: 164 20% 94%;      /* #EDF2F0 Warm Olive Tint */
 
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --radius-xl: 28px;
+    --gold: 38 45% 45%;              /* #8C7A5B Antique Gold */
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
     --radius-full: 9999px;
-  }
-
-  .dark {
-    --paper-base: 170 20% 8%;       /* #121A19 Deep Midnight Ink */
-    --paper-surface: 170 18% 11%;   /* #182220 Dark Slate */
-    --paper-card: 170 18% 14%;      /* #1D2927 Dark Card */
-    --paper-border: 170 12% 24%;    /* Dark Border */
-    --paper-border-subtle: 170 12% 18%;
-
-    --ink-primary: 43 31% 95%;     /* #F7F4ED Cream Text */
-    --ink-secondary: 40 15% 75%;
-    --ink-muted: 40 10% 60%;
-
-    --terracotta: 17 70% 55%;      /* Brighter Terracotta for dark */
-    --terracotta-hover: 17 70% 45%;
-
-    --olive: 164 35% 45%;
-    --olive-light: 170 20% 16%;
   }
 }
 
@@ -51,23 +35,57 @@
   --font-body: var(--font-body), system-ui, sans-serif;
   --font-mono: var(--font-mono), monospace;
   --font-bengali: var(--font-bengali), sans-serif;
+  --font-script: var(--font-script), cursive;
 
-  --color-paper: #F7F4ED;
-  --color-paper-card: #FAF7F0;
+  --color-cotton: #F7F4ED;
+  --color-ivory: #FAF8F3;
   --color-ink: #1D2927;
   --color-terracotta: #A84D2A;
   --color-olive: #355C52;
-  --color-border-paper: #D9D3C7;
+  --color-gold: #8C7A5B;
+  --color-linen: #D9D3C7;
+  
+  /* Complex layered shadow with subtle border highlight */
+  --shadow-paper: 
+    0 12px 30px -10px rgba(29, 41, 39, 0.08), 
+    0 4px 10px -4px rgba(29, 41, 39, 0.05),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.5);
+  
+  --shadow-paper-hover: 
+    0 24px 48px -12px rgba(29, 41, 39, 0.15), 
+    0 8px 16px -6px rgba(29, 41, 39, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.7);
+    
+  --shadow-ink: 0 4px 0px 0px #1D2927;
 }
 
 body {
-  background-color: hsl(var(--paper-base));
-  color: hsl(var(--ink-primary));
+  background-color: hsl(var(--paper-cotton));
+  color: hsl(var(--ink-charcoal));
   font-family: var(--font-body);
   overflow-x: hidden;
+  position: relative;
+  /* Smooth scrolling for anchor links */
+  scroll-behavior: smooth;
 }
 
-h1, h2, h3, h4 {
+/* Beautiful Selection */
+::selection {
+  background-color: #A84D2A;
+  color: #F7F4ED;
+}
+
+/* Hide scrollbar for clean UI */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Base Typographic Resets */
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   letter-spacing: -0.02em;
 }
@@ -76,38 +94,46 @@ h1, h2, h3, h4 {
   font-family: var(--font-serif);
 }
 
-/* Eyebrow Label */
-.eyebrow {
-  display: inline-block;
-  font-size: 0.75rem;
+.font-script {
+  font-family: var(--font-script);
+}
+
+/* Editorial Utilities */
+.backdrop-paper {
+  background: rgba(250, 248, 243, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Editorial Utilities */
+.editorial-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #A84D2A;
+  letter-spacing: 0.2em;
+  color: #1D2927;
+  border: 1px solid #1D2927;
+  padding: 0.25rem 0.75rem;
+  background: #F7F4ED;
 }
 
-/* Handcrafted Paper Card */
-.paper-card {
-  background-color: #FAF7F0;
-  border: 1px solid #D9D3C7;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(29, 41, 39, 0.04);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.dark .paper-card {
+.ink-rule {
+  height: 1px;
   background-color: #1D2927;
-  border: 1px solid #2F3E3B;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: 100%;
 }
 
-.paper-card:hover {
-  transform: translateY(-3px);
-  border-color: #A84D2A;
-  box-shadow: 0 12px 32px rgba(29, 41, 39, 0.08);
+.ink-rule-subtle {
+  height: 1px;
+  background-color: #D9D3C7;
+  width: 100%;
 }
 
-/* Ink Underline Hover Effect */
+/* Organic Ink Underline Hover Animation */
 .ink-underline {
   position: relative;
 }
@@ -117,12 +143,27 @@ h1, h2, h3, h4 {
   position: absolute;
   width: 0;
   height: 2px;
-  bottom: -2px;
+  bottom: -4px;
   left: 0;
   background-color: #A84D2A;
-  transition: width 0.3s ease;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ink-underline:hover::after {
+.ink-underline:hover::after, .ink-underline.active::after {
   width: 100%;
 }
+
+/* Custom CSS Marquee Animation for Live Feed */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+

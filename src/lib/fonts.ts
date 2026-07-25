@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono, Noto_Sans_Bengali, Newsreader } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono, Noto_Sans_Bengali, Newsreader, Caveat } from "next/font/google";
 
 export const fontHeading = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -33,5 +33,12 @@ export const fontBengali = Noto_Sans_Bengali({
   subsets: ["bengali"],
   variable: "--font-bengali",
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+export const fontScript = Caveat({
+  subsets: ["latin"],
+  variable: "--font-script",
+  weight: ["400", "600"],
   display: "swap",
 });

@@ -1,91 +1,102 @@
+"use client";
+
 import { Container } from "@/components/layout/container";
-import { SectionHeader } from "@/components/shared/section-header";
-import { UserPlus, Sparkles, Share2, Wallet, ShieldCheck } from "lucide-react";
+import { FadeIn, RevealText, InkDivider } from "@/components/ui/motion";
 
 const STEPS = [
   {
     step: "01",
-    title: "Claim Permanent Profile",
-    description: "Claim your permanent URL (pasheachi.bro.bd/@username) in 30 seconds to showcase all your causes in one place.",
-    icon: UserPlus,
+    title: "Claim Your Story",
+    description: "Every journey needs a home. Create a beautiful, permanent narrative page that tells the world exactly what you are fighting for.",
   },
   {
     step: "02",
-    title: "Tell Your Story",
-    description: "Upload photos, medical documents, set your target goal amount, and define optional fund milestones.",
-    icon: Sparkles,
+    title: "The Power of Proof",
+    description: "We are building an archive of trust. Upload documents, photos, and updates. Transparency is how strangers become community.",
   },
   {
     step: "03",
-    title: "Share Everywhere",
-    description: "Share your campaign link across Facebook, WhatsApp, LinkedIn, and social networks with rich preview cards.",
-    icon: Share2,
+    title: "Share with the World",
+    description: "Your story is only as powerful as its reach. We provide beautifully crafted preview cards for every social network.",
   },
   {
     step: "04",
-    title: "Receive & Withdraw",
-    description: "Supporters back your dream via bKash, Nagad, Rocket, or Bank. Withdraw directly to your account anytime.",
-    icon: Wallet,
+    title: "Receive Direct Support",
+    description: "Direct to you. Funds are transferred via secure local channels (bKash, Nagad, Bank). No hidden fees, no opaque holding periods.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-24 bg-slate-50/60 dark:bg-slate-900/40">
+    <section id="how-it-works" className="py-24 sm:py-32 bg-transparent border-b border-[#D9D3C7]">
       <Container variant="wide">
-        <SectionHeader
-          badge="Simple Flow"
-          title="How PasheAchi Works"
-          subtitle="Simple, transparent, and built for trust. Start receiving support in four straightforward steps."
-          centered
-        />
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
+          <FadeIn>
+            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#A84D2A] mb-8">
+              <span className="h-px w-8 bg-[#A84D2A]"></span>
+              <span className="font-mono">The Process</span>
+              <span className="h-px w-8 bg-[#A84D2A]"></span>
+            </div>
+          </FadeIn>
+          <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-medium text-[#1D2927]">
+            <RevealText>How trust is</RevealText>
+            <RevealText><span className="italic text-[#8C7A5B] font-light">built.</span></RevealText>
+          </h2>
+        </div>
 
-        <div className="relative mt-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Connecting Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 left-[12%] right-[12%] h-0.5 border-t-2 border-dashed border-slate-200 dark:border-slate-800 -z-0" />
+        <div className="relative max-w-4xl mx-auto">
+          {/* Connecting Vertical Ink Line for Desktop */}
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-[#D9D3C7] -translate-x-1/2 z-0" />
 
-          {STEPS.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={idx}
-                className="relative z-10 flex flex-col items-center text-center group"
-              >
-                {/* Step Circle */}
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-md border border-slate-100 text-[#10B981] transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow-green dark:bg-slate-900 dark:border-slate-800">
-                  <Icon className="h-9 w-9" />
+          <div className="flex flex-col gap-12 sm:gap-24 relative z-10">
+            {STEPS.map((item, idx) => {
+              const isEven = idx % 2 === 0;
+              return (
+                <div key={idx} className={`flex flex-col md:flex-row items-center gap-8 md:gap-16 ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                  
+                  {/* Content Side */}
+                  <div className={`flex-1 flex flex-col ${isEven ? 'md:text-right md:items-end' : 'md:text-left md:items-start'} text-center items-center`}>
+                    <FadeIn delay={0.1}>
+                      <span className="mb-4 inline-block font-mono text-[10px] font-bold tracking-[0.2em] text-[#A84D2A] bg-[#F7F4ED] border border-[#A84D2A] px-3 py-1">
+                        PHASE {item.step}
+                      </span>
+                      <h3 className="font-editorial text-2xl sm:text-3xl font-medium text-[#1D2927] mb-4">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-[#53605C] max-w-sm">
+                        {item.description}
+                      </p>
+                    </FadeIn>
+                  </div>
+
+                  {/* Center Node */}
+                  <div className="hidden md:flex shrink-0 w-16 h-16 rounded-full border border-[#1D2927] bg-[#FAF8F3] items-center justify-center font-editorial text-2xl text-[#1D2927] shadow-sm relative">
+                    {/* Horizontal connector to the line */}
+                    <div className={`absolute top-1/2 w-8 h-px bg-[#1D2927] ${isEven ? 'right-full' : 'left-full'}`}></div>
+                    <span className="italic">{item.step}</span>
+                  </div>
+
+                  {/* Empty Spacer Side */}
+                  <div className="hidden md:block flex-1" />
                 </div>
-
-                <span className="mb-2 inline-block rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-extrabold text-[#047857] dark:bg-emerald-950/50 dark:text-emerald-300">
-                  STEP {item.step}
-                </span>
-
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                  {item.title}
-                </h3>
-
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400 max-w-xs">
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Handcrafted Trust Banner inside How It Works */}
-        <div className="mt-16 mx-auto max-w-3xl rounded-3xl border border-emerald-200/80 bg-white p-6 sm:p-8 shadow-xl dark:border-emerald-900/50 dark:bg-slate-900 flex flex-col sm:flex-row items-center gap-6">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-[#10B981] dark:bg-emerald-950/60">
-            <ShieldCheck className="h-7 w-7" />
-          </div>
-          <div>
-            <h4 className="text-base font-bold text-slate-900 dark:text-white">
-              Zero Platform Hold & Manual Transaction Security
-            </h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-              In Phase 1, every bKash, Nagad, and Rocket transaction is audited against official provider statements by our compliance team in Dhaka.
-            </p>
+              );
+            })}
           </div>
         </div>
+
+        <FadeIn delay={0.3}>
+          <div className="mt-32 max-w-2xl mx-auto">
+            <InkDivider className="mb-8" />
+            <div className="text-center">
+              <p className="font-editorial text-2xl italic text-[#1D2927] mb-4">
+                "Our promise is simple: transparency at every step."
+              </p>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+                — The PasheAchi Trust & Safety Team
+              </p>
+            </div>
+          </div>
+        </FadeIn>
       </Container>
     </section>
   );
