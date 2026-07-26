@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Campaign } from "@/types";
 import { PRESET_AMOUNTS } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   X,
   ArrowLeft,
@@ -16,7 +14,9 @@ import {
   Lock,
   Smartphone,
   Building,
+  Paperclip,
 } from "lucide-react";
+import { FadeIn, PaperLift } from "../ui/motion";
 
 interface PaymentModalProps {
   campaign: Campaign;
@@ -66,328 +66,400 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white p-6 sm:p-8 shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1D2927]/60 backdrop-blur-sm animate-in fade-in">
+      <PaperLift className="relative w-full max-w-lg bg-[#FAF8F3] border-2 border-[#1D2927] p-6 sm:p-8 shadow-[8px_8px_0_0_#1D2927] overflow-hidden">
+        
+        {/* Decorative Tape */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#EAE5DB] opacity-80 rotate-[-1deg] z-20"></div>
+
+        {/* Paperclip */}
+        <div className="absolute -top-3 -left-3 z-20 text-[#8C7A5B] rotate-[-15deg]">
+          <Paperclip className="h-8 w-8 stroke-[1.5]" />
+        </div>
+
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors dark:bg-slate-800 dark:text-slate-400"
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center border border-[#1D2927] text-[#1D2927] hover:bg-[#EAE5DB] transition-colors z-20"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
 
-        {/* STEP 1: Choose Amount & Details */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-                Step 1 of 4 • Support Cause
-              </span>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-1 line-clamp-1">
-                Support {campaign.title}
-              </h2>
-            </div>
-
-            <div className="space-y-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                Choose Amount (৳)
-              </label>
-              <div className="grid grid-cols-5 gap-2">
-                {PRESET_AMOUNTS.map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => {
-                      setAmount(amt);
-                      setCustomAmount("");
-                    }}
-                    className={`h-11 rounded-xl text-xs font-bold transition-all ${
-                      amount === amt && !customAmount
-                        ? "bg-[#10B981] text-white shadow-md shadow-[#10B981]/25"
-                        : "border border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
-                    }`}
-                  >
-                    ৳{amt}
-                  </button>
-                ))}
+        <div className="mt-4">
+          {/* STEP 1: Choose Amount & Details */}
+          {step === 1 && (
+            <FadeIn className="space-y-6">
+              <div className="border-b border-dashed border-[#D9D3C7] pb-4">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                  Ledger Entry • Step 1 of 4
+                </span>
+                <h2 className="font-editorial text-3xl text-[#1D2927] mt-2 line-clamp-1">
+                  Support {campaign.title}
+                </h2>
               </div>
 
-              <Input
-                type="number"
-                placeholder="Or enter custom amount in ৳"
-                value={customAmount}
-                onChange={(e) => {
-                  setCustomAmount(e.target.value);
-                  setAmount(Number(e.target.value) || 0);
-                }}
-              />
-            </div>
-
-            <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  className="rounded border-slate-300 text-[#10B981] focus:ring-[#10B981]"
-                />
-                <span>Donate Anonymously (Hide your name publicly)</span>
-              </label>
-
-              {!isAnonymous && (
-                <Input
-                  label="Display Name (Optional)"
-                  placeholder="e.g. Arif Ahmed"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                />
-              )}
-
-              <Input
-                label="Support Message / Prayer (Optional)"
-                placeholder="Write an encouraging message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-            </div>
-
-            <Button
-              size="lg"
-              onClick={() => setStep(2)}
-              disabled={currentAmount <= 0}
-              className="w-full font-bold gap-2"
-            >
-              <span>Continue to Payment ({formatCurrency(currentAmount)})</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-
-        {/* STEP 2: Choose Payment Method */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back
-              </button>
-              <span className="text-xs font-bold text-[#10B981]">
-                Amount: {formatCurrency(currentAmount)}
-              </span>
-            </div>
-
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Choose Payment Method
-            </h2>
-
-            <div className="space-y-3">
-              {[
-                { id: "bkash", name: "bKash Send Money", desc: "Personal account transfer", icon: Smartphone },
-                { id: "nagad", name: "Nagad Send Money", desc: "Personal account transfer", icon: Smartphone },
-                { id: "rocket", name: "Rocket Send Money", desc: "Personal account transfer", icon: Smartphone },
-                { id: "bank", name: "Direct Bank Transfer", desc: "DBBL / City Bank transfer", icon: Building },
-              ].map((m) => {
-                const Icon = m.icon;
-                const selected = paymentMethod === m.id;
-                return (
-                  <div
-                    key={m.id}
-                    onClick={() => setPaymentMethod(m.id as "bkash" | "nagad" | "rocket" | "bank")}
-                    className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
-                      selected
-                        ? "border-[#10B981] bg-[#ECFDF5]/50 dark:bg-[#10B981]/10"
-                        : "border-slate-100 bg-white hover:border-slate-200 dark:border-slate-800 dark:bg-slate-900"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">{m.name}</h4>
-                        <p className="text-xs text-slate-500">{m.desc}</p>
-                      </div>
-                    </div>
-                    <div
-                      className={`h-5 w-5 rounded-full border flex items-center justify-center ${
-                        selected ? "border-[#10B981] bg-[#10B981] text-white" : "border-slate-300"
+              <div className="space-y-4">
+                <label className="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C]">
+                  Select Amount (৳)
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {PRESET_AMOUNTS.map((amt) => (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => {
+                        setAmount(amt);
+                        setCustomAmount("");
+                      }}
+                      className={`h-12 border transition-all font-mono text-sm ${
+                        amount === amt && !customAmount
+                          ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
+                          : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
                       }`}
                     >
-                      {selected && <Check className="h-3 w-3 stroke-[3]" />}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                      {amt}
+                    </button>
+                  ))}
+                </div>
 
-            <Button size="lg" onClick={() => setStep(3)} className="w-full font-bold">
-              Continue to Instructions →
-            </Button>
-          </div>
-        )}
-
-        {/* STEP 3: Payment Instructions */}
-        {step === 3 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back
-              </button>
-              <span className="text-xs font-bold text-[#10B981]">
-                Send {formatCurrency(currentAmount)}
-              </span>
-            </div>
-
-            <div className="rounded-2xl bg-emerald-50 p-5 dark:bg-emerald-950/40 text-center space-y-3">
-              <h3 className="font-bold text-base text-[#047857] dark:text-emerald-300">
-                📱 Send {formatCurrency(currentAmount)} via {paymentMethod.toUpperCase()}
-              </h3>
-
-              <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
-                <p>1. Open your {paymentMethod.toUpperCase()} App</p>
-                <p>2. Select <strong>"Send Money"</strong></p>
-                <p>3. Enter receiver number below:</p>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[#53605C]">৳</span>
+                  <input
+                    type="number"
+                    placeholder="Custom amount"
+                    value={customAmount}
+                    onChange={(e) => {
+                      setCustomAmount(e.target.value);
+                      setAmount(Number(e.target.value) || 0);
+                    }}
+                    className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] pl-8 pr-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
+                  />
+                </div>
               </div>
 
-              {/* Number Copy Box */}
-              <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 border border-emerald-200 dark:bg-slate-900 dark:border-slate-800">
-                <span className="font-mono text-base font-bold text-slate-900 dark:text-white">
-                  {MFS_NUMBERS[paymentMethod]}
-                </span>
+              <div className="space-y-4 pt-4 border-t border-[#D9D3C7]">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${
+                    isAnonymous ? "border-[#1D2927] bg-[#1D2927]" : "border-[#D9D3C7] bg-[#F7F4ED]"
+                  }`}>
+                    {isAnonymous && <Check className="h-3 w-3 text-[#F7F4ED]" />}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    className="hidden"
+                  />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927] group-hover:text-[#A84D2A] transition-colors">
+                    Make this anonymous
+                  </span>
+                </label>
+
+                {!isAnonymous && (
+                  <div>
+                    <label className="block font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1.5">
+                      Display Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Arif Ahmed"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="h-10 w-full border border-[#D9D3C7] bg-[#F7F4ED] px-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none transition-all"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1.5">
+                    Support Message (Optional)
+                  </label>
+                  <textarea
+                    placeholder="Write an encouraging message..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="min-h-[80px] w-full border border-[#D9D3C7] bg-[#F7F4ED] p-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => setStep(2)}
+                disabled={currentAmount <= 0}
+                className="w-full h-12 bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#2A3B38] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span>Continue ({formatCurrency(currentAmount)})</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </FadeIn>
+          )}
+
+          {/* STEP 2: Choose Payment Method */}
+          {step === 2 && (
+            <FadeIn className="space-y-6">
+              <div className="flex items-center justify-between border-b border-dashed border-[#D9D3C7] pb-4">
                 <button
                   type="button"
-                  onClick={handleCopy}
-                  className="flex items-center gap-1 text-xs font-bold text-[#10B981] hover:underline"
+                  onClick={() => setStep(1)}
+                  className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] hover:text-[#1D2927]"
                 >
-                  {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
-                  <span>{copied ? "Copied!" : "Copy"}</span>
+                  <ArrowLeft className="h-3 w-3" /> Back
                 </button>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                  Step 2 of 4
+                </span>
               </div>
 
-              <p className="text-[11px] text-amber-700 font-semibold dark:text-amber-300">
-                ⚠️ Save your Transaction ID from the SMS confirmation to verify below.
-              </p>
-            </div>
+              <h2 className="font-editorial text-3xl text-[#1D2927]">
+                Payment Method
+              </h2>
 
-            <Button size="lg" onClick={() => setStep(4)} className="w-full font-bold">
-              I've Completed Payment →
-            </Button>
-          </div>
-        )}
+              <div className="space-y-3">
+                {[
+                  { id: "bkash", name: "bKash Send Money", desc: "Personal account transfer", icon: Smartphone },
+                  { id: "nagad", name: "Nagad Send Money", desc: "Personal account transfer", icon: Smartphone },
+                  { id: "rocket", name: "Rocket Send Money", desc: "Personal account transfer", icon: Smartphone },
+                  { id: "bank", name: "Direct Bank Transfer", desc: "DBBL / City Bank transfer", icon: Building },
+                ].map((m) => {
+                  const Icon = m.icon;
+                  const selected = paymentMethod === m.id;
+                  return (
+                    <div
+                      key={m.id}
+                      onClick={() => setPaymentMethod(m.id as "bkash" | "nagad" | "rocket" | "bank")}
+                      className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
+                        selected
+                          ? "border-[#1D2927] bg-[#EAE5DB]"
+                          : "border-[#D9D3C7] bg-[#F7F4ED] hover:border-[#1D2927]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center border border-[#1D2927] bg-[#FAF8F3] text-[#1D2927]">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-[#1D2927]">{m.name}</h4>
+                          <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-1">{m.desc}</p>
+                        </div>
+                      </div>
+                      <div
+                        className={`h-5 w-5 border flex items-center justify-center ${
+                          selected ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED]" : "border-[#D9D3C7]"
+                        }`}
+                      >
+                        {selected && <Check className="h-3 w-3 stroke-[3]" />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-        {/* STEP 4: Submit Transaction Details */}
-        {step === 4 && (
-          <form onSubmit={handleSubmitTrx} className="space-y-6">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900"
+              <button 
+                onClick={() => setStep(3)} 
+                className="w-full h-12 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#EAE5DB] transition-colors"
               >
-                <ArrowLeft className="h-4 w-4" /> Back
+                <span>View Instructions</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
-              <span className="text-xs font-bold text-[#10B981]">Verify Payment</span>
-            </div>
+            </FadeIn>
+          )}
 
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                Enter Transaction Details
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Enter your transaction info for manual verification
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <Input
-                label="Transaction ID (TRX ID) *"
-                required
-                placeholder="e.g. TXN8A3F2K12"
-                value={trxId}
-                onChange={(e) => setTrxId(e.target.value.toUpperCase())}
-                helperText="Found in your MFS SMS confirmation message"
-              />
-
-              <Input
-                label="Amount Sent (৳) *"
-                required
-                type="number"
-                value={currentAmount}
-                disabled
-              />
-
-              <Input
-                label={`Your ${paymentMethod.toUpperCase()} Sender Number *`}
-                required
-                placeholder="017XXXXXXXX"
-                value={senderNumber}
-                onChange={(e) => setSenderNumber(e.target.value)}
-              />
-            </div>
-
-            <Button
-              size="lg"
-              type="submit"
-              isLoading={submitting}
-              disabled={!trxId || !senderNumber}
-              className="w-full font-bold gap-2"
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Confirm & Submit Support</span>
-            </Button>
-
-            <p className="text-[11px] text-center text-slate-400 flex items-center justify-center gap-1">
-              <Lock className="h-3 w-3" /> Information is securely transmitted to PasheAchi audit queue
-            </p>
-          </form>
-        )}
-
-        {/* STEP 5: Success & Verification Notice */}
-        {step === 5 && (
-          <div className="text-center space-y-6 py-4">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-[#10B981] animate-bounce">
-              <CheckCircle2 className="h-10 w-10" />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                Thank You for Your Support!
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 max-w-sm mx-auto">
-                Your payment of <strong>{formatCurrency(currentAmount)}</strong> has been submitted. It is now in our verification queue.
-              </p>
-            </div>
-
-            {/* Receipt Card */}
-            <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left text-xs space-y-2 dark:border-slate-800 dark:bg-slate-950">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Transaction ID:</span>
-                <span className="font-mono font-bold text-slate-900 dark:text-white">{trxId}</span>
+          {/* STEP 3: Payment Instructions */}
+          {step === 3 && (
+            <FadeIn className="space-y-6">
+              <div className="flex items-center justify-between border-b border-dashed border-[#D9D3C7] pb-4">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] hover:text-[#1D2927]"
+                >
+                  <ArrowLeft className="h-3 w-3" /> Back
+                </button>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                  Step 3 of 4
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Method:</span>
-                <span className="font-bold capitalize">{paymentMethod} Send Money</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Status:</span>
-                <span className="font-bold text-amber-600">⏳ Pending Audit (1-24 hrs)</span>
-              </div>
-            </div>
 
-            <Button size="lg" onClick={onClose} className="w-full font-bold">
-              Done & Return to Campaign
-            </Button>
-          </div>
-        )}
-      </div>
+              <div className="border border-[#1D2927] bg-[#F7F4ED] p-6 text-center space-y-4">
+                <h3 className="font-editorial text-2xl text-[#1D2927]">
+                  Send {formatCurrency(currentAmount)} via {paymentMethod.toUpperCase()}
+                </h3>
+
+                <div className="space-y-2 font-mono text-[11px] uppercase tracking-widest text-[#53605C] text-left mx-auto max-w-xs">
+                  <p>1. Open your {paymentMethod.toUpperCase()} App</p>
+                  <p>2. Select <strong>"Send Money"</strong></p>
+                  <p>3. Enter receiver number below:</p>
+                </div>
+
+                {/* Number Copy Box */}
+                <div className="flex items-center justify-between bg-[#EAE5DB] px-4 py-3 border border-[#D9D3C7]">
+                  <span className="font-mono text-base font-bold text-[#1D2927]">
+                    {MFS_NUMBERS[paymentMethod]}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex items-center gap-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A] hover:text-[#1D2927] transition-colors"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    <span>{copied ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
+
+                <div className="p-3 border border-dashed border-[#A84D2A] bg-[#FAF8F3] mt-4">
+                  <p className="font-mono text-[9px] uppercase tracking-widest text-[#A84D2A]">
+                    <strong className="block mb-1">Important</strong>
+                    Save your Transaction ID from the SMS confirmation to verify on the next step.
+                  </p>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setStep(4)} 
+                className="w-full h-12 bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#2A3B38] transition-colors shadow-ink"
+              >
+                Payment Completed <ArrowRight className="h-4 w-4" />
+              </button>
+            </FadeIn>
+          )}
+
+          {/* STEP 4: Submit Transaction Details */}
+          {step === 4 && (
+            <FadeIn>
+              <form onSubmit={handleSubmitTrx} className="space-y-6">
+                <div className="flex items-center justify-between border-b border-dashed border-[#D9D3C7] pb-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] hover:text-[#1D2927]"
+                  >
+                    <ArrowLeft className="h-3 w-3" /> Back
+                  </button>
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                    Step 4 of 4
+                  </span>
+                </div>
+
+                <div>
+                  <h2 className="font-editorial text-3xl text-[#1D2927]">
+                    Verify Transaction
+                  </h2>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] mt-2">
+                    Enter details for manual audit
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-mono text-[9px] font-bold uppercase tracking-widest text-[#1D2927] mb-1.5">
+                      Transaction ID (TRX ID) *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. TXN8A3F2K12"
+                      value={trxId}
+                      onChange={(e) => setTrxId(e.target.value.toUpperCase())}
+                      className="h-10 w-full border border-[#D9D3C7] bg-[#F7F4ED] px-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none transition-all uppercase"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[9px] font-bold uppercase tracking-widest text-[#53605C] mb-1.5">
+                      Amount Sent (৳)
+                    </label>
+                    <input
+                      type="number"
+                      value={currentAmount}
+                      disabled
+                      className="h-10 w-full border border-[#D9D3C7] bg-[#EAE5DB] px-4 font-mono text-sm text-[#53605C] cursor-not-allowed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-[9px] font-bold uppercase tracking-widest text-[#1D2927] mb-1.5">
+                      Your {paymentMethod.toUpperCase()} Number *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="017XXXXXXXX"
+                      value={senderNumber}
+                      onChange={(e) => setSenderNumber(e.target.value)}
+                      className="h-10 w-full border border-[#D9D3C7] bg-[#F7F4ED] px-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!trxId || !senderNumber || submitting}
+                  className="w-full h-12 bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#2A3B38] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-ink"
+                >
+                  {submitting ? (
+                    <span>Verifying...</span>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Submit Verification</span>
+                    </>
+                  )}
+                </button>
+
+                <p className="font-mono text-[9px] uppercase tracking-widest text-[#8C7A5B] text-center flex items-center justify-center gap-1">
+                  <Lock className="h-3 w-3" /> Secured by PasheAchi Audit
+                </p>
+              </form>
+            </FadeIn>
+          )}
+
+          {/* STEP 5: Success & Verification Notice */}
+          {step === 5 && (
+            <FadeIn className="text-center space-y-6 py-6">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center border-2 border-dashed border-[#1D2927] rounded-full text-[#1D2927]">
+                <CheckCircle2 className="h-10 w-10" />
+              </div>
+
+              <div>
+                <h2 className="font-editorial text-4xl text-[#1D2927]">
+                  Thank You
+                </h2>
+                <p className="font-mono text-xs leading-relaxed text-[#53605C] mt-4 max-w-sm mx-auto">
+                  Your payment of <strong>{formatCurrency(currentAmount)}</strong> is in the audit queue.
+                </p>
+              </div>
+
+              {/* Receipt Card */}
+              <div className="border border-[#1D2927] bg-[#F7F4ED] p-6 text-left text-xs space-y-4">
+                <div className="flex justify-between border-b border-dashed border-[#D9D3C7] pb-2">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">TRX ID:</span>
+                  <span className="font-mono font-bold text-[#1D2927]">{trxId}</span>
+                </div>
+                <div className="flex justify-between border-b border-dashed border-[#D9D3C7] pb-2">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">Method:</span>
+                  <span className="font-mono font-bold text-[#1D2927] capitalize">{paymentMethod}</span>
+                </div>
+                <div className="flex justify-between pt-2">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">Status:</span>
+                  <span className="font-mono font-bold text-[#A84D2A]">Pending Audit</span>
+                </div>
+                
+                <div className="mt-8 pt-4 border-t border-[#1D2927] text-right">
+                  <span className="font-script text-xl text-[#1D2927] -rotate-2 inline-block">PasheAchi</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={onClose} 
+                className="w-full h-12 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest flex items-center justify-center hover:bg-[#EAE5DB] transition-colors"
+              >
+                Return to Campaign
+              </button>
+            </FadeIn>
+          )}
+        </div>
+      </PaperLift>
     </div>
   );
 }
