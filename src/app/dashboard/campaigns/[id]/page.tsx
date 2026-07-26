@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { PaperLift } from "@/components/ui/motion";
 import { MOCK_CAMPAIGNS } from "@/data/mock";
 import { formatCurrency, calculateProgress } from "@/lib/utils";
@@ -12,12 +13,12 @@ import {
   AlertCircle 
 } from "lucide-react";
 
-export default async function CampaignOverviewPage({
+export default function CampaignOverviewPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id } = use(params);
   const campaign = MOCK_CAMPAIGNS[0];
   const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
 

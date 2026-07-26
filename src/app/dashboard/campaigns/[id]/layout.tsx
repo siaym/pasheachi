@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
@@ -7,14 +8,14 @@ import { cn } from "@/lib/utils";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { MOCK_CAMPAIGNS } from "@/data/mock";
 
-export default async function CampaignWorkspaceLayout({
+export default function CampaignWorkspaceLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id } = use(params);
   const pathname = usePathname();
   
   // In a real app, fetch campaign by ID
