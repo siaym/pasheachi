@@ -21,7 +21,7 @@ export default function CampaignAnalyticsPage() {
 
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <PaperLift delay={0.1} className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
+        <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
             <Eye className="h-4 w-4" /> Total Views
           </div>
@@ -33,7 +33,7 @@ export default function CampaignAnalyticsPage() {
           </div>
         </PaperLift>
 
-        <PaperLift delay={0.2} className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
+        <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
             <Users className="h-4 w-4" /> Unique Visitors
           </div>
@@ -45,7 +45,7 @@ export default function CampaignAnalyticsPage() {
           </div>
         </PaperLift>
 
-        <PaperLift delay={0.3} className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
+        <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 flex flex-col justify-between h-32">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
             <MousePointerClick className="h-4 w-4" /> Conversion Rate
           </div>
@@ -57,7 +57,7 @@ export default function CampaignAnalyticsPage() {
           </div>
         </PaperLift>
 
-        <PaperLift delay={0.4} className="bg-[#FAF8F3] border border-[#1D2927] bg-[#EAE5DB] p-6 flex flex-col justify-between h-32 shadow-ink">
+        <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] bg-[#EAE5DB] p-6 flex flex-col justify-between h-32 shadow-ink">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#1D2927] font-bold">
             <TrendingUp className="h-4 w-4" /> Avg. Donation
           </div>
