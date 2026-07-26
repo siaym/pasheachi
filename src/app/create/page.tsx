@@ -32,12 +32,19 @@ export default function CreateCampaignPage() {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [category, setCategory] = useState("medical");
+  const [campaignType, setCampaignType] = useState<"flexible" | "fixed">("flexible");
+  const [fixedAmount, setFixedAmount] = useState("");
+  const [targetParticipants, setTargetParticipants] = useState("");
   const [goalAmount, setGoalAmount] = useState("");
   const [deadline, setDeadline] = useState("30");
   const [tags, setTags] = useState("");
 
   const [story, setStory] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+
+  const calculatedGoal = campaignType === "fixed" && fixedAmount && targetParticipants 
+    ? (Number(fixedAmount) * Number(targetParticipants)).toString() 
+    : goalAmount;
 
   const handleSubmit = () => {
     setLoading(true);
@@ -129,36 +136,103 @@ export default function CreateCampaignPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="relative">
-                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
-                        Goal Amount (৳) *
+                  <div className="relative">
+                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-3">
+                      Campaign Type *
+                    </label>
+                    <div className="flex gap-4">
+                      <label className={`flex-1 border-2 p-4 cursor-pointer transition-all ${campaignType === 'flexible' ? 'border-[#1D2927] bg-[#EAE5DB]' : 'border-[#D9D3C7] hover:border-[#1D2927]'}`}>
+                        <input 
+                          type="radio" 
+                          name="campaignType" 
+                          value="flexible" 
+                          checked={campaignType === 'flexible'} 
+                          onChange={() => setCampaignType("flexible")}
+                          className="sr-only" 
+                        />
+                        <div className="font-editorial text-lg text-[#1D2927] mb-1">Flexible Goal</div>
+                        <div className="font-mono text-[10px] text-[#53605C]">Any amount can be donated until the total goal is reached.</div>
                       </label>
-                      <input
-                        required
-                        type="number"
-                        placeholder="50000"
-                        value={goalAmount}
-                        onChange={(e) => setGoalAmount(e.target.value)}
-                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-xl text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
-                      />
-                    </div>
-                    
-                    <div className="relative">
-                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
-                        Category *
+                      <label className={`flex-1 border-2 p-4 cursor-pointer transition-all ${campaignType === 'fixed' ? 'border-[#1D2927] bg-[#EAE5DB]' : 'border-[#D9D3C7] hover:border-[#1D2927]'}`}>
+                        <input 
+                          type="radio" 
+                          name="campaignType" 
+                          value="fixed" 
+                          checked={campaignType === 'fixed'} 
+                          onChange={() => setCampaignType("fixed")}
+                          className="sr-only" 
+                        />
+                        <div className="font-editorial text-lg text-[#1D2927] mb-1">Fixed Contribution</div>
+                        <div className="font-mono text-[10px] text-[#53605C]">E.g. Tours/Events where every participant pays a specific set amount.</div>
                       </label>
-                      <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm uppercase tracking-widest text-[#1D2927] focus:outline-none cursor-pointer transition-colors"
-                      >
-                        {CATEGORIES.map((cat) => (
-                          <option key={cat.id} value={cat.slug}>{cat.name}</option>
-                        ))}
-                      </select>
                     </div>
                   </div>
+
+                  {campaignType === "flexible" ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="relative">
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                          Goal Amount (৳) *
+                        </label>
+                        <input
+                          required
+                          type="number"
+                          placeholder="50000"
+                          value={goalAmount}
+                          onChange={(e) => setGoalAmount(e.target.value)}
+                          className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-xl text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
+                        />
+                      </div>
+                      
+                      <div className="relative">
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                          Category *
+                        </label>
+                        <select
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                          className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-sm uppercase tracking-widest text-[#1D2927] focus:outline-none cursor-pointer transition-colors"
+                        >
+                          {CATEGORIES.map((cat) => (
+                            <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#EAE5DB]/50 p-6 border border-[#D9D3C7]">
+                      <div className="relative">
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                          Amount Per Person (৳) *
+                        </label>
+                        <input
+                          required
+                          type="number"
+                          placeholder="2000"
+                          value={fixedAmount}
+                          onChange={(e) => setFixedAmount(e.target.value)}
+                          className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
+                        />
+                      </div>
+                      <div className="relative">
+                        <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-2">
+                          Target Participants *
+                        </label>
+                        <input
+                          required
+                          type="number"
+                          placeholder="25"
+                          value={targetParticipants}
+                          onChange={(e) => setTargetParticipants(e.target.value)}
+                          className="w-full bg-transparent border-b-2 border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none transition-colors"
+                        />
+                      </div>
+                      <div className="relative flex flex-col justify-end pb-2">
+                        <div className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-1">Calculated Goal</div>
+                        <div className="font-editorial text-2xl text-[#1D2927]">৳{calculatedGoal || "0"}</div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="relative">
@@ -382,7 +456,10 @@ export default function CreateCampaignPage() {
                       <h1 className="font-editorial text-3xl text-[#1D2927]">{title || "Untitled Campaign"}</h1>
                       <p className="text-[#53605C] text-sm">{subtitle || "No subtitle provided."}</p>
                       <div className="h-2 w-full bg-[#EAE5DB]"></div>
-                      <p className="font-mono text-xs text-[#A84D2A] uppercase">Goal: ৳{goalAmount || "0"}</p>
+                      <p className="font-mono text-xs text-[#A84D2A] uppercase">
+                        Goal: ৳{calculatedGoal || "0"} 
+                        {campaignType === "fixed" && <span className="text-[10px] text-[#53605C] font-normal ml-2">(৳{fixedAmount} per person)</span>}
+                      </p>
                       <div className="mt-8 border-t border-[#D9D3C7] pt-4">
                         <p className="text-sm">{story || "Your story will appear here..."}</p>
                       </div>

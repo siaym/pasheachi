@@ -222,3 +222,56 @@ export const MOCK_SUCCESS_STORIES: SuccessStory[] = [
     campaignTitle: "Sylhet Flood Relief Drive",
   },
 ];
+
+export const MOCK_TRANSACTIONS = [
+  {
+    id: "TRX-9F2A1B",
+    donorName: "Anika Rahman",
+    amount: 5000,
+    phone: "+880 1712 *** 345",
+    date: "2026-07-26",
+    time: "10:23 AM",
+    status: "verified",
+    method: "bKash"
+  },
+  {
+    id: "TRX-4C8D7E",
+    donorName: "Anonymous",
+    amount: 1000,
+    phone: "+880 1923 *** 890",
+    date: "2026-07-25",
+    time: "02:45 PM",
+    status: "verified",
+    method: "Nagad"
+  },
+  {
+    id: "TRX-1A2B3C",
+    donorName: "Zahid Hasan",
+    amount: 15000,
+    phone: "+880 1819 *** 112",
+    date: "2026-07-25",
+    time: "11:15 AM",
+    status: "pending",
+    method: "Bank Transfer"
+  },
+  {
+    id: "TRX-5E6F7G",
+    donorName: "Faria Islam",
+    amount: 2000,
+    phone: "+880 1555 *** 777",
+    date: "2026-07-24",
+    time: "09:30 PM",
+    status: "verified",
+    method: "bKash"
+  },
+  {
+    id: "TRX-9H8I7J",
+    donorName: "Anonymous",
+    amount: 500,
+    phone: "+880 1678 *** 444",
+    date: "2026-07-24",
+    time: "08:12 AM",
+    status: "verified",
+    method: "Nagad"
+  }
+];
