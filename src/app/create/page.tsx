@@ -502,7 +502,13 @@ export default function CreateCampaignPage() {
                 <button
                   type="button"
                   onClick={() => setStep((s) => (s + 1) as any)}
-                  disabled={step === 1 && (!title || !goalAmount)}
+                  disabled={
+                    step === 1 &&
+                    (!title ||
+                      !subtitle ||
+                      (campaignType === "flexible" && !goalAmount) ||
+                      (campaignType === "fixed" && (!fixedAmount || !targetParticipants)))
+                  }
                   className="h-12 px-8 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Proceed <ArrowRight className="h-4 w-4" />
