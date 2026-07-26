@@ -106,6 +106,8 @@ Funds raised will cover budget airline tickets, hostel accommodation, local tran
     imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
     creator: MOCK_USERS.tanvir,
     isFeatured: true,
+    campaignType: "fixed",
+    fixedAmount: 2000,
     status: "active",
     createdAt: "2026-07-05",
   },

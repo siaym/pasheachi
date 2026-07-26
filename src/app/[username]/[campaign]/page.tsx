@@ -252,6 +252,15 @@ export default function CampaignDetailPage({
                       </span>
                     </div>
 
+                    {campaign.campaignType === "fixed" && (
+                      <div className="mb-4 bg-[#EAE5DB]/50 border border-[#D9D3C7] p-3 text-center">
+                        <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1">Fixed Contribution Required</div>
+                        <div className="font-editorial text-2xl text-[#1D2927]">
+                          {formatCurrency(campaign.fixedAmount || 0)} <span className="text-xs font-mono text-[#53605C] font-normal tracking-widest uppercase">/ person</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Hand-drawn style progress bar */}
                     <div className="h-2 w-full bg-[#EAE5DB] border border-[#D9D3C7] overflow-hidden relative mb-4">
                       <div 
@@ -269,47 +278,58 @@ export default function CampaignDetailPage({
                   <div className="ink-rule-subtle mb-6"></div>
 
                   {/* Amount Selection */}
-                  <div className="space-y-4">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#1D2927]">
-                      Select Support Amount (৳)
-                    </label>
+                  {campaign.campaignType === "fixed" ? (
+                    <div className="space-y-4">
+                       <label className="block text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                        Fixed Amount (৳)
+                      </label>
+                      <div className="h-12 w-full border border-[#D9D3C7] bg-[#EAE5DB] px-4 flex items-center font-mono text-sm text-[#53605C] cursor-not-allowed">
+                        {campaign.fixedAmount || 0}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                        Select Support Amount (৳)
+                      </label>
 
-                    {/* Preset Pills - Ink Stamped Style */}
-                    <div className="grid grid-cols-5 gap-2">
-                      {PRESET_AMOUNTS.map((amt) => (
-                        <button
-                          key={amt}
-                          type="button"
-                          onClick={() => {
-                            setSelectedAmount(amt);
-                            setCustomAmount("");
+                      {/* Preset Pills - Ink Stamped Style */}
+                      <div className="grid grid-cols-5 gap-2">
+                        {PRESET_AMOUNTS.map((amt) => (
+                          <button
+                            key={amt}
+                            type="button"
+                            onClick={() => {
+                              setSelectedAmount(amt);
+                              setCustomAmount("");
+                            }}
+                            className={`h-12 border transition-all font-mono text-sm ${
+                              selectedAmount === amt && !customAmount
+                                ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
+                                : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
+                            }`}
+                          >
+                            {amt}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Custom Amount Input */}
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[#53605C]">৳</span>
+                        <input
+                          type="number"
+                          placeholder="Custom amount"
+                          value={customAmount}
+                          onChange={(e) => {
+                            setCustomAmount(e.target.value);
+                            setSelectedAmount(Number(e.target.value) || 0);
                           }}
-                          className={`h-12 border transition-all font-mono text-sm ${
-                            selectedAmount === amt && !customAmount
-                              ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
-                              : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
-                          }`}
-                        >
-                          {amt}
-                        </button>
-                      ))}
+                          className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] pl-8 pr-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
+                        />
+                      </div>
                     </div>
-
-                    {/* Custom Amount Input */}
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[#53605C]">৳</span>
-                      <input
-                        type="number"
-                        placeholder="Custom amount"
-                        value={customAmount}
-                        onChange={(e) => {
-                          setCustomAmount(e.target.value);
-                          setSelectedAmount(Number(e.target.value) || 0);
-                        }}
-                        className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] pl-8 pr-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
-                      />
-                    </div>
-                  </div>
+                  )}
 
                   {/* Main CTA */}
                   <button
@@ -318,7 +338,7 @@ export default function CampaignDetailPage({
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <Heart className="h-4 w-4" />
-                      Support {formatCurrency(selectedAmount || 250)}
+                      Support {formatCurrency(campaign.campaignType === "fixed" ? (campaign.fixedAmount || 0) : (selectedAmount || 250))}
                     </span>
                     <div className="absolute inset-0 bg-[#1D2927] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
                   </button>

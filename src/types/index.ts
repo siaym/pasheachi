@@ -69,6 +69,8 @@ export interface Campaign {
   creator: User;
   isPinned?: boolean;
   isFeatured?: boolean;
+  campaignType?: "flexible" | "fixed";
+  fixedAmount?: number;
   status: "active" | "completed" | "pending" | "draft";
   milestones?: Milestone[];
   createdAt: string;

@@ -26,7 +26,7 @@ interface PaymentModalProps {
 
 export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [amount, setAmount] = useState<number>(250);
+  const [amount, setAmount] = useState<number>(campaign.campaignType === "fixed" ? (campaign.fixedAmount || 0) : 250);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [displayName, setDisplayName] = useState<string>("");
@@ -101,41 +101,50 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
 
               <div className="space-y-4">
                 <label className="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C]">
-                  Select Amount (৳)
+                  {campaign.campaignType === "fixed" ? "Fixed Contribution Required (৳)" : "Select Amount (৳)"}
                 </label>
-                <div className="grid grid-cols-5 gap-2">
-                  {PRESET_AMOUNTS.map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => {
-                        setAmount(amt);
-                        setCustomAmount("");
-                      }}
-                      className={`h-12 border transition-all font-mono text-sm ${
-                        amount === amt && !customAmount
-                          ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
-                          : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
-                      }`}
-                    >
-                      {amt}
-                    </button>
-                  ))}
-                </div>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[#53605C]">৳</span>
-                  <input
-                    type="number"
-                    placeholder="Custom amount"
-                    value={customAmount}
-                    onChange={(e) => {
-                      setCustomAmount(e.target.value);
-                      setAmount(Number(e.target.value) || 0);
-                    }}
-                    className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] pl-8 pr-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
-                  />
-                </div>
+                {campaign.campaignType === "fixed" ? (
+                  <div className="h-12 w-full border border-[#D9D3C7] bg-[#EAE5DB] px-4 flex items-center font-mono text-sm text-[#1D2927] cursor-not-allowed">
+                    {campaign.fixedAmount || 0}
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-5 gap-2">
+                      {PRESET_AMOUNTS.map((amt) => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => {
+                            setAmount(amt);
+                            setCustomAmount("");
+                          }}
+                          className={`h-12 border transition-all font-mono text-sm ${
+                            amount === amt && !customAmount
+                              ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
+                              : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
+                          }`}
+                        >
+                          {amt}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[#53605C]">৳</span>
+                      <input
+                        type="number"
+                        placeholder="Custom amount"
+                        value={customAmount}
+                        onChange={(e) => {
+                          setCustomAmount(e.target.value);
+                          setAmount(Number(e.target.value) || 0);
+                        }}
+                        className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] pl-8 pr-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="space-y-4 pt-4 border-t border-[#D9D3C7]">
