@@ -26,7 +26,7 @@ export default async function CampaignOverviewPage({
   if (!campaign) {
     notFound();
   }
-  const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
+  const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount || 0);
 
   return (
     <div className="space-y-8">
@@ -44,7 +44,7 @@ export default async function CampaignOverviewPage({
           <div className="mt-6 space-y-2">
             <div className="flex justify-between font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
               <span>{progress}% Funded</span>
-              <span>Goal: {formatCurrency(campaign.goalAmount)}</span>
+              <span>Goal: {formatCurrency(campaign.goalAmount || 0)}</span>
             </div>
             <div className="h-1.5 w-full bg-[#EAE5DB] overflow-hidden">
               <div 

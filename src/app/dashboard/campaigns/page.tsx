@@ -95,7 +95,7 @@ export default async function MyCampaignsPage({
         {/* Campaign List */}
         <div className="space-y-6">
           {myCampaigns.map((cmp) => {
-            const progress = calculateProgress(cmp.raisedAmount, cmp.goalAmount);
+            const progress = calculateProgress(cmp.raisedAmount, cmp.goalAmount || 0);
             return (
               <PaperLift
                 key={cmp.id}
