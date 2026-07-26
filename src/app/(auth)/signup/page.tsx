@@ -2,149 +2,131 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { FadeIn, PaperLift } from "@/components/ui/motion";
+import { signupAction } from "../actions";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    username: "",
-    password: "",
-  });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const isUsernameAvailable = formData.username.length >= 3;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    setError(null);
+    
+    const formData = new FormData(e.currentTarget);
+    const result = await signupAction(formData);
+    
+    if (result?.error) {
+      setError(result.error);
       setLoading(false);
-      window.location.href = "/dashboard";
-    }, 1000);
+    }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6">
-      <div className="w-full max-w-md space-y-8 rounded-3xl border border-slate-100 bg-white p-8 sm:p-10 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <Logo iconOnly className="h-12 w-12" />
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Join PasheAchi
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Start supporting dreams and launch your permanent profile
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 bg-[#FDFBF7] relative overflow-hidden">
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Full Name *"
-            type="text"
-            required
-            placeholder="Siyam Ahmed"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
+      <FadeIn className="w-full max-w-md relative z-10">
+        <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-8 sm:p-12 shadow-paper relative">
+          <div className="flex flex-col text-center space-y-4 mb-10">
+            <h1 className="font-editorial text-4xl sm:text-5xl text-[#1D2927]">
+              Start Your Journey
+            </h1>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+              Create an account to launch campaigns
+            </p>
+          </div>
 
-          <Input
-            label="Email Address *"
-            type="email"
-            required
-            placeholder="siyam@email.com"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
+          {error && (
+            <div className="mb-6 p-4 bg-[#F7F4ED] border-l-2 border-[#A84D2A] font-mono text-[10px] uppercase tracking-widest text-[#A84D2A]">
+              {error}
+            </div>
+          )}
 
-          <Input
-            label="Phone Number *"
-            type="tel"
-            required
-            placeholder="01712345678"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          />
-
-          {/* Username Input with URL Preview */}
-          <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Claim Your Profile URL *
-            </label>
-            <div className="relative flex items-center">
-              <span className="absolute left-3 text-xs font-semibold text-slate-400 select-none">
-                pasheachi.bro.bd/
-              </span>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Full Name
+              </label>
               <input
                 type="text"
+                name="name"
                 required
-                placeholder="siyam"
-                value={formData.username}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""),
-                  })
-                }
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-36 pr-10 text-sm text-slate-900 font-semibold focus:border-[#10B981] focus:outline-none focus:ring-4 focus:ring-[#10B981]/15 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="John Doe"
+                className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-lg italic text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
               />
-              {isUsernameAvailable && (
-                <CheckCircle2 className="absolute right-3.5 h-4 w-4 text-[#10B981]" />
-              )}
             </div>
-            {isUsernameAvailable && (
-              <p className="text-xs text-[#10B981] font-semibold flex items-center gap-1">
-                ✓ pasheachi.bro.bd/{formData.username} is available!
-              </p>
-            )}
-          </div>
 
-          <Input
-            label="Password *"
-            type="password"
-            required
-            placeholder="••••••••••••"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          />
+            <div className="space-y-2">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                required
+                placeholder="johndoe"
+                className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
+              />
+            </div>
 
-          <div className="flex items-start gap-2 pt-1 text-xs text-slate-600 dark:text-slate-400">
-            <input
-              type="checkbox"
-              required
-              className="mt-0.5 rounded border-slate-300 text-[#10B981] focus:ring-[#10B981]"
-            />
-            <span>
-              I agree to the{" "}
-              <Link href="/terms" className="font-semibold text-[#10B981] underline">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="font-semibold text-[#10B981] underline">
-                Privacy Policy
+            <div className="space-y-2">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="john@example.com"
+                className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
+              />
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-3 text-[#53605C] hover:text-[#1D2927] transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink disabled:opacity-50 mt-8"
+            >
+              {loading ? "Creating Account..." : "Sign Up"} <ArrowRight className="h-4 w-4" />
+            </button>
+          </form>
+
+          <div className="mt-8 text-center border-t border-[#D9D3C7] pt-8">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+              Already have an account?{" "}
+              <Link href="/login" className="font-bold text-[#A84D2A] hover:text-[#1D2927] underline decoration-[#D9D3C7] underline-offset-4 transition-colors">
+                Sign In
               </Link>
-            </span>
+            </p>
           </div>
-
-          <Button size="lg" isLoading={loading} className="w-full font-bold mt-2">
-            <span>Create Account</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </form>
-
-        {/* Login Redirect */}
-        <p className="text-center text-xs text-slate-500">
-          Already have an account?{" "}
-          <Link href="/login" className="font-bold text-[#10B981] hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
+        </PaperLift>
+      </FadeIn>
     </div>
   );
 }

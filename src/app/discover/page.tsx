@@ -1,31 +1,40 @@
-"use client";
 
-import { useState } from "react";
 import { Container } from "@/components/layout/container";
 import { CampaignCard } from "@/components/campaign/campaign-card";
-import { MOCK_CAMPAIGNS } from "@/data/mock";
+import { prisma } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/constants";
 import { FadeIn, RevealText, PaperLift, InkDivider } from "@/components/ui/motion";
-import { Search, Filter, FolderOpen, RotateCcw } from "lucide-react";
+import { SearchBar } from "@/components/discover/search-bar";
+import { Filter, FolderOpen, RotateCcw } from "lucide-react";
 
-export default function DiscoverPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("recent");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+export default async function DiscoverPage({
+  searchParams,
+}: {
+  searchParams: { category?: string; q?: string };
+}) {
+  const campaigns = await prisma.campaign.findMany({
+    include: {
+      creator: true,
+      transactions: true,
+    },
+  });
 
-  // Filter campaigns
-  const filteredCampaigns = MOCK_CAMPAIGNS.filter((campaign) => {
+  const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesCategory =
-      selectedCategory === "all" || campaign.category === selectedCategory;
-    const matchesSearch =
-      campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      campaign.creator.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+      searchParams.category && searchParams.category !== "all"
+        ? campaign.category === searchParams.category
+        : true;
+
+    const matchesQuery = searchParams.q
+      ? campaign.title.toLowerCase().includes(searchParams.q.toLowerCase()) ||
+        campaign.description.toLowerCase().includes(searchParams.q.toLowerCase())
+      : true;
+
+    return matchesCategory && matchesQuery;
   });
 
   return (
-    <div className="min-h-screen pt-32 pb-20 sm:pb-32 relative">
+    <div className="min-h-screen pt-32 pb-20 sm:pb-32 relative bg-[#FDFBF7]">
       <Container variant="wide" className="relative z-10">
         
         {/* Editorial Header */}
@@ -50,73 +59,33 @@ export default function DiscoverPage() {
 
         {/* Search & Filter Bar (Typed Paper Style) */}
         <FadeIn delay={0.3} className="mb-12">
-          <div className="flex flex-col md:flex-row items-end gap-6 border-b-2 border-[#1D2927] pb-4">
-            
-            {/* Search Input */}
-            <div className="relative w-full md:flex-1">
-              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B] mb-2">
-                Search Query
-              </label>
-              <div className="relative flex items-center">
-                <Search className="absolute left-0 h-5 w-5 text-[#1D2927]" />
-                <input
-                  type="text"
-                  placeholder="Title, creator, or keyword..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-10 w-full bg-transparent pl-8 pr-4 font-editorial text-2xl text-[#1D2927] placeholder:text-[#D9D3C7] focus:outline-none placeholder:font-editorial placeholder:italic"
-                />
-              </div>
-            </div>
-
-            {/* Sort Select */}
-            <div className="w-full md:w-64">
-              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B] mb-2">
-                Sort Order
-              </label>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="h-10 w-full appearance-none bg-transparent border border-[#D9D3C7] pl-4 pr-10 font-mono text-xs uppercase tracking-widest text-[#1D2927] focus:outline-none focus:border-[#1D2927] hover:border-[#1D2927] transition-colors cursor-pointer"
-                >
-                  <option value="recent">Most Recent</option>
-                  <option value="funded">Most Funded</option>
-                  <option value="ending">Ending Soon</option>
-                  <option value="supporters">Most Supporters</option>
-                </select>
-                <Filter className="pointer-events-none absolute right-3 top-2.5 h-4 w-4 text-[#1D2927]" />
-              </div>
-            </div>
-          </div>
+          <SearchBar />
 
           {/* Category Filters (Ink-stamped Pills) */}
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <span className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] mr-2">Filters:</span>
-            <button
-              type="button"
-              onClick={() => setSelectedCategory("all")}
+            <a
+              href="/discover"
               className={`h-8 px-4 border transition-all font-mono text-[10px] uppercase tracking-widest ${
-                selectedCategory === "all"
+                !searchParams.category || searchParams.category === "all"
                   ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
                   : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
               }`}
             >
               All Files
-            </button>
+            </a>
             {CATEGORIES.map((cat) => (
-              <button
+              <a
                 key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(cat.slug)}
+                href={`/discover?category=${cat.slug}`}
                 className={`h-8 px-4 border transition-all font-mono text-[10px] uppercase tracking-widest ${
-                  selectedCategory === cat.slug
+                  searchParams.category === cat.slug
                     ? "border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow-ink scale-[0.98]"
                     : "border-[#D9D3C7] bg-transparent text-[#1D2927] hover:border-[#1D2927] hover:bg-[#EAE5DB]"
                 }`}
               >
-                {cat.name} ({cat.activeCount})
-              </button>
+                {cat.name}
+              </a>
             ))}
           </div>
         </FadeIn>
@@ -124,18 +93,14 @@ export default function DiscoverPage() {
         {/* Results Counter */}
         <FadeIn delay={0.4} className="mb-8 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
           <span>Showing {filteredCampaigns.length} records</span>
-          {(selectedCategory !== "all" || searchQuery) && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedCategory("all");
-                setSearchQuery("");
-              }}
+          {(searchParams.category || searchParams.q) && (
+            <a
+              href="/discover"
               className="flex items-center gap-1 text-[#A84D2A] hover:text-[#1D2927] transition-colors"
             >
               <RotateCcw className="h-3 w-3" />
               <span className="ink-underline">Reset Filters</span>
-            </button>
+            </a>
           )}
         </FadeIn>
 
@@ -169,15 +134,12 @@ export default function DiscoverPage() {
                 Try a different search!
               </p>
 
-              <button
-                onClick={() => {
-                  setSelectedCategory("all");
-                  setSearchQuery("");
-                }}
-                className="mt-8 h-12 px-8 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors shadow-sm"
+              <a
+                href="/discover"
+                className="mt-8 h-12 px-8 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors shadow-sm flex items-center"
               >
                 Clear All Filters
-              </button>
+              </a>
             </PaperLift>
           )}
         </FadeIn>

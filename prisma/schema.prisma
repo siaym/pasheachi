@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  name      String
+  password  String?
+  email     String?  @unique
+  bio       String?  @db.Text
+  location  String?
+  avatarUrl String?
+  coverUrl  String?
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaigns     Campaign[]
+  messages      Message[]
+  notifications Notification[]
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  subtitle       String
+  category       String
+  location       String
+  description    String
+  coverImageUrl  String?
+  goalAmount     Float?
+  raisedAmount   Float    @default(0)
+  targetParticipants Int?
+  
+  campaignType   String   @default("flexible")
+  fixedAmount    Float?
+
+  isFeatured     Boolean  @default(false)
+  isPinned       Boolean  @default(false)
+  status         String   @default("active")
+
+  bkashNumber    String?
+  nagadNumber    String?
+  bankDetails    String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  creatorId      String
+  creator        User     @relation(fields: [creatorId], references: [id])
+  
+  milestones     Milestone[]
+  transactions   Transaction[]
+  updates        Update[]
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Float
+  completed   Boolean  @default(false)
+  
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  donorName   String
+  phone       String
+  amount      Float
+  method      String
+  referenceId String?
+  status      String   @default("pending")
+  
+  date        DateTime @default(now())
+
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model Update {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  date        DateTime @default(now())
+
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderName  String
+  email       String?
+  content     String   @db.Text
+  isRead      Boolean  @default(false)
+  date        DateTime @default(now())
+
+  recipientId String
+  recipient   User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String
+  message     String
+  isRead      Boolean  @default(false)
+  date        DateTime @default(now())
+  actionUrl   String?
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

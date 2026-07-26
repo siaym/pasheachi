@@ -1,25 +1,29 @@
-"use client";
-
-import { use } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { notFound } from "next/navigation";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, ExternalLink } from "lucide-react";
-import { MOCK_CAMPAIGNS } from "@/data/mock";
+import { prisma } from "@/lib/prisma";
+import { WorkspaceNav } from "./workspace-nav";
 
-export default function CampaignWorkspaceLayout({
+export default async function CampaignWorkspaceLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const pathname = usePathname();
+  const { id } = await params;
   
-  // In a real app, fetch campaign by ID
-  const campaign = MOCK_CAMPAIGNS[0]; 
+  // Fetch campaign by ID
+  const campaign = await prisma.campaign.findUnique({
+    where: { id },
+    include: { creator: true }
+  });
+
+  if (!campaign) {
+    notFound();
+  }
 
   const CAMPAIGN_TABS = [
     { name: "Overview", href: `/dashboard/campaigns/${id}` },
@@ -64,31 +68,8 @@ export default function CampaignWorkspaceLayout({
         </div>
       </FadeIn>
 
-      {/* Tabs Navigation (Paper Style) */}
-      <FadeIn delay={0.1}>
-        <div className="border-b border-[#D9D3C7] flex overflow-x-auto hide-scrollbar">
-          {CAMPAIGN_TABS.map((tab) => {
-            const isActive = pathname === tab.href;
-            return (
-              <Link
-                key={tab.name}
-                href={tab.href}
-                className={cn(
-                  "px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors relative",
-                  isActive
-                    ? "text-[#1D2927]"
-                    : "text-[#53605C] hover:text-[#1D2927] hover:bg-[#FAF8F3]"
-                )}
-              >
-                {tab.name}
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#1D2927]" />
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      </FadeIn>
+      {/* Tabs Navigation (Client Component) */}
+      <WorkspaceNav id={id} />
 
       {/* Workspace Content */}
       <FadeIn delay={0.2}>

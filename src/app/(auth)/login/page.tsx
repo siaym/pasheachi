@@ -2,111 +2,109 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { FadeIn, PaperLift } from "@/components/ui/motion";
+import { loginAction } from "../actions";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    setError(null);
+    
+    const formData = new FormData(e.currentTarget);
+    const result = await loginAction(formData);
+    
+    if (result?.error) {
+      setError(result.error);
       setLoading(false);
-      window.location.href = "/dashboard";
-    }, 1000);
+    }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6">
-      <div className="w-full max-w-md space-y-8 rounded-3xl border border-slate-100 bg-white p-8 sm:p-10 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <Logo iconOnly className="h-12 w-12" />
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Welcome Back
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Sign in to manage your campaigns and support causes
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 bg-[#FDFBF7] relative overflow-hidden">
+      {/* Decorative Background Texture */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <Input
-            label="Email or Phone Number"
-            type="text"
-            required
-            placeholder="siyam@email.com or 017XXXXXXXX"
-            value={formData.identifier}
-            onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
-          />
+      <FadeIn className="w-full max-w-md relative z-10">
+        <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-8 sm:p-12 shadow-paper relative">
+          {/* Header */}
+          <div className="flex flex-col text-center space-y-4 mb-10">
+            <h1 className="font-editorial text-4xl sm:text-5xl text-[#1D2927]">
+              Welcome Back
+            </h1>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+              Access your creator dashboard
+            </p>
+          </div>
 
-          <div className="relative">
-            <Input
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              required
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-9 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          {error && (
+            <div className="mb-6 p-4 bg-[#F7F4ED] border-l-2 border-[#A84D2A] font-mono text-[10px] uppercase tracking-widest text-[#A84D2A]">
+              {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Username or Email
+              </label>
+              <input
+                type="text"
+                name="identifier"
+                required
+                placeholder="siyam or siyam@example.com"
+                className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-editorial text-lg italic text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
+              />
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors placeholder:text-[#D9D3C7]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-3 text-[#53605C] hover:text-[#1D2927] transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink disabled:opacity-50 mt-8"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {loading ? "Authenticating..." : "Sign In to Dashboard"} <ArrowRight className="h-4 w-4" />
             </button>
+          </form>
+
+          {/* Signup Redirect */}
+          <div className="mt-8 text-center border-t border-[#D9D3C7] pt-8">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
+              Need to start a campaign?{" "}
+              <Link href="/signup" className="font-bold text-[#A84D2A] hover:text-[#1D2927] underline decoration-[#D9D3C7] underline-offset-4 transition-colors">
+                Create an Account
+              </Link>
+            </p>
           </div>
-
-          <div className="flex items-center justify-between text-xs">
-            <label className="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
-              <input type="checkbox" className="rounded border-slate-300 text-[#10B981] focus:ring-[#10B981]" />
-              <span>Remember me</span>
-            </label>
-            <Link href="/forgot-password" className="font-semibold text-[#10B981] hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-
-          <Button size="lg" isLoading={loading} className="w-full font-bold">
-            <span>Sign In</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </form>
-
-        {/* Social Signin Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200 dark:border-slate-800" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-slate-400 dark:bg-slate-900">or continue with</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button variant="secondary" size="md" className="w-full text-xs font-semibold">
-            Google
-          </Button>
-          <Button variant="secondary" size="md" className="w-full text-xs font-semibold">
-            Facebook
-          </Button>
-        </div>
-
-        {/* Signup Redirect */}
-        <p className="text-center text-xs text-slate-500">
-          Don't have an account?{" "}
-          <Link href="/signup" className="font-bold text-[#10B981] hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+        </PaperLift>
+      </FadeIn>
     </div>
   );
 }

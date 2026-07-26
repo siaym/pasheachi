@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { MOCK_CAMPAIGNS } from "@/data/mock";
+import { Campaign } from "@/types";
 import { calculateProgress, formatCurrency } from "@/lib/utils";
 import { FadeIn, RevealText, InkDivider, PaperLift } from "@/components/ui/motion";
 
-export function FeaturedStories() {
-  const featured = MOCK_CAMPAIGNS.slice(0, 3);
+export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
+  const featured = campaigns.slice(0, 3);
 
   return (
     <section id="featured-stories" className="py-20 sm:py-32 bg-transparent border-b border-[#D9D3C7]">
@@ -35,7 +35,7 @@ export function FeaturedStories() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#D9D3C7] bg-[#F7F4ED]/80 backdrop-blur-md shadow-paper">
           {featured.map((campaign, index) => {
-            const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
+            const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount || 0);
             return (
               <FadeIn
                 key={campaign.id}
@@ -47,7 +47,7 @@ export function FeaturedStories() {
                   <div className="relative h-full w-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={campaign.imageUrl}
+                      src={campaign.coverImageUrl || "/placeholder.jpg"}
                       alt={campaign.title}
                       className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
@@ -74,7 +74,7 @@ export function FeaturedStories() {
                       Time Left
                     </div>
                     <div className="text-xs font-bold text-[#1D2927] mt-1">
-                      {campaign.daysLeft} Days
+                      Active
                     </div>
                   </div>
                 </div>
@@ -99,7 +99,7 @@ export function FeaturedStories() {
                         {formatCurrency(campaign.raisedAmount)}
                       </p>
                       <p className="text-[10px] font-bold tracking-widest text-[#53605C] mt-1 uppercase">
-                        Raised of {formatCurrency(campaign.goalAmount)}
+                        Raised of {formatCurrency(campaign.goalAmount || 0)}
                       </p>
                     </div>
                     <span className="font-mono text-xs font-bold text-[#A84D2A]">{progress}%</span>

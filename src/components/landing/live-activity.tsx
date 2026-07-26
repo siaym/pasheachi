@@ -30,8 +30,18 @@ const ACTIVITIES = [
   },
 ];
 
-export function LiveActivity() {
-  const duplicatedActivities = [...ACTIVITIES, ...ACTIVITIES, ...ACTIVITIES];
+export function LiveActivity({ transactions }: { transactions: any[] }) {
+  // If we have real transactions, map them. Otherwise, fall back to mock data
+  const baseActivities = transactions.length > 0 
+    ? transactions.map(t => ({
+        icon: Heart,
+        text: `${t.isAnonymous ? 'Anonymous' : t.donorName} supported ${t.campaignTitle}`,
+        amount: `৳${t.amount.toLocaleString()}`,
+        time: t.date,
+      }))
+    : ACTIVITIES;
+
+  const duplicatedActivities = [...baseActivities, ...baseActivities, ...baseActivities];
 
   return (
     <section className="border-b border-[#D9D3C7] bg-[#1D2927] py-3.5 overflow-hidden">

@@ -21,6 +21,7 @@ import {
   Tablet
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createCampaignAction } from "./actions";
 
 export default function CreateCampaignPage() {
   const router = useRouter();
@@ -51,12 +52,45 @@ export default function CreateCampaignPage() {
     ? (Number(fixedAmount) * Number(targetParticipants)).toString() 
     : goalAmount;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("subtitle", subtitle);
+      formData.append("category", category);
+      formData.append("campaignType", campaignType);
+      
+      if (campaignType === "fixed") {
+        formData.append("fixedAmount", fixedAmount);
+        formData.append("targetParticipants", targetParticipants);
+      } else {
+        formData.append("goalAmount", goalAmount);
+      }
+      
+      formData.append("deadline", deadline);
+      formData.append("tags", tags);
+      formData.append("story", story);
+      formData.append("videoUrl", videoUrl);
+      
+      if (bkashNumber) formData.append("bkashNumber", bkashNumber);
+      if (nagadNumber) formData.append("nagadNumber", nagadNumber);
+      if (bankDetails) formData.append("bankDetails", bankDetails);
+
+      const result = await createCampaignAction(formData);
+      
+      if (result.error) {
+        alert(result.error);
+        setLoading(false);
+        return;
+      }
+      
       router.push("/dashboard/campaigns");
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+      setLoading(false);
+    }
   };
 
   return (

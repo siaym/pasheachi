@@ -10,12 +10,43 @@ import { TrustSection } from "@/components/landing/trust-section";
 import { FAQ } from "@/components/landing/faq";
 import { Newsletter } from "@/components/landing/newsletter";
 
-export default function HomePage() {
+import { prisma } from "@/lib/prisma";
+
+export default async function HomePage() {
+  const campaigns = await prisma.campaign.findMany({
+    include: {
+      creator: true,
+      transactions: true,
+    },
+    take: 6,
+    orderBy: { createdAt: "desc" },
+  });
+
+  const recentTransactions = await prisma.transaction.findMany({
+    where: { status: "verified" },
+    include: { campaign: true },
+    take: 10,
+    orderBy: { date: "desc" },
+  });
+
+  const formattedTransactions = recentTransactions.map(t => {
+    const diffInMinutes = Math.floor((new Date().getTime() - new Date(t.date).getTime()) / 60000);
+    const timeString = diffInMinutes < 60 ? `${diffInMinutes} mins ago` : `${Math.floor(diffInMinutes / 60)} hours ago`;
+    
+    return {
+      donorName: t.donorName,
+      isAnonymous: t.donorName.toLowerCase() === 'anonymous' || t.donorName === '',
+      amount: t.amount,
+      campaignTitle: t.campaign.title,
+      date: timeString,
+    };
+  });
+
   return (
     <>
       <Hero />
-      <LiveActivity />
-      <FeaturedStories />
+      <LiveActivity transactions={formattedTransactions} />
+      <FeaturedStories campaigns={campaigns} />
       <CommunityImpact />
       <PaperCategories />
       <SuccessStories />

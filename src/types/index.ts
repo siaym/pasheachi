@@ -1,3 +1,5 @@
+import { User as PrismaUser, Campaign as PrismaCampaign, Transaction, Milestone } from "@prisma/client";
+
 export type CategorySlug =
   | "medical"
   | "travel"
@@ -24,62 +26,12 @@ export interface Category {
   textColor: string;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  avatarUrl: string;
-  coverUrl?: string;
-  verified: boolean;
-  verificationBadgeType?: "user" | "ngo" | "student" | "creator";
-  bio: string;
-  location: string;
-  category: string;
-  socialLinks?: {
-    website?: string;
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    github?: string;
-    youtube?: string;
-  };
-  followersCount: number;
-  followingCount: number;
-}
-
-export interface Milestone {
-  id: string;
-  title: string;
-  amount: number;
-  completed: boolean;
-}
-
-export interface Campaign {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  story: string;
-  category: CategorySlug;
-  goalAmount: number;
-  raisedAmount: number;
-  daysLeft: number;
-  supportersCount: number;
-  imageUrl: string;
+export type User = PrismaUser;
+export type Campaign = PrismaCampaign & {
   creator: User;
-  isPinned?: boolean;
-  isFeatured?: boolean;
-  campaignType?: "flexible" | "fixed";
-  fixedAmount?: number;
-  status: "active" | "completed" | "pending" | "draft";
-  paymentDetails?: {
-    bkash?: string;
-    nagad?: string;
-    bank?: string;
-  };
+  transactions?: Transaction[];
   milestones?: Milestone[];
-  createdAt: string;
-}
+};
 
 export interface Supporter {
   id: string;

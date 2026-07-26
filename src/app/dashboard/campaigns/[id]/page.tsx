@@ -1,8 +1,6 @@
-"use client";
-
-import { use } from "react";
 import { PaperLift } from "@/components/ui/motion";
-import { MOCK_CAMPAIGNS } from "@/data/mock";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 import { formatCurrency, calculateProgress } from "@/lib/utils";
 import { 
   Users, 
@@ -13,13 +11,21 @@ import {
   AlertCircle 
 } from "lucide-react";
 
-export default function CampaignOverviewPage({
+export default async function CampaignOverviewPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const campaign = MOCK_CAMPAIGNS[0];
+  const { id } = await params;
+  
+  const campaign = await prisma.campaign.findUnique({
+    where: { id },
+    include: { transactions: true }
+  });
+
+  if (!campaign) {
+    notFound();
+  }
   const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
 
   return (
@@ -72,7 +78,7 @@ export default function CampaignOverviewPage({
               <Users className="h-3.5 w-3.5" /> Supporters
             </span>
             <div className="font-editorial text-4xl text-[#1D2927] mb-1">
-              128
+              {campaign.transactions?.length || 0}
             </div>
             <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
               +12 this week

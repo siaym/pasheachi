@@ -1,9 +1,9 @@
-"use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
-import { MOCK_CAMPAIGNS, MOCK_USERS } from "@/data/mock";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { formatCurrency, calculateProgress } from "@/lib/utils";
 import {
   Search,
@@ -19,14 +19,24 @@ import {
 
 type FilterStatus = "All" | "Live" | "Draft" | "Pending Approval" | "Completed" | "Archived" | "Rejected";
 
-export default function MyCampaignsPage() {
-  const user = MOCK_USERS.siyam;
-  const [activeFilter, setActiveFilter] = useState<FilterStatus>("All");
-  
-  const myCampaigns = MOCK_CAMPAIGNS.filter(
-    (c) => c.creator.username === user.username
-  );
+export default async function MyCampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: FilterStatus }>;
+}) {
+  const { filter } = await searchParams;
+  const user = await getCurrentUser();
 
+  if (!user) {
+    redirect("/login");
+  }
+
+  const myCampaigns = await prisma.campaign.findMany({
+    where: { creatorId: user.id },
+    include: { creator: true, transactions: true }
+  });
+
+  const activeFilter = filter || "All";
   const filters: FilterStatus[] = ["All", "Live", "Draft", "Pending Approval", "Completed", "Archived", "Rejected"];
 
   return (
@@ -58,17 +68,17 @@ export default function MyCampaignsPage() {
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C]">Filter</span>
             </div>
             {filters.map((filter) => (
-              <button
+              <a
                 key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`h-8 px-4 border font-bold text-[10px] uppercase tracking-widest transition-colors whitespace-nowrap ${
+                href={`/dashboard/campaigns?filter=${filter}`}
+                className={`h-8 px-4 border font-bold text-[10px] flex items-center uppercase tracking-widest transition-colors whitespace-nowrap ${
                   activeFilter === filter
                     ? "border-[#1D2927] bg-[#EAE5DB] text-[#1D2927]"
                     : "border-transparent text-[#53605C] hover:text-[#1D2927] hover:bg-[#EAE5DB]"
                 }`}
               >
                 {filter}
-              </button>
+              </a>
             ))}
           </div>
 
@@ -95,7 +105,7 @@ export default function MyCampaignsPage() {
                 <div className="w-full md:w-64 h-48 md:h-auto shrink-0 relative border-b md:border-b-0 md:border-r border-[#D9D3C7]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={cmp.imageUrl}
+                    src={cmp.coverImageUrl || "/placeholder.jpg"}
                     alt={cmp.title}
                     className="w-full h-full object-cover grayscale opacity-80 mix-blend-multiply"
                   />
@@ -115,7 +125,7 @@ export default function MyCampaignsPage() {
                         <span>•</span>
                         <span>{cmp.daysLeft} Days Left</span>
                         <span>•</span>
-                        <span>128 Supporters</span>
+                        <span>{cmp.transactions?.length || 0} Supporters</span>
                       </div>
                     </div>
                     
@@ -136,7 +146,13 @@ export default function MyCampaignsPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between font-mono text-xs text-[#1D2927]">
                         <span className="font-bold">{formatCurrency(cmp.raisedAmount)}</span>
-                        <span className="text-[#8C7A5B]">Goal: {formatCurrency(cmp.goalAmount)}</span>
+                        <span className="text-[#355C52]">{cmp.transactions?.length || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#53605C]">Progress</span>
+                        <span className="font-mono font-bold text-[#1D2927]">
+                          {Math.round((cmp.raisedAmount / (cmp.goalAmount || 1)) * 100)}%
+                        </span>
                       </div>
                       <div className="h-2 w-full bg-[#EAE5DB] overflow-hidden">
                         <div 

@@ -17,6 +17,7 @@ import {
   Paperclip,
 } from "lucide-react";
 import { FadeIn, PaperLift } from "../ui/motion";
+import { submitDonationAction } from "@/app/[username]/[campaign]/actions";
 
 interface PaymentModalProps {
   campaign: Campaign;
@@ -69,13 +70,34 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmitTrx = (e: React.FormEvent) => {
+  const handleSubmitTrx = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    
+    try {
+      const formData = new FormData();
+      formData.append("campaignId", campaign.id);
+      if (!isAnonymous && displayName) formData.append("donorName", displayName);
+      formData.append("phone", senderNumber);
+      formData.append("amount", currentAmount.toString());
+      formData.append("method", paymentMethod);
+      formData.append("referenceId", trxId);
+
+      const result = await submitDonationAction(formData);
+      
+      if (result.error) {
+        alert(result.error);
+        setSubmitting(false);
+        return;
+      }
+      
       setStep(5);
-    }, 1200);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

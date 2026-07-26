@@ -1,5 +1,3 @@
-"use client";
-
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { Download, Users, Eye, MousePointerClick, TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
 

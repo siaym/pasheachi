@@ -14,7 +14,7 @@ interface CampaignCardProps {
 
 export function CampaignCard({ campaign }: CampaignCardProps) {
   const [liked, setLiked] = useState(false);
-  const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount);
+  const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount || 0);
 
   return (
     <PaperLift className="group flex flex-col h-full bg-[#FAF8F3] border border-[#D9D3C7] p-3 sm:p-4 shadow-sm hover:shadow-paper transition-shadow duration-500 relative backdrop-paper">
@@ -28,7 +28,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       <div className="relative aspect-[4/3] w-full overflow-hidden border border-[#1D2927] bg-[#EAE5DB] mb-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={campaign.imageUrl}
+          src={campaign.coverImageUrl || "/placeholder.jpg"}
           alt={campaign.title}
           className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
         />
@@ -81,7 +81,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           </Link>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3 text-[#8C7A5B]" />
-            <span>{campaign.daysLeft > 0 ? `${campaign.daysLeft}d left` : "Ended"}</span>
+            <span>Active</span>
           </div>
         </div>
 
@@ -115,7 +115,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         {/* Footer info: Supporters & Action */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <AvatarStack count={campaign.supportersCount} />
+            <AvatarStack count={campaign.transactions?.length || 0} />
           </div>
 
           <Link href={`/@${campaign.creator.username}/${campaign.slug}`} className="flex-1">

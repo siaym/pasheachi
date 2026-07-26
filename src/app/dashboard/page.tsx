@@ -1,9 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
-import { MOCK_USERS } from "@/data/mock";
 import { formatCurrency } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 import {
   Wallet,
   Users,
@@ -20,17 +18,59 @@ import {
   ShieldCheck,
   Clock
 } from "lucide-react";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function DashboardPage() {
-  const user = MOCK_USERS.siyam;
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
 
-  // Mock aggregated metrics
+  if (!user) {
+    redirect("/login");
+  }
+
+  const userData = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: {
+      campaigns: {
+        include: {
+          transactions: true,
+        },
+      },
+    },
+  });
+
+  if (!userData) {
+    redirect("/login");
+  }
+
+  let totalRaised = 0;
+  let verifiedAmount = 0;
+  let pendingDonations = 0;
+  let totalSupporters = 0;
+
+  user.campaigns.forEach(campaign => {
+    totalRaised += campaign.raisedAmount;
+    
+    const uniqueSupporters = new Set();
+    campaign.transactions.forEach(trx => {
+      uniqueSupporters.add(trx.phone || trx.donorName);
+      if (trx.status === "verified") {
+        verifiedAmount += trx.amount;
+      } else {
+        pendingDonations += trx.amount;
+      }
+    });
+    totalSupporters += uniqueSupporters.size;
+  });
+
+  const availableBalance = verifiedAmount; // Could subtract fees here
+
   const metrics = {
-    totalRaised: 32500,
-    verifiedAmount: 29500,
-    pendingDonations: 3000,
-    totalSupporters: 128,
-    availableBalance: 28025, // after 5% fee on verified
+    totalRaised,
+    verifiedAmount,
+    pendingDonations,
+    totalSupporters,
+    availableBalance,
   };
 
   return (
