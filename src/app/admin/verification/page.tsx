@@ -1,236 +1,157 @@
 "use client";
 
+import { FadeIn, PaperLift } from "@/components/ui/motion";
+import { Check, X, ShieldCheck, Search, Smartphone, Filter } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
-import { Container } from "@/components/layout/container";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "@/lib/utils";
-import {
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  FileSpreadsheet,
-  ArrowLeft,
-  Search,
-  Filter,
-} from "lucide-react";
 
-const MOCK_QUEUE = [
+// Mock data for pending transactions
+const MOCK_PENDING_TX = [
   {
-    id: "q-1",
-    trxId: "TXN8A3F2K12",
-    amount: 500,
-    senderNumber: "01712345678",
-    receiverNumber: "01712345678",
+    id: "TX-998A",
+    campaignName: "Mother's Cardiac Surgery",
+    donor: "Anonymous",
+    amount: 1500,
     method: "bKash",
-    campaign: "Help Rina's Mother Get Urgent Surgery",
-    user: "@siyam",
+    trxId: "8GH2KX91L",
+    senderNo: "01712***345",
     time: "2 mins ago",
     status: "pending",
   },
   {
-    id: "q-2",
-    trxId: "TXN9B4G3L99",
-    amount: 1000,
-    senderNumber: "01987654321",
-    receiverNumber: "01912345678",
+    id: "TX-998B",
+    campaignName: "Flood Relief Sylhet",
+    donor: "Tariqul",
+    amount: 500,
     method: "Nagad",
-    campaign: "Japan Tour & Cultural Expedition",
-    user: "@tanvir",
+    trxId: "NG72MQP0",
+    senderNo: "01911***888",
     time: "15 mins ago",
     status: "pending",
   },
   {
-    id: "q-3",
-    trxId: "TXN7C2H1M44",
-    amount: 250,
-    senderNumber: "01811223344",
-    receiverNumber: "01812345678",
-    method: "Rocket",
-    campaign: "Support Next.js Bengali Developer Tooling",
-    user: "@siyam",
-    time: "45 mins ago",
-    status: "flagged",
-    flagReason: "Duplicate Transaction ID submitted",
-  },
-  {
-    id: "q-4",
-    trxId: "TXN5E0J9O11",
-    amount: 5000,
-    senderNumber: "01755667788",
-    receiverNumber: "01712345678",
+    id: "TX-998C",
+    campaignName: "University Tuition",
+    donor: "Sara",
+    amount: 2000,
     method: "bKash",
-    campaign: "Free School Supplies for 200 Street Children",
-    user: "@ekattor",
+    trxId: "8GH5ZZ10B",
+    senderNo: "01822***444",
     time: "1 hour ago",
-    status: "approved",
-  },
+    status: "pending",
+  }
 ];
 
-export default function VerificationQueuePage() {
-  const [filter, setFilter] = useState<"all" | "pending" | "flagged" | "approved">("pending");
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+export default function AdminVerificationPage() {
+  const [transactions, setTransactions] = useState(MOCK_PENDING_TX);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+  const handleAction = (id: string, action: 'approve' | 'reject') => {
+    // In reality, this makes an API call
+    setTransactions((prev) => prev.filter((tx) => tx.id !== id));
   };
 
-  const filtered = MOCK_QUEUE.filter((item) => {
-    if (filter === "pending") return item.status === "pending";
-    if (filter === "flagged") return item.status === "flagged";
-    if (filter === "approved") return item.status === "approved";
-    return true;
-  });
+  const filteredTx = transactions.filter(tx => 
+    tx.trxId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tx.senderNo.includes(searchTerm)
+  );
 
   return (
-    <div className="page-shell py-8 sm:py-12">
-      <Container variant="wide">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between mb-6">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to Admin Overview
-          </Link>
-
-          <Link href="/admin/bulk-checker">
-            <Button size="sm" className="font-bold gap-2 bg-[#10B981] hover:bg-[#059669]">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Use Bulk Checker</span>
-            </Button>
-          </Link>
+    <div className="space-y-12 pb-12">
+      {/* Header */}
+      <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#D9D3C7] pb-6">
+        <div>
+          <h1 className="font-editorial text-3xl sm:text-4xl text-[#1D2927] mb-2">
+            Verification Queue
+          </h1>
+          <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+            Manual Audit ({transactions.length} Pending)
+          </p>
         </div>
+      </FadeIn>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold">
-              Manual Verification Queue
-            </h1>
-            <p className="text-sm text-slate-400">
-              Audit submitted donor transaction IDs and confirm funds
-            </p>
-          </div>
-
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2">
-            {(["all", "pending", "flagged", "approved"] as const).map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setFilter(f)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold capitalize transition-all ${
-                  filter === f
-                    ? "bg-[#10B981] text-white"
-                    : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+      {/* Toolbar */}
+      <FadeIn delay={0.1} className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8C7A5B]" />
+          <input
+            type="text"
+            placeholder="Search TrxID or Sender No..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-[#FAF8F3] border border-[#D9D3C7] focus:border-[#1E3A8A] pl-10 pr-4 py-2 font-mono text-sm outline-none transition-colors shadow-sm"
+          />
         </div>
+        <button className="h-10 px-4 bg-[#FAF8F3] border border-[#D9D3C7] text-[#1D2927] flex items-center justify-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest hover:border-[#1E3A8A] transition-colors">
+          <Filter className="h-4 w-4" /> Filter Method
+        </button>
+      </FadeIn>
 
-        {/* Selected Batch Actions Bar */}
-        {selectedIds.length > 0 && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-950/80 border border-emerald-800 flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-300">
-              {selectedIds.length} transactions selected
-            </span>
-            <div className="flex items-center gap-2">
-              <Button size="sm" className="bg-[#10B981] hover:bg-[#059669] text-xs font-bold gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Approve Selected
-              </Button>
-              <Button size="sm" variant="danger" className="text-xs font-bold gap-1">
-                <XCircle className="h-3.5 w-3.5" /> Reject Selected
-              </Button>
+      {/* Queue List */}
+      <div className="space-y-4">
+        {filteredTx.length === 0 ? (
+          <FadeIn>
+            <div className="bg-[#FAF8F3] border border-[#D9D3C7] p-12 text-center flex flex-col items-center">
+              <ShieldCheck className="h-12 w-12 text-[#D9D3C7] mb-4" />
+              <h3 className="font-editorial text-2xl text-[#1D2927]">Queue Empty!</h3>
+              <p className="text-[#53605C] mt-2">All manual transactions have been verified.</p>
             </div>
-          </div>
-        )}
+          </FadeIn>
+        ) : (
+          filteredTx.map((tx, idx) => (
+            <FadeIn key={tx.id} delay={idx * 0.05}>
+              <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 sm:p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:border-[#1E3A8A] transition-colors">
+                
+                {/* Details */}
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                  <div>
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1">Method</div>
+                    <div className="flex items-center gap-1.5 font-bold text-sm text-[#1D2927]">
+                      <Smartphone className="h-4 w-4 text-[#8C7A5B]" /> {tx.method}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1">TrxID</div>
+                    <div className="font-mono text-sm font-bold text-[#1E3A8A]">{tx.trxId}</div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1">Sender No</div>
+                    <div className="font-mono text-sm text-[#1D2927]">{tx.senderNo}</div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mb-1">Amount</div>
+                    <div className="font-editorial text-xl text-[#1D2927]">৳{tx.amount.toLocaleString()}</div>
+                  </div>
+                </div>
 
-        {/* Table Container */}
-        <div className="rounded-3xl border border-slate-800 bg-slate-950 overflow-hidden shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
-                <tr>
-                  <th className="p-4 w-10">
-                    <input
-                      type="checkbox"
-                      onChange={(e) =>
-                        setSelectedIds(e.target.checked ? filtered.map((i) => i.id) : [])
-                      }
-                      className="rounded border-slate-700"
-                    />
-                  </th>
-                  <th className="p-4">Transaction ID</th>
-                  <th className="p-4">Amount</th>
-                  <th className="p-4">Sender #</th>
-                  <th className="p-4">Method</th>
-                  <th className="p-4">Campaign</th>
-                  <th className="p-4">Time</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-medium">
-                {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-900/60">
-                    <td className="p-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(item.id)}
-                        onChange={() => toggleSelect(item.id)}
-                        className="rounded border-slate-700"
-                      />
-                    </td>
-                    <td className="p-4 font-mono font-bold text-white">{item.trxId}</td>
-                    <td className="p-4 font-extrabold text-[#10B981]">
-                      {formatCurrency(item.amount)}
-                    </td>
-                    <td className="p-4 text-slate-300">{item.senderNumber}</td>
-                    <td className="p-4 capitalize">{item.method}</td>
-                    <td className="p-4 text-slate-300 max-w-xs truncate">{item.campaign}</td>
-                    <td className="p-4 text-slate-400">{item.time}</td>
-                    <td className="p-4">
-                      {item.status === "pending" && (
-                        <Badge variant="pending">⏳ Pending Audit</Badge>
-                      )}
-                      {item.status === "flagged" && (
-                        <Badge variant="accent">🚨 {item.flagReason || "Flagged"}</Badge>
-                      )}
-                      {item.status === "approved" && (
-                        <Badge variant="active">✅ Verified</Badge>
-                      )}
-                    </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-950/60 text-[#10B981] hover:bg-[#10B981] hover:text-white transition-colors"
-                          title="Approve"
-                        >
-                          <CheckCircle2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-950/60 text-red-400 hover:bg-red-600 hover:text-white transition-colors"
-                          title="Reject"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </Container>
+                {/* Context & Actions */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto shrink-0 border-t lg:border-t-0 lg:border-l border-[#D9D3C7] pt-4 lg:pt-0 lg:pl-6">
+                  <div className="text-left lg:text-right hidden sm:block">
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] truncate max-w-[150px]">{tx.campaignName}</div>
+                    <div className="font-mono text-[9px] text-[#8C7A5B]">{tx.time}</div>
+                  </div>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <button 
+                      onClick={() => handleAction(tx.id, 'approve')}
+                      className="flex-1 sm:flex-none h-10 w-10 bg-[#10B981] text-white hover:bg-[#059669] flex items-center justify-center transition-colors shadow-sm"
+                      title="Approve"
+                    >
+                      <Check className="h-5 w-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleAction(tx.id, 'reject')}
+                      className="flex-1 sm:flex-none h-10 w-10 border border-red-200 text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors"
+                      title="Reject"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+              </PaperLift>
+            </FadeIn>
+          ))
+        )}
+      </div>
     </div>
   );
 }

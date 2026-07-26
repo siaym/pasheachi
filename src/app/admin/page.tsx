@@ -1,151 +1,163 @@
 "use client";
 
-import Link from "next/link";
-import { Container } from "@/components/layout/container";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { FadeIn, PaperLift } from "@/components/ui/motion";
+import { formatCurrency } from "@/lib/utils";
 import {
-  ShieldCheck,
-  FileSpreadsheet,
-  Users,
-  Rocket,
   Wallet,
-  TrendingUp,
-  AlertTriangle,
-  ArrowRight,
+  Users,
+  Megaphone,
   CheckCircle2,
+  TrendingUp,
+  ShieldAlert,
+  ArrowRight
 } from "lucide-react";
+import Link from "next/link";
 
-export default function AdminDashboardPage() {
+export default function AdminOverviewPage() {
+  // Mock Admin Metrics
+  const metrics = {
+    revenue: 42500000, // 4.2 Cr
+    activeCampaigns: 1247,
+    totalUsers: 15832,
+    verificationRate: 99.2,
+  };
+
   return (
-    <div className="page-shell py-8 sm:py-12">
-      <Container variant="wide">
-        {/* Header */}
-        <div className="mb-8 flex flex-col justify-between gap-4 border-b border-[#D9D3C7] pb-6 sm:flex-row sm:items-center">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="verified">Admin Console</Badge>
-              <span className="text-xs text-slate-400">PasheAchi Operations</span>
-            </div>
-            <h1 className="mt-2 text-3xl font-bold text-[#1D2927] sm:text-5xl">
-              Admin Overview & Audit Dashboard
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/admin/bulk-checker">
-              <Button size="md" className="font-bold gap-2 bg-[#10B981] hover:bg-[#059669]">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Bulk Transaction Checker</span>
-              </Button>
-            </Link>
-            <Link href="/admin/verification">
-              <Button size="md" variant="secondary" className="font-bold gap-2 text-slate-900 bg-white">
-                <ShieldCheck className="h-4 w-4 text-[#10B981]" />
-                <span>Verification Queue (23)</span>
-              </Button>
-            </Link>
-          </div>
+    <div className="space-y-12 pb-12">
+      {/* Header */}
+      <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#D9D3C7] pb-6">
+        <div>
+          <h1 className="font-editorial text-4xl sm:text-5xl text-[#1D2927] mb-2">
+            System Overview
+          </h1>
+          <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+            Platform Health & Key Metrics • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
         </div>
+      </FadeIn>
 
-        {/* Admin Navigation Pills */}
-        <div className="mb-8 flex items-center gap-2 overflow-x-auto border-b border-[#D9D3C7] pb-4">
-          <Link href="/admin" className="rounded-lg bg-[#1D2927] px-4 py-2 text-xs font-bold text-white">
-            Overview
-          </Link>
-          <Link href="/admin/verification" className="px-4 py-2 rounded-full text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800">
-            Verification Queue (23)
-          </Link>
-          <Link href="/admin/bulk-checker" className="px-4 py-2 rounded-full text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-1.5">
-            <FileSpreadsheet className="h-3.5 w-3.5 text-[#10B981]" />
-            <span>Bulk Checker</span>
-          </Link>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-10">
-          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 space-y-2">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-              <span>Platform Revenue</span>
-              <Wallet className="h-4 w-4 text-[#10B981]" />
-            </div>
-            <div className="text-3xl font-extrabold text-white">৳4.2 Cr+</div>
-            <span className="text-xs text-[#10B981] font-semibold">+18.4% this month</span>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 space-y-2">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-              <span>Total Campaigns</span>
-              <Rocket className="h-4 w-4 text-[#4F46E5]" />
-            </div>
-            <div className="text-3xl font-extrabold text-white">1,247</div>
-            <span className="text-xs text-slate-400 font-semibold">124 pending review</span>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 space-y-2">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-              <span>Total Users</span>
-              <Users className="h-4 w-4 text-[#F59E0B]" />
-            </div>
-            <div className="text-3xl font-extrabold text-white">15,832</div>
-            <span className="text-xs text-[#10B981] font-semibold">+142 new today</span>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 space-y-2">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase">
-              <span>Verification Rate</span>
-              <CheckCircle2 className="h-4 w-4 text-[#10B981]" />
-            </div>
-            <div className="text-3xl font-extrabold text-white">99.2%</div>
-            <span className="text-xs text-slate-400 font-semibold">Avg audit time 1.4 hrs</span>
-          </div>
-        </div>
-
-        {/* Quick Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-          <div className="rounded-3xl border border-emerald-900/50 bg-gradient-to-br from-emerald-950/40 to-slate-950 p-8 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#10B981]/20 text-[#10B981]">
-                <FileSpreadsheet className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Bulk Transaction Checker</h3>
-                <p className="text-xs text-slate-400">Match CSV/Excel bank statements instantly</p>
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <FadeIn delay={0.1}>
+          <PaperLift className="bg-[#FAF8F3] border border-[#1E3A8A] p-6 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1E3A8A] mb-2 block flex items-center gap-2">
+                <Wallet className="h-3.5 w-3.5" /> Platform Revenue
+              </span>
+              <div className="font-editorial text-3xl text-[#1D2927] mb-1">
+                {formatCurrency(metrics.revenue)}
               </div>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Upload statements from bKash, Nagad, or Rocket to automatically match Transaction ID, Amount, Receiver Number, and Time Window across pending donations.
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#10B981] flex items-center gap-1.5 mt-4">
+              <TrendingUp className="h-3 w-3" /> +18.4% this month
             </p>
-            <Link href="/admin/bulk-checker" className="inline-block">
-              <Button size="md" className="font-bold gap-2 bg-[#10B981] hover:bg-[#059669]">
-                <span>Open Bulk Checker</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          </PaperLift>
+        </FadeIn>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-950 p-8 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-[#818CF8]">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Manual Verification Queue</h3>
-                <p className="text-xs text-slate-400">Review pending user transactions</p>
+        <FadeIn delay={0.15}>
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] mb-2 block flex items-center gap-2">
+                <Megaphone className="h-3.5 w-3.5" /> Total Campaigns
+              </span>
+              <div className="font-editorial text-3xl text-[#1D2927] mb-1">
+                {metrics.activeCampaigns.toLocaleString()}
               </div>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Audit individual transactions submitted by donors. Approve valid payments, flag duplicate Transaction IDs, or reject mismatched numbers.
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#A84D2A] mt-4">
+              12 pending review
             </p>
-            <Link href="/admin/verification" className="inline-block">
-              <Button size="md" variant="secondary" className="font-bold gap-2 text-slate-900 bg-white">
-                <span>View Queue (23 Pending)</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          </PaperLift>
+        </FadeIn>
+
+        <FadeIn delay={0.2}>
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] mb-2 block flex items-center gap-2">
+                <Users className="h-3.5 w-3.5" /> Total Users
+              </span>
+              <div className="font-editorial text-3xl text-[#1D2927] mb-1">
+                {metrics.totalUsers.toLocaleString()}
+              </div>
+            </div>
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#10B981] mt-4">
+              +142 new today
+            </p>
+          </PaperLift>
+        </FadeIn>
+
+        <FadeIn delay={0.25}>
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C] mb-2 block flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Verification Rate
+              </span>
+              <div className="font-editorial text-3xl text-[#1D2927] mb-1">
+                {metrics.verificationRate}%
+              </div>
+            </div>
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
+              Avg audit time 1.4 hrs
+            </p>
+          </PaperLift>
+        </FadeIn>
+      </div>
+
+      {/* Priority Action Cards */}
+      <FadeIn delay={0.3}>
+        <h2 className="font-editorial text-2xl text-[#1D2927] border-b border-[#D9D3C7] pb-2 mb-6">
+          Needs Attention
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <PaperLift className="bg-[#F8FAFC] border-2 border-red-200 p-8 flex flex-col items-start gap-4 shadow-sm relative overflow-hidden">
+            <div className="absolute -right-8 -top-8 opacity-5">
+              <ShieldAlert className="w-48 h-48 text-red-600" />
+            </div>
+            <div className="relative z-10 space-y-4 w-full flex flex-col h-full">
+              <div>
+                <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 mb-2">
+                  <ShieldAlert className="h-4 w-4" /> 23 Pending
+                </div>
+                <h3 className="font-editorial text-2xl text-[#1D2927]">Verification Queue</h3>
+                <p className="text-sm text-[#53605C] mt-2 leading-relaxed max-w-sm">
+                  Audit individual transactions submitted by donors. Approve valid payments or reject mismatched IDs.
+                </p>
+              </div>
+              
+              <div className="mt-auto pt-4">
+                <Link href="/admin/verification" className="inline-flex h-10 px-6 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest items-center gap-2 hover:bg-red-700 transition-colors">
+                  Process Queue <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </PaperLift>
+
+          <PaperLift className="bg-[#EFF6FF] border-2 border-[#1E3A8A] p-8 flex flex-col items-start gap-4 shadow-[4px_4px_0_0_#1E3A8A] relative overflow-hidden">
+            <div className="absolute -right-8 -top-8 opacity-5">
+              <Megaphone className="w-48 h-48 text-[#1E3A8A]" />
+            </div>
+            <div className="relative z-10 space-y-4 w-full flex flex-col h-full">
+              <div>
+                <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#1E3A8A] mb-2">
+                  <Megaphone className="h-4 w-4" /> 12 Pending
+                </div>
+                <h3 className="font-editorial text-2xl text-[#1D2927]">Campaign Approvals</h3>
+                <p className="text-sm text-[#53605C] mt-2 leading-relaxed max-w-sm">
+                  Review newly submitted campaigns for policy violations before they go live on the public Discover page.
+                </p>
+              </div>
+              
+              <div className="mt-auto pt-4">
+                <Link href="/admin/campaigns" className="inline-flex h-10 px-6 bg-[#1E3A8A] text-white font-mono text-[10px] font-bold uppercase tracking-widest items-center gap-2 hover:bg-[#1E40AF] transition-colors">
+                  Review Campaigns <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </PaperLift>
         </div>
-      </Container>
+      </FadeIn>
+
     </div>
   );
 }
