@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { SearchClient } from "./client";
+import { Suspense } from "react";
 
 export default async function SearchPage({
   searchParams,
@@ -36,10 +37,12 @@ export default async function SearchPage({
   }
 
   return (
-    <SearchClient 
-      initialQuery={query}
-      campaigns={campaigns}
-      users={users}
-    />
+    <Suspense fallback={<div className="min-h-screen pt-32 pb-20 relative bg-[#FDFBF7]"></div>}>
+      <SearchClient 
+        initialQuery={query}
+        campaigns={campaigns}
+        users={users}
+      />
+    </Suspense>
   );
 }

@@ -40,7 +40,7 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
   const [displayName, setDisplayName] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const availableMethods = ["bkash", "nagad", "rocket", "bank"].filter(
-    (m) => !campaign.paymentDetails || !!(campaign.paymentDetails as any)[m] || (!campaign.paymentDetails && (MFS_NUMBERS as any)[m])
+    (m) => !(campaign as any).paymentDetails || !!((campaign as any).paymentDetails as any)[m] || (!(campaign as any).paymentDetails && (MFS_NUMBERS as any)[m])
   );
   
   const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | "rocket" | "bank">(
@@ -58,8 +58,8 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
   const currentAmount = customAmount ? Number(customAmount) || 0 : amount;
 
   const getPaymentNumber = (method: string) => {
-    if (campaign.paymentDetails && (campaign.paymentDetails as any)[method]) {
-      return (campaign.paymentDetails as any)[method];
+    if ((campaign as any).paymentDetails && ((campaign as any).paymentDetails as any)[method]) {
+      return ((campaign as any).paymentDetails as any)[method];
     }
     return (MFS_NUMBERS as any)[method];
   };

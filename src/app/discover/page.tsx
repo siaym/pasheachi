@@ -6,6 +6,7 @@ import { CATEGORIES } from "@/lib/constants";
 import { FadeIn, RevealText, PaperLift, InkDivider } from "@/components/ui/motion";
 import { SearchBar } from "@/components/discover/search-bar";
 import { Filter, FolderOpen, RotateCcw } from "lucide-react";
+import { Suspense } from "react";
 
 export default async function DiscoverPage({
   searchParams,
@@ -59,7 +60,9 @@ export default async function DiscoverPage({
 
         {/* Search & Filter Bar (Typed Paper Style) */}
         <FadeIn delay={0.3} className="mb-12">
-          <SearchBar />
+          <Suspense fallback={<div className="h-12 w-full animate-pulse bg-gray-100 rounded-lg"></div>}>
+            <SearchBar />
+          </Suspense>
 
           {/* Category Filters (Ink-stamped Pills) */}
           <div className="mt-8 flex flex-wrap items-center gap-3">

@@ -1,6 +1,6 @@
 import { Campaign, User, SuccessStory } from "@/types";
 
-export const MOCK_USERS: Record<string, User> = {
+export const MOCK_USERS: Record<string, any> = {
   siyam: {
     id: "usr-1",
     name: "Siyam Ahmed",
@@ -62,7 +62,7 @@ export const MOCK_USERS: Record<string, User> = {
   },
 };
 
-export const MOCK_CAMPAIGNS: Campaign[] = [
+export const MOCK_CAMPAIGNS: any[] = [
   {
     id: "cmp-1",
     title: "Help Rina's Mother Get Urgent Cardiac Surgery",

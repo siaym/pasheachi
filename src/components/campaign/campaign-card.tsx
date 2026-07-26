@@ -77,7 +77,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             className="flex items-center gap-1 hover:text-[#A84D2A] transition-colors"
           >
             <span>{campaign.creator.username}</span>
-            {campaign.creator.verified && <CheckCircle2 className="h-3 w-3 text-[#A84D2A]" />}
+            <CheckCircle2 className="h-3 w-3 text-[#A84D2A]" />
           </Link>
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3 text-[#8C7A5B]" />

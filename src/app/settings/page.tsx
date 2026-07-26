@@ -26,8 +26,8 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState({
     name: user.name,
     username: user.username,
-    bio: user.bio,
-    location: user.location,
+    bio: user.bio || "",
+    location: user.location || "",
     website: "",
   });
 
