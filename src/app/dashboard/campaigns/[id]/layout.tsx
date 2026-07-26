@@ -62,9 +62,9 @@ export default async function CampaignWorkspaceLayout({
             </h1>
           </div>
           
-          <button className="h-10 px-4 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors flex items-center gap-2 shrink-0">
+          <Link href={`/@${campaign.creator.username}/${campaign.slug}`} target="_blank" className="h-10 px-4 border border-[#1D2927] text-[#1D2927] font-bold text-xs uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors flex items-center gap-2 shrink-0">
             View Public Page <ExternalLink className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
       </FadeIn>
 

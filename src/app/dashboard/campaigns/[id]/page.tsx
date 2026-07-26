@@ -37,7 +37,7 @@ export default async function CampaignOverviewPage({
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block flex items-center gap-2">
               <TrendingUp className="h-3.5 w-3.5" /> Total Raised
             </span>
-            <div className="font-editorial text-4xl text-[#1D2927] mb-1">
+            <div className="font-sans font-medium tracking-tight text-4xl text-[#1D2927] mb-1">
               {formatCurrency(campaign.raisedAmount)}
             </div>
           </div>
@@ -60,7 +60,7 @@ export default async function CampaignOverviewPage({
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block flex items-center gap-2">
               <ShieldCheck className="h-3.5 w-3.5" /> Verified Funds
             </span>
-            <div className="font-editorial text-4xl text-[#1D2927] mb-1">
+            <div className="font-sans font-medium tracking-tight text-4xl text-[#1D2927] mb-1">
               {formatCurrency(campaign.raisedAmount * 0.9)} {/* Mock calculation */}
             </div>
           </div>
@@ -77,7 +77,7 @@ export default async function CampaignOverviewPage({
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block flex items-center gap-2">
               <Users className="h-3.5 w-3.5" /> Supporters
             </span>
-            <div className="font-editorial text-4xl text-[#1D2927] mb-1">
+            <div className="font-sans font-medium tracking-tight text-4xl text-[#1D2927] mb-1">
               {campaign.transactions?.length || 0}
             </div>
             <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
