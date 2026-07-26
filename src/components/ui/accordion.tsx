@@ -22,14 +22,14 @@ export function AccordionItem({
     <div className="border-b border-[#D9D3C7] py-4 transition-colors">
       <button
         type="button"
-        className="flex w-full items-center justify-between py-2 text-left transition-all hover:text-[#A84D2A] text-[#1D2927] group"
+        className="flex w-full items-start sm:items-center justify-between py-2 text-left transition-all hover:text-[#A84D2A] text-[#1D2927] group gap-4"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span className="font-editorial text-xl sm:text-2xl transition-colors">
+        <span className="font-editorial text-xl sm:text-2xl transition-colors pr-4">
           {question}
         </span>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#1D2927] group-hover:border-[#A84D2A] group-hover:bg-[#FAF8F3] transition-all duration-300">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#1D2927] group-hover:border-[#A84D2A] group-hover:bg-[#FAF8F3] transition-all duration-300 mt-1 sm:mt-0">
           {isOpen ? (
             <Minus className="h-4 w-4 text-[#A84D2A]" />
           ) : (

@@ -12,7 +12,7 @@ export function Navbar() {
   const pathname = usePathname();
   
   const { scrollY } = useScroll();
-  const smoothScrollY = useSpring(scrollY, { stiffness: 100, damping: 20, mass: 0.5 });
+  const smoothScrollY = useSpring(scrollY, { stiffness: 60, damping: 25, mass: 0.5 });
   
   // Morphing values based on smooth scroll
   // Width shrinks slightly on desktop to become a compact pill
@@ -80,14 +80,14 @@ export function Navbar() {
           <Logo />
 
           {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center lg:gap-4 xl:gap-8">
             {navLinks.map((link) => {
               const active = pathname === link.href || (pathname === '/' && link.href.includes('#') && false); // Simplified active state for hash links
               return (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`relative text-xs font-bold uppercase tracking-widest transition-colors ${
+                  className={`relative text-[10px] xl:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${
                     active ? "text-[#A84D2A]" : "text-[#1D2927] hover:text-[#A84D2A]"
                   }`}
                 >
@@ -147,8 +147,8 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 10, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="lg:hidden rounded-2xl border border-[#1D2927] bg-[#FAF8F3]/85 backdrop-blur-3xl p-6 shadow-paper mt-2"
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="lg:hidden rounded-2xl border border-[#1D2927] bg-[#FAF8F3]/95 backdrop-blur-[24px] p-6 shadow-[0_24px_48px_-12px_rgba(29,41,39,0.3)] mt-2"
             >
               <nav className="flex flex-col gap-6 text-center">
                 {navLinks.map((link) => (

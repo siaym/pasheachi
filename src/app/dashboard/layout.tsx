@@ -43,7 +43,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen pt-32 pb-20 sm:pb-32 bg-[#F8FAFC]">
+    <div className="min-h-screen pt-40 pb-20 sm:pb-32 bg-[#F8FAFC]">
       <Container variant="wide">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           
