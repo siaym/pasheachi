@@ -123,7 +123,7 @@ export default async function MyCampaignsPage({
                       <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
                         <span className="text-[#10B981] font-bold">✓ Verified</span>
                         <span>•</span>
-                        <span>{cmp.daysLeft} Days Left</span>
+                        <span>30 Days Left</span>
                         <span>•</span>
                         <span>{cmp.transactions?.length || 0} Supporters</span>
                       </div>

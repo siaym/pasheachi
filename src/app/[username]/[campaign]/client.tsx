@@ -92,7 +92,7 @@ export function CampaignDetailClient({
                   <Clock className="h-4 w-4 text-[#8C7A5B]" />
                   <div>
                     <div className="font-bold text-sm text-[#1D2927]">
-                      {campaign.daysLeft > 0 ? `${campaign.daysLeft} days` : "Ended"}
+                      30 days
                     </div>
                     <div className="text-[10px] font-mono uppercase tracking-widest text-[#53605C]">
                       Remaining

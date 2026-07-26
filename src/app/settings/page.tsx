@@ -28,7 +28,7 @@ export default function SettingsPage() {
     username: user.username,
     bio: user.bio,
     location: user.location,
-    website: user.socialLinks?.website || "",
+    website: "",
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -105,7 +105,7 @@ export default function SettingsPage() {
 
                   {/* Avatar Upload */}
                   <div className="flex items-center gap-4">
-                    <Avatar src={user.avatarUrl} name={user.name} size="xl" />
+                    <Avatar src={user.avatarUrl || undefined} name={user.name} size="xl" />
                     <div>
                       <Button size="sm" variant="secondary" type="button" className="font-bold text-xs">
                         Change Photo

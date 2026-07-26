@@ -48,7 +48,7 @@ export default async function DashboardPage() {
   let pendingDonations = 0;
   let totalSupporters = 0;
 
-  user.campaigns.forEach(campaign => {
+  userData.campaigns.forEach(campaign => {
     totalRaised += campaign.raisedAmount;
     
     const uniqueSupporters = new Set();
