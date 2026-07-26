@@ -83,6 +83,11 @@ Every single contribution—no matter how small—will bring us one step closer 
     isFeatured: true,
     isPinned: true,
     status: "active",
+    paymentDetails: {
+      bkash: "01712345678 (Personal)",
+      nagad: "01912345678 (Personal)",
+      bank: "Rina Akter\nAcc: 123456789\nDutch Bangla Bank\nMirpur Branch",
+    },
     createdAt: "2026-07-10",
     milestones: [
       { id: "m-1", title: "Diagnostic Tests & Pre-Op Prep", amount: 10000, completed: true },

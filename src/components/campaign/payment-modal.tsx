@@ -28,10 +28,23 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [amount, setAmount] = useState<number>(campaign.campaignType === "fixed" ? (campaign.fixedAmount || 0) : 250);
   const [customAmount, setCustomAmount] = useState<string>("");
+
+  const MFS_NUMBERS = {
+    bkash: "01712345678",
+    nagad: "01912345678",
+    rocket: "01812345678",
+    bank: "DBBL Acc: 123-456-7890 (PasheAchi BD)",
+  };
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [displayName, setDisplayName] = useState<string>("");
   const [message, setMessage] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | "rocket" | "bank">("bkash");
+  const availableMethods = ["bkash", "nagad", "rocket", "bank"].filter(
+    (m) => !campaign.paymentDetails || !!(campaign.paymentDetails as any)[m] || (!campaign.paymentDetails && (MFS_NUMBERS as any)[m])
+  );
+  
+  const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | "rocket" | "bank">(
+    (availableMethods[0] as "bkash" | "nagad" | "rocket" | "bank") || "bkash"
+  );
 
   // Transaction form states
   const [trxId, setTrxId] = useState<string>("");
@@ -43,15 +56,15 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
 
   const currentAmount = customAmount ? Number(customAmount) || 0 : amount;
 
-  const MFS_NUMBERS = {
-    bkash: "01712345678",
-    nagad: "01912345678",
-    rocket: "01812345678",
-    bank: "DBBL Acc: 123-456-7890 (PasheAchi BD)",
+  const getPaymentNumber = (method: string) => {
+    if (campaign.paymentDetails && (campaign.paymentDetails as any)[method]) {
+      return (campaign.paymentDetails as any)[method];
+    }
+    return (MFS_NUMBERS as any)[method];
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(MFS_NUMBERS[paymentMethod]);
+    navigator.clipboard.writeText(getPaymentNumber(paymentMethod));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -230,7 +243,7 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
                   { id: "nagad", name: "Nagad Send Money", desc: "Personal account transfer", icon: Smartphone },
                   { id: "rocket", name: "Rocket Send Money", desc: "Personal account transfer", icon: Smartphone },
                   { id: "bank", name: "Direct Bank Transfer", desc: "DBBL / City Bank transfer", icon: Building },
-                ].map((m) => {
+                ].filter(m => availableMethods.includes(m.id)).map((m) => {
                   const Icon = m.icon;
                   const selected = paymentMethod === m.id;
                   return (
@@ -303,8 +316,8 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
 
                 {/* Number Copy Box */}
                 <div className="flex items-center justify-between bg-[#EAE5DB] px-4 py-3 border border-[#D9D3C7]">
-                  <span className="font-mono text-base font-bold text-[#1D2927]">
-                    {MFS_NUMBERS[paymentMethod]}
+                  <span className="font-mono text-xs sm:text-sm font-bold text-[#1D2927] whitespace-pre-wrap text-left">
+                    {getPaymentNumber(paymentMethod)}
                   </span>
                   <button
                     type="button"

@@ -42,6 +42,11 @@ export default function CreateCampaignPage() {
   const [story, setStory] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
 
+  // Payment states
+  const [bkashNumber, setBkashNumber] = useState("");
+  const [nagadNumber, setNagadNumber] = useState("");
+  const [bankDetails, setBankDetails] = useState("");
+
   const calculatedGoal = campaignType === "fixed" && fixedAmount && targetParticipants 
     ? (Number(fixedAmount) * Number(targetParticipants)).toString() 
     : goalAmount;
@@ -387,30 +392,52 @@ export default function CreateCampaignPage() {
                       <CreditCard className="h-6 w-6" /> Payment Information
                     </h3>
                     <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-8">
-                      PasheAchi collects funds securely and holds them until withdrawal is requested.
+                      PasheAchi does not collect funds directly. Donors will send money directly to the accounts you provide below.
                     </p>
 
                     <div className="space-y-6">
-                      <div>
-                        <h4 className="font-bold text-sm text-[#1D2927] mb-2">Supported Payment Methods</h4>
-                        <div className="flex gap-2">
-                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">bKash</span>
-                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">Nagad</span>
-                          <span className="px-3 py-1 bg-[#EAE5DB] border border-[#D9D3C7] font-mono text-[10px] uppercase tracking-widest">Bank Transfer</span>
-                        </div>
+                      <div className="space-y-4">
+                        <label className="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
+                          bKash Personal Number (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={bkashNumber}
+                          onChange={(e) => setBkashNumber(e.target.value)}
+                          placeholder="e.g. 01700000000"
+                          className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] px-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
+                        />
                       </div>
 
-                      <div>
-                        <h4 className="font-bold text-sm text-[#1D2927] mb-2">Verification Process</h4>
-                        <p className="text-sm text-[#53605C] leading-relaxed">
-                          Once a donor makes a payment, it enters a "Pending" state. Our system verifies the transaction reference with the payment gateway. Once verified, the funds are added to your "Verified Balance" and can be requested for withdrawal. A standard 5% platform fee applies to verified funds.
-                        </p>
+                      <div className="space-y-4">
+                        <label className="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
+                          Nagad Personal Number (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={nagadNumber}
+                          onChange={(e) => setNagadNumber(e.target.value)}
+                          placeholder="e.g. 01900000000"
+                          className="h-12 w-full border border-[#D9D3C7] bg-[#F7F4ED] px-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all"
+                        />
                       </div>
 
-                      <div className="bg-[#EAE5DB] p-4 border-l-4 border-[#A84D2A]">
-                        <h4 className="font-bold text-sm text-[#1D2927] mb-1">Campaign Instructions</h4>
+                      <div className="space-y-4">
+                        <label className="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
+                          Bank Account Details (Optional)
+                        </label>
+                        <textarea
+                          value={bankDetails}
+                          onChange={(e) => setBankDetails(e.target.value)}
+                          placeholder="Account Name:&#10;Account Number:&#10;Bank Name:&#10;Branch:"
+                          className="h-24 w-full border border-[#D9D3C7] bg-[#F7F4ED] p-4 font-mono text-sm text-[#1D2927] placeholder:text-[#8C7A5B] focus:border-[#1D2927] focus:outline-none focus:ring-1 focus:ring-[#1D2927] transition-all resize-none"
+                        />
+                      </div>
+
+                      <div className="bg-[#EAE5DB] p-4 border-l-4 border-[#A84D2A] mt-6">
+                        <h4 className="font-bold text-sm text-[#1D2927] mb-1">Important Instruction</h4>
                         <p className="text-xs text-[#53605C]">
-                          No further setup is required on your part. A 'Donate Now' button will automatically be added to your public campaign page, handling the entire checkout process.
+                          You must provide at least one valid payment method. Donors will see these details and transfer money directly to you, then upload a transaction ID to our platform for verification.
                         </p>
                       </div>
                     </div>
@@ -503,11 +530,12 @@ export default function CreateCampaignPage() {
                   type="button"
                   onClick={() => setStep((s) => (s + 1) as any)}
                   disabled={
-                    step === 1 &&
-                    (!title ||
-                      !subtitle ||
-                      (campaignType === "flexible" && !goalAmount) ||
-                      (campaignType === "fixed" && (!fixedAmount || !targetParticipants)))
+                    (step === 1 &&
+                      (!title ||
+                        !subtitle ||
+                        (campaignType === "flexible" && !goalAmount) ||
+                        (campaignType === "fixed" && (!fixedAmount || !targetParticipants)))) ||
+                    (step === 4 && !bkashNumber && !nagadNumber && !bankDetails)
                   }
                   className="h-12 px-8 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink disabled:opacity-50 disabled:cursor-not-allowed"
                 >

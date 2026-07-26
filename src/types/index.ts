@@ -72,6 +72,11 @@ export interface Campaign {
   campaignType?: "flexible" | "fixed";
   fixedAmount?: number;
   status: "active" | "completed" | "pending" | "draft";
+  paymentDetails?: {
+    bkash?: string;
+    nagad?: string;
+    bank?: string;
+  };
   milestones?: Milestone[];
   createdAt: string;
 }
