@@ -98,7 +98,18 @@ export function Navbar({ user }: { user?: User | null }) {
                   <UserIcon className="h-3 w-3" />
                   <span>@{user.username}</span>
                 </Link>
+
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    title="Log Out"
+                    className="p-1.5 rounded-full border border-[#D9D3C7] text-[#A84D2A] hover:bg-[#FDF4F0] transition-colors"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                  </button>
+                </form>
               </div>
+
             ) : (
               <Link href="/login" className="hidden sm:inline-block text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors relative">
                 <span className="ink-underline">Sign In</span>

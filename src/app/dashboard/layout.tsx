@@ -16,15 +16,18 @@ import {
   Rss,
   LineChart,
   MessageSquare,
-  User
+  User,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutAction } from "../(auth)/actions";
+import { useTransition } from "react";
 
 const DASHBOARD_NAV = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "My Campaigns", href: "/dashboard/campaigns", icon: Megaphone },
   { name: "Create Campaign", href: "/create", icon: PlusCircle },
-  { name: "Supporters", href: "/dashboard/supporters", icon: Users },
+  { name: "Supporters CRM", href: "/dashboard/donors", icon: Users },
   { name: "Donations", href: "/dashboard/donations", icon: Heart },
   { name: "Updates", href: "/dashboard/updates", icon: Rss },
   { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
@@ -41,6 +44,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await logoutAction();
+    });
+  };
 
   return (
     <div className="min-h-screen pt-40 pb-20 sm:pb-32 bg-[#F8FAFC]">
@@ -73,6 +83,16 @@ export default function DashboardLayout({
                     </Link>
                   );
                 })}
+
+                {/* Explicit Log Out Button */}
+                <button
+                  onClick={handleLogout}
+                  disabled={isPending}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-bold tracking-wide transition-all whitespace-nowrap text-[#A84D2A] hover:bg-[#FDF4F0] border-t border-[#D9D3C7] mt-2 text-left w-full disabled:opacity-50"
+                >
+                  <LogOut className="h-4 w-4 text-[#A84D2A]" />
+                  {isPending ? "Logging out..." : "Log Out"}
+                </button>
               </nav>
             </FadeIn>
           </div>

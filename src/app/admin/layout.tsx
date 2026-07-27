@@ -17,6 +17,8 @@ import {
   Sliders,
   Users
 } from "lucide-react";
+import { logoutAction } from "../(auth)/actions";
+
 
 export default function BackOfficeLayout({
   children,
@@ -115,6 +117,15 @@ export default function BackOfficeLayout({
               <span className="font-bold text-[#A84D2A]">SuperAdmin</span>
               <span className="text-[10px] text-[#D9D3C7] hidden sm:inline">(saifulsiam10000@gmail.com)</span>
             </div>
+
+            <button
+              onClick={() => logoutAction()}
+              title="Log Out"
+              className="p-1.5 hover:bg-[#A84D2A] text-[#F7F4ED] transition-colors border border-[#53605C] ml-2"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+
 
           </div>
         </Container>
