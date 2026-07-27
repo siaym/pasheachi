@@ -113,8 +113,9 @@ export default function BackOfficeLayout({
 
             <div className="flex items-center gap-2 font-mono text-xs text-[#F7F4ED] border-l border-[#53605C] pl-3">
               <span className="font-bold text-[#A84D2A]">SuperAdmin</span>
-              <span className="text-[10px] text-[#D9D3C7] hidden sm:inline">(Siyam)</span>
+              <span className="text-[10px] text-[#D9D3C7] hidden sm:inline">(saifulsiam10000@gmail.com)</span>
             </div>
+
           </div>
         </Container>
       </div>

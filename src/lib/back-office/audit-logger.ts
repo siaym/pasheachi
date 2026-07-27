@@ -19,8 +19,9 @@ const MEMORY_AUDIT_LOGS: AuditLogEntry[] = [
     id: "LOG-9081",
     timestamp: "2026-07-27 18:45:12",
     actorName: "Siyam Ahmed",
-    actorEmail: "siyam@pasheachi.bro.bd",
+    actorEmail: "saifulsiam10000@gmail.com",
     actorRole: "SuperAdmin",
+
     action: "VERIFY_TRANSACTION",
     resourceType: "Transaction",
     resourceId: "TRX-9F2A1B",

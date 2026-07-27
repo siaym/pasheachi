@@ -70,7 +70,7 @@ export default function AdminWorkspacePage() {
     setTransactions(prev => prev.map(t => t.id === id ? { ...t, status: "VERIFIED" } : t));
     logAuditEvent({
       actorName: "Siyam Ahmed",
-      actorEmail: "siyam@pasheachi.bro.bd",
+      actorEmail: "saifulsiam10000@gmail.com",
       actorRole: "SuperAdmin",
       action: "MANUAL_MFS_VERIFY",
       resourceType: "Transaction",
@@ -89,7 +89,7 @@ export default function AdminWorkspacePage() {
     setCampaigns(prev => prev.filter(c => c.id !== id));
     logAuditEvent({
       actorName: "Siyam Ahmed",
-      actorEmail: "siyam@pasheachi.bro.bd",
+      actorEmail: "saifulsiam10000@gmail.com",
       actorRole: "Moderator",
       action: "APPROVE_CAMPAIGN",
       resourceType: "Campaign",
