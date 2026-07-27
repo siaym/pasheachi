@@ -12,10 +12,11 @@ export default async function UserProfilePage({
   const decodedUsername = decodeURIComponent(username);
   const cleanUsername = decodedUsername.replace(/^@/, "").toLowerCase();
 
-  // Canonical URL redirection (e.g., /siyam or /Siyam -> /@siyam)
-  if (decodedUsername !== `@${cleanUsername}`) {
-    redirect(`/@${cleanUsername}`);
+  // Canonical URL redirection (e.g., /@siyam or /Siyam -> /siyam)
+  if (decodedUsername !== cleanUsername) {
+    redirect(`/${cleanUsername}`);
   }
+
   
   // Fetch user from DB
   const user = await prisma.user.findUnique({

@@ -40,11 +40,12 @@ export function UserProfileClient({
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(`${window.location.origin}/@${user.username}`);
+      navigator.clipboard.writeText(`${window.location.origin}/${user.username}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
 
   return (
     <div className="min-h-screen pb-20 pt-20">
@@ -135,12 +136,13 @@ export function UserProfileClient({
           <div className="flex items-center gap-3 w-full sm:w-auto sm:self-end sm:pb-4">
             {activeCampaigns.length > 0 && (
               <a
-                href={`/@${user.username}/${activeCampaigns[0].slug}`}
+                href={`/${user.username}/${activeCampaigns[0].slug}`}
                 className="h-10 px-6 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink active:scale-[0.98]"
               >
                 <Heart className="h-3 w-3" /> Support Cause
               </a>
             )}
+
             <button
               onClick={handleShare}
               className="h-10 px-4 border border-[#D9D3C7] bg-transparent text-[#1D2927] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all active:scale-[0.98]"

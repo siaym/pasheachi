@@ -81,7 +81,7 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
 
                 {/* Story Title & Description */}
                 <div className="py-6 flex-1">
-                  <Link href={`/@${campaign.creator.username}/${campaign.slug}`}>
+                  <Link href={`/${campaign.creator.username}/${campaign.slug}`}>
                     <h3 className="font-editorial text-2xl font-medium leading-snug text-[#1D2927] transition-colors group-hover:text-[#A84D2A]">
                       {campaign.title}
                     </h3>
@@ -116,7 +116,7 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
                 {/* Action Link */}
                 <div className="mt-8">
                   <Link
-                    href={`/@${campaign.creator.username}/${campaign.slug}`}
+                    href={`/${campaign.creator.username}/${campaign.slug}`}
                     className="inline-flex items-center justify-between w-full h-12 px-6 border border-[#1D2927] text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors"
                   >
                     <span>Read Full Story</span>

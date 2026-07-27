@@ -73,7 +73,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         {/* Creator Info & Time Left */}
         <div className="mb-3 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-[#53605C]">
           <Link
-            href={`/@${campaign.creator.username}`}
+            href={`/${campaign.creator.username}`}
             className="flex items-center gap-1 hover:text-[#A84D2A] transition-colors"
           >
             <span>{campaign.creator.username}</span>
@@ -86,7 +86,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         </div>
 
         {/* Title */}
-        <Link href={`/@${campaign.creator.username}/${campaign.slug}`}>
+        <Link href={`/${campaign.creator.username}/${campaign.slug}`}>
           <h3 className="line-clamp-2 font-editorial text-2xl leading-tight text-[#1D2927] transition-colors group-hover:text-[#A84D2A] mb-4">
             {campaign.title}
           </h3>
@@ -118,11 +118,12 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
             <AvatarStack count={campaign.transactions?.length || 0} />
           </div>
 
-          <Link href={`/@${campaign.creator.username}/${campaign.slug}`} className="flex-1">
+          <Link href={`/${campaign.creator.username}/${campaign.slug}`} className="flex-1">
             <button className="w-full h-10 border border-[#1D2927] bg-transparent text-[#1D2927] font-bold text-[10px] uppercase tracking-widest transition-all hover:bg-[#1D2927] hover:text-[#F7F4ED] hover:shadow-ink active:scale-[0.98]">
               Support Dream
             </button>
           </Link>
+
         </div>
       </div>
     </PaperLift>

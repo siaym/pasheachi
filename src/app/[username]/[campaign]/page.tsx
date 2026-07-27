@@ -11,10 +11,11 @@ export default async function CampaignDetailPage({
   const decodedUsername = decodeURIComponent(username);
   const cleanUsername = decodedUsername.replace(/^@/, "").toLowerCase();
 
-  // Canonical URL redirection (e.g., /siyam/help-rina -> /@siyam/help-rina)
-  if (decodedUsername !== `@${cleanUsername}`) {
-    redirect(`/@${cleanUsername}/${campaignSlug}`);
+  // Canonical URL redirection (e.g., /@siyam/test-3329 or /Siyam/test-3329 -> /siyam/test-3329)
+  if (decodedUsername !== cleanUsername) {
+    redirect(`/${cleanUsername}/${campaignSlug}`);
   }
+
 
   const campaign = await prisma.campaign.findFirst({
     where: { 

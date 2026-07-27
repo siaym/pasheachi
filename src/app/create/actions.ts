@@ -119,15 +119,16 @@ export async function createCampaignAction(formData: FormData) {
 
     revalidatePath("/discover");
     revalidatePath("/dashboard");
-    revalidatePath(`/@${user.username}`);
+    revalidatePath(`/${user.username}`);
 
     return { 
       success: true, 
       campaignId: campaign.id,
       slug: campaign.slug,
       creatorUsername: user.username,
-      redirectUrl: `/@${user.username}/${campaign.slug}`
+      redirectUrl: `/${user.username}/${campaign.slug}`
     };
+
   } catch (error: any) {
     console.error("Failed to create campaign:", error);
     return { success: false, error: error.message || "Failed to create campaign." };
