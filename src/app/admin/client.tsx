@@ -6,6 +6,10 @@ import { formatCurrency } from "@/lib/utils";
 import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
 import { AdvancedTable } from "@/components/back-office/advanced-table";
 import { getAuditLogs, logAuditEvent } from "@/lib/back-office/audit-logger";
+import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
+import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
+import { getTasks, completeTask, TaskItem } from "@/lib/back-office/task-engine";
+import { getInternalNotes, addInternalNote, InternalNote } from "@/lib/back-office/internal-notes";
 import {
   Building2,
   Wallet,
@@ -23,7 +27,12 @@ import {
   FileSpreadsheet,
   TrendingUp,
   Globe,
-  Sliders
+  Sliders,
+  Eye,
+  CheckSquare,
+  StickyNote,
+  Layers,
+  ArrowRight
 } from "lucide-react";
 
 export function AdminClientHub({
@@ -35,10 +44,14 @@ export function AdminClientHub({
   initialCampaigns?: any[];
   initialUsers?: any[];
 }) {
-  const [activeTab, setActiveTab] = useState<WorkspaceId>("SUPER_ADMIN");
+  const [activeTab, setActiveTab] = useState<WorkspaceId | "LAUNCHER">("LAUNCHER");
   const [transactions, setTransactions] = useState(initialTransactions);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [auditLogs, setAuditLogs] = useState(getAuditLogs());
+  const [tasks, setTasks] = useState<TaskItem[]>(getTasks());
+  const [isImpersonateOpen, setIsImpersonateOpen] = useState(false);
+  const [selectedNoteEntity, setSelectedNoteEntity] = useState<{ type: string; id: string; title: string } | null>(null);
+  const [noteInput, setNoteInput] = useState("");
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
@@ -85,7 +98,35 @@ export function AdminClientHub({
     showToast(`Campaign ${id} approved and published live!`);
   };
 
+  const handleTaskComplete = (taskId: string) => {
+    completeTask(taskId);
+    setTasks(getTasks());
+    showToast(`Task ${taskId} marked complete!`);
+  };
+
+  const handleAddNote = () => {
+    if (!selectedNoteEntity || !noteInput.trim()) return;
+    addInternalNote({
+      targetType: selectedNoteEntity.type as any,
+      targetId: selectedNoteEntity.id,
+      authorName: "Siyam Ahmed",
+      authorRole: "SuperAdmin",
+      content: noteInput.trim()
+    });
+    setNoteInput("");
+    showToast(`Internal Note added for ${selectedNoteEntity.type} ${selectedNoteEntity.id}`);
+  };
+
   const pendingTxCount = transactions.filter(t => t.status === "pending" || t.status === "PENDING").length;
+  const pendingTaskCount = tasks.filter(t => t.status !== "COMPLETED").length;
+
+  if (activeTab === "LAUNCHER") {
+    return (
+      <div className="space-y-8">
+        <LauncherHub onSelectWorkspace={(wsId) => setActiveTab(wsId)} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-24">
@@ -96,23 +137,137 @@ export function AdminClientHub({
         </div>
       )}
 
+      {/* Impersonation Modal */}
+      <ImpersonationModal isOpen={isImpersonateOpen} onClose={() => setIsImpersonateOpen(false)} users={initialUsers} />
+
+      {/* Internal Note Drawer Overlay */}
+      {selectedNoteEntity && (
+        <div className="fixed inset-0 z-50 bg-[#1D2927]/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#FAF8F3] border-2 border-[#1D2927] p-6 max-w-lg w-full shadow-paper space-y-4 font-mono text-xs">
+            <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
+              <span className="font-bold uppercase tracking-widest text-[#1D2927] flex items-center gap-2">
+                <StickyNote className="h-4 w-4 text-[#A84D2A]" /> Admin Internal Notes ({selectedNoteEntity.type}: {selectedNoteEntity.id})
+              </span>
+              <button onClick={() => setSelectedNoteEntity(null)} className="text-[10px] text-[#8C7A5B] uppercase font-bold">Close</button>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {getInternalNotes(selectedNoteEntity.type, selectedNoteEntity.id).length === 0 ? (
+                <div className="p-4 text-center text-[#8C7A5B]">No private admin notes logged yet.</div>
+              ) : (
+                getInternalNotes(selectedNoteEntity.type, selectedNoteEntity.id).map((n) => (
+                  <div key={n.id} className="p-3 bg-[#F7F4ED] border border-[#D9D3C7] space-y-1">
+                    <div className="flex justify-between text-[10px] text-[#8C7A5B]">
+                      <span>{n.authorName} ({n.authorRole})</span>
+                      <span>{n.timestamp}</span>
+                    </div>
+                    <div className="text-[#1D2927]">{n.content}</div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-[#D9D3C7]">
+              <textarea
+                value={noteInput}
+                onChange={(e) => setNoteInput(e.target.value)}
+                placeholder="Write private internal note (visible only to Back Office admins)..."
+                className="w-full h-20 p-2.5 bg-[#F7F4ED] border border-[#D9D3C7] text-xs focus:outline-none focus:border-[#1D2927]"
+              />
+              <button
+                onClick={handleAddNote}
+                className="h-8 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest"
+              >
+                Log Internal Note
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Workspace Tabs Header Bar */}
-      <div className="flex flex-wrap gap-2 bg-[#FAF8F3] border border-[#D9D3C7] p-2 overflow-x-auto hide-scrollbar">
-        {(Object.keys(WORKSPACES) as WorkspaceId[]).map((wsKey) => {
-          const ws = WORKSPACES[wsKey];
-          const isSelected = activeTab === wsKey;
-          const Icon = ws.icon;
-          return (
-            <button
-              key={wsKey}
-              onClick={() => setActiveTab(wsKey)}
-              className={`px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border transition-all ${isSelected ? 'bg-[#1D2927] text-[#FAF8F3] border-[#1D2927] shadow-sm' : 'bg-[#F7F4ED] text-[#53605C] border-transparent hover:border-[#D9D3C7] hover:text-[#1D2927]'}`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span>{ws.shortName}</span>
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF8F3] border border-[#D9D3C7] p-2">
+        <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+          <button
+            onClick={() => setActiveTab("LAUNCHER")}
+            className="px-3 py-2 bg-[#FAF8F3] border border-[#1D2927] font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927] hover:bg-[#1D2927] hover:text-[#FAF8F3] transition-colors flex items-center gap-1.5"
+          >
+            <Layers className="h-3.5 w-3.5 text-[#A84D2A]" /> Launcher
+          </button>
+
+          {(Object.keys(WORKSPACES) as WorkspaceId[]).map((wsKey) => {
+            const ws = WORKSPACES[wsKey];
+            const isSelected = activeTab === wsKey;
+            const Icon = ws.icon;
+            return (
+              <button
+                key={wsKey}
+                onClick={() => setActiveTab(wsKey)}
+                className={`px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border transition-all ${isSelected ? 'bg-[#1D2927] text-[#FAF8F3] border-[#1D2927] shadow-sm' : 'bg-[#F7F4ED] text-[#53605C] border-transparent hover:border-[#D9D3C7] hover:text-[#1D2927]'}`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{ws.shortName}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Super Admin Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsImpersonateOpen(true)}
+            className="h-8 px-3 bg-[#A84D2A] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5"
+          >
+            <Eye className="h-3.5 w-3.5" /> Impersonate User
+          </button>
+        </div>
+      </div>
+
+      {/* Global "Needs Attention" & Task Center Widget */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <PaperLift className="lg:col-span-8 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
+          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
+            <h3 className="font-editorial text-2xl text-[#1D2927] flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-[#A84D2A]" /> Global Needs Attention Queue
+            </h3>
+            <span className="font-mono text-xs uppercase text-[#A84D2A] font-bold">{pendingTxCount + campaigns.length + pendingTaskCount} Action Items</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+            <div className="p-3 bg-[#FDF4F0] border border-[#A84D2A]">
+              <div className="font-bold text-[10px] uppercase text-[#A84D2A]">Pending MFS Verifications</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{pendingTxCount} Tx</div>
+            </div>
+            <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <div className="font-bold text-[10px] uppercase text-[#8C7A5B]">Campaign Reviews</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{campaigns.length} Active</div>
+            </div>
+            <div className="p-3 bg-[#E5EEE8] border border-[#355C52]">
+              <div className="font-bold text-[10px] uppercase text-[#355C52]">Assigned Admin Tasks</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{pendingTaskCount} Tasks</div>
+            </div>
+          </div>
+        </PaperLift>
+
+        <PaperLift className="lg:col-span-4 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3 font-mono text-xs">
+          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-2 font-bold uppercase text-[#1D2927]">
+            <span>My Assigned Tasks</span>
+            <span className="text-[10px] text-[#8C7A5B]">Jira Protocol</span>
+          </div>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {tasks.filter(t => t.status !== "COMPLETED").map((t) => (
+              <div key={t.id} className="p-2 bg-[#F7F4ED] border border-[#D9D3C7] flex justify-between items-center">
+                <div>
+                  <div className="font-bold text-[11px] text-[#1D2927]">{t.title}</div>
+                  <div className="text-[9px] text-[#8C7A5B] uppercase">{t.workspace} • Assigned: {t.assignedTo}</div>
+                </div>
+                <button onClick={() => handleTaskComplete(t.id)} className="p-1 hover:bg-[#EAE5DB]">
+                  <CheckSquare className="h-4 w-4 text-[#355C52]" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </PaperLift>
       </div>
 
       {/* WORKSPACE 1: SUPER ADMIN */}
@@ -125,38 +280,7 @@ export function AdminClientHub({
                 Live Database Operational Status • Enterprise Audit Logs
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] font-bold uppercase text-[#355C52] bg-[#E5EEE8] px-3 py-1 border border-[#355C52]">
-                Database Connected
-              </span>
-            </div>
           </FadeIn>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm">
-              <div className="font-mono text-[10px] font-bold uppercase text-[#8C7A5B] mb-1">Live Campaigns Count</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{campaigns.length}</div>
-              <p className="font-mono text-[9px] uppercase text-[#355C52] mt-3">Active database records</p>
-            </PaperLift>
-
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm">
-              <div className="font-mono text-[10px] font-bold uppercase text-[#A84D2A] mb-1">Pending Audit Tx</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{pendingTxCount}</div>
-              <p className="font-mono text-[9px] uppercase text-[#A84D2A] mt-3">Awaiting MFS verification</p>
-            </PaperLift>
-
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm">
-              <div className="font-mono text-[10px] font-bold uppercase text-[#355C52] mb-1">Registered Creators</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{initialUsers.length}</div>
-              <p className="font-mono text-[9px] uppercase text-[#53605C] mt-3">Supabase PostgreSQL accounts</p>
-            </PaperLift>
-
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm">
-              <div className="font-mono text-[10px] font-bold uppercase text-[#8C7A5B] mb-1">System Audit Logs</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{auditLogs.length}</div>
-              <p className="font-mono text-[9px] uppercase text-[#53605C] mt-3">Immutable action entries</p>
-            </PaperLift>
-          </div>
 
           <div className="space-y-4">
             <h3 className="font-editorial text-2xl text-[#1D2927]">Platform Audit Trail (Immutable)</h3>
@@ -205,6 +329,18 @@ export function AdminClientHub({
               { header: "Sender Phone", accessorKey: (r) => r.phone || "N/A" },
               { header: "Status", accessorKey: "status" },
               {
+                header: "Internal Notes",
+                accessorKey: "id",
+                cell: (r) => (
+                  <button
+                    onClick={() => setSelectedNoteEntity({ type: "Transaction", id: r.id, title: r.donorName })}
+                    className="px-2 py-1 bg-[#EAE5DB] text-[#1D2927] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase flex items-center gap-1"
+                  >
+                    <StickyNote className="h-3 w-3 text-[#A84D2A]" /> Notes
+                  </button>
+                )
+              },
+              {
                 header: "Action",
                 accessorKey: "status",
                 cell: (r) => r.status === "VERIFIED" || r.status === "verified" ? (
@@ -228,13 +364,11 @@ export function AdminClientHub({
       {/* WORKSPACE 3: MODERATION */}
       {activeTab === "MODERATION" && (
         <div className="space-y-8">
-          <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D9D3C7] pb-4">
-            <div>
-              <h1 className="font-editorial text-4xl text-[#1D2927]">Campaign Moderation Workspace</h1>
-              <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
-                Review Submitted Campaigns & Government ID Evidence
-              </p>
-            </div>
+          <FadeIn className="border-b border-[#D9D3C7] pb-4">
+            <h1 className="font-editorial text-4xl text-[#1D2927]">Campaign Moderation Workspace</h1>
+            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+              Review Submitted Campaigns & Government ID Evidence
+            </p>
           </FadeIn>
 
           <AdvancedTable
@@ -245,6 +379,18 @@ export function AdminClientHub({
               { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
               { header: "Goal Amount", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
               { header: "Category", accessorKey: "category" },
+              {
+                header: "Notes",
+                accessorKey: "id",
+                cell: (r) => (
+                  <button
+                    onClick={() => setSelectedNoteEntity({ type: "Campaign", id: r.id, title: r.title })}
+                    className="px-2 py-1 bg-[#EAE5DB] text-[#1D2927] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase flex items-center gap-1"
+                  >
+                    <StickyNote className="h-3 w-3 text-[#A84D2A]" /> Notes
+                  </button>
+                )
+              },
               {
                 header: "Action",
                 accessorKey: "id",
