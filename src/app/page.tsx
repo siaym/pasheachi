@@ -65,7 +65,7 @@ export default async function HomePage() {
       <FeaturedStories campaigns={campaigns} />
       <CommunityImpact stats={liveStats} />
       <PaperCategories />
-      <SuccessStories />
+      <SuccessStories campaigns={campaigns} />
       <DonorCommunity />
       <HowItWorks />
       <TrustSection />
@@ -74,4 +74,5 @@ export default async function HomePage() {
     </>
   );
 }
+
 

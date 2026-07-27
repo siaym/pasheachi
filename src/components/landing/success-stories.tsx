@@ -8,17 +8,34 @@ import { formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, RevealText } from "@/components/ui/motion";
 
-export function SuccessStories() {
+import { Campaign } from "@/types";
+
+export function SuccessStories({ campaigns = [] }: { campaigns?: Campaign[] }) {
   const [activeIdx, setActiveIdx] = useState(0);
-  const current = MOCK_SUCCESS_STORIES[activeIdx];
+
+  const stories = campaigns.length > 0 
+    ? campaigns.map(c => ({
+        id: c.id,
+        name: c.creator?.name || "Anonymous Creator",
+        location: c.location || "Bangladesh",
+        photoUrl: c.coverImageUrl || c.creator?.avatarUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
+        quote: c.subtitle || c.description.slice(0, 150) + "...",
+        amountRaised: c.raisedAmount,
+        supportersCount: c.transactions?.length || 0,
+        campaignTitle: c.title,
+      }))
+    : MOCK_SUCCESS_STORIES;
+
+  const current = stories[activeIdx] || stories[0];
 
   const handlePrev = () => {
-    setActiveIdx((prev) => (prev === 0 ? MOCK_SUCCESS_STORIES.length - 1 : prev - 1));
+    setActiveIdx((prev) => (prev === 0 ? stories.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setActiveIdx((prev) => (prev === MOCK_SUCCESS_STORIES.length - 1 ? 0 : prev + 1));
+    setActiveIdx((prev) => (prev === stories.length - 1 ? 0 : prev + 1));
   };
+
 
   return (
     <section className="py-24 sm:py-32 bg-transparent border-b border-[#D9D3C7]">
@@ -105,8 +122,9 @@ export function SuccessStories() {
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <div className="px-4 font-mono text-[10px] tracking-widest text-[#53605C]">
-                {String(activeIdx + 1).padStart(2, '0')} / {String(MOCK_SUCCESS_STORIES.length).padStart(2, '0')}
+                {String(activeIdx + 1).padStart(2, '0')} / {String(stories.length).padStart(2, '0')}
               </div>
+
               <button
                 onClick={handleNext}
                 className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center border-l border-[#D9D3C7] text-[#1D2927] hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors"
