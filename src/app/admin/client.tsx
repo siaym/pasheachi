@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import Link from "next/link";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { formatCurrency } from "@/lib/utils";
 import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
 import { AdvancedTable } from "@/components/back-office/advanced-table";
-import { getAuditLogs, logAuditEvent } from "@/lib/back-office/audit-logger";
 import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
-import { getTasks, completeTask, TaskItem } from "@/lib/back-office/task-engine";
-import { getInternalNotes, addInternalNote, InternalNote } from "@/lib/back-office/internal-notes";
+import { verifyCampaignAction, verifyTransactionAction } from "@/app/admin/actions";
 import {
   Building2,
   Wallet,
@@ -29,31 +28,46 @@ import {
   Globe,
   Sliders,
   Eye,
-  CheckSquare,
-  StickyNote,
   Layers,
-  ArrowRight
+  ArrowRight,
+  StickyNote,
+  Search
 } from "lucide-react";
 
+interface DashboardStats {
+  totalTransactions: number;
+  pendingTransactions: number;
+  verifiedTransactions: number;
+  totalDonationVolume: number;
+  todayDonationVolume: number;
+  verificationRate: number;
+  totalCampaigns: number;
+  activeCampaigns: number;
+  rejectedCampaigns: number;
+  pendingCampaigns: number;
+  totalUsers: number;
+}
+
 export function AdminClientHub({
+  stats,
   initialTransactions = [],
   initialCampaigns = [],
-  initialUsers = []
+  initialUsers = [],
+  initialAuditLogs = [],
 }: {
+  stats: DashboardStats;
   initialTransactions?: any[];
   initialCampaigns?: any[];
   initialUsers?: any[];
+  initialAuditLogs?: any[];
 }) {
   const [activeTab, setActiveTab] = useState<WorkspaceId | "LAUNCHER">("LAUNCHER");
   const [transactions, setTransactions] = useState(initialTransactions);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
-  const [auditLogs, setAuditLogs] = useState(getAuditLogs());
-  const [tasks, setTasks] = useState<TaskItem[]>(getTasks());
   const [isImpersonateOpen, setIsImpersonateOpen] = useState(false);
-  const [selectedNoteEntity, setSelectedNoteEntity] = useState<{ type: string; id: string; title: string } | null>(null);
-  const [noteInput, setNoteInput] = useState("");
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const showToast = (msg: string) => {
     setFeedbackMsg(msg);
@@ -61,64 +75,36 @@ export function AdminClientHub({
   };
 
   const handleVerifyTransaction = (id: string) => {
-    setTransactions(prev => prev.map(t => t.id === id ? { ...t, status: "VERIFIED" } : t));
-    logAuditEvent({
-      actorName: "Siyam Ahmed",
-      actorEmail: "saifulsiam10000@gmail.com",
-      actorRole: "SuperAdmin",
-      action: "MANUAL_MFS_VERIFY",
-      resourceType: "Transaction",
-      resourceId: id,
-      ipAddress: "103.145.78.12",
-      userAgent: "BackOffice Engine",
-      oldValue: "PENDING",
-      newValue: "VERIFIED",
-      reason: "Matched MFS Statement Transaction ID"
+    startTransition(async () => {
+      const res = await verifyTransactionAction(id, "verified", "Verified from Finance Workspace");
+      if (res.success) {
+        setTransactions(prev => prev.map(t => t.id === id ? { ...t, status: "verified" } : t));
+        showToast(`Transaction ${id.slice(0, 8)} verified and persisted!`);
+      }
     });
-    setAuditLogs(getAuditLogs());
-    showToast(`Transaction ${id} verified successfully!`);
   };
 
   const handleApproveCampaign = (id: string) => {
-    setCampaigns(prev => prev.filter(c => c.id !== id));
-    logAuditEvent({
-      actorName: "Siyam Ahmed",
-      actorEmail: "saifulsiam10000@gmail.com",
-      actorRole: "Moderator",
-      action: "APPROVE_CAMPAIGN",
-      resourceType: "Campaign",
-      resourceId: id,
-      ipAddress: "103.145.78.12",
-      userAgent: "BackOffice Engine",
-      oldValue: "SUBMITTED",
-      newValue: "APPROVED",
-      reason: "Verified campaign narrative & creator NID"
+    startTransition(async () => {
+      const res = await verifyCampaignAction(id, "approved", "Approved from Moderation Workspace");
+      if (res.success) {
+        setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: "active" } : c));
+        showToast(`Campaign ${id.slice(0, 8)} approved!`);
+      }
     });
-    setAuditLogs(getAuditLogs());
-    showToast(`Campaign ${id} approved and published live!`);
   };
 
-  const handleTaskComplete = (taskId: string) => {
-    completeTask(taskId);
-    setTasks(getTasks());
-    showToast(`Task ${taskId} marked complete!`);
-  };
-
-  const handleAddNote = () => {
-    if (!selectedNoteEntity || !noteInput.trim()) return;
-    addInternalNote({
-      targetType: selectedNoteEntity.type as any,
-      targetId: selectedNoteEntity.id,
-      authorName: "Siyam Ahmed",
-      authorRole: "SuperAdmin",
-      content: noteInput.trim()
+  const handleRejectCampaign = (id: string) => {
+    startTransition(async () => {
+      const res = await verifyCampaignAction(id, "rejected", "Rejected from Moderation Workspace");
+      if (res.success) {
+        setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: "rejected" } : c));
+        showToast(`Campaign ${id.slice(0, 8)} rejected.`);
+      }
     });
-    setNoteInput("");
-    showToast(`Internal Note added for ${selectedNoteEntity.type} ${selectedNoteEntity.id}`);
   };
 
   const pendingTxCount = transactions.filter(t => t.status === "pending" || t.status === "PENDING").length;
-  const pendingTaskCount = tasks.filter(t => t.status !== "COMPLETED").length;
 
   if (activeTab === "LAUNCHER") {
     return (
@@ -139,51 +125,6 @@ export function AdminClientHub({
 
       {/* Impersonation Modal */}
       <ImpersonationModal isOpen={isImpersonateOpen} onClose={() => setIsImpersonateOpen(false)} users={initialUsers} />
-
-      {/* Internal Note Drawer Overlay */}
-      {selectedNoteEntity && (
-        <div className="fixed inset-0 z-50 bg-[#1D2927]/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#FAF8F3] border-2 border-[#1D2927] p-6 max-w-lg w-full shadow-paper space-y-4 font-mono text-xs">
-            <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
-              <span className="font-bold uppercase tracking-widest text-[#1D2927] flex items-center gap-2">
-                <StickyNote className="h-4 w-4 text-[#A84D2A]" /> Admin Internal Notes ({selectedNoteEntity.type}: {selectedNoteEntity.id})
-              </span>
-              <button onClick={() => setSelectedNoteEntity(null)} className="text-[10px] text-[#8C7A5B] uppercase font-bold">Close</button>
-            </div>
-
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {getInternalNotes(selectedNoteEntity.type, selectedNoteEntity.id).length === 0 ? (
-                <div className="p-4 text-center text-[#8C7A5B]">No private admin notes logged yet.</div>
-              ) : (
-                getInternalNotes(selectedNoteEntity.type, selectedNoteEntity.id).map((n) => (
-                  <div key={n.id} className="p-3 bg-[#F7F4ED] border border-[#D9D3C7] space-y-1">
-                    <div className="flex justify-between text-[10px] text-[#8C7A5B]">
-                      <span>{n.authorName} ({n.authorRole})</span>
-                      <span>{n.timestamp}</span>
-                    </div>
-                    <div className="text-[#1D2927]">{n.content}</div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="space-y-2 pt-2 border-t border-[#D9D3C7]">
-              <textarea
-                value={noteInput}
-                onChange={(e) => setNoteInput(e.target.value)}
-                placeholder="Write private internal note (visible only to Back Office admins)..."
-                className="w-full h-20 p-2.5 bg-[#F7F4ED] border border-[#D9D3C7] text-xs focus:outline-none focus:border-[#1D2927]"
-              />
-              <button
-                onClick={handleAddNote}
-                className="h-8 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest"
-              >
-                Log Internal Note
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Workspace Tabs Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF8F3] border border-[#D9D3C7] p-2">
@@ -223,49 +164,62 @@ export function AdminClientHub({
         </div>
       </div>
 
-      {/* Global "Needs Attention" & Task Center Widget */}
+      {/* Global "Needs Attention" Widget */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <PaperLift className="lg:col-span-8 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
           <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
             <h3 className="font-editorial text-2xl text-[#1D2927] flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-[#A84D2A]" /> Global Needs Attention Queue
             </h3>
-            <span className="font-mono text-xs uppercase text-[#A84D2A] font-bold">{pendingTxCount + campaigns.length + pendingTaskCount} Action Items</span>
+            <span className="font-mono text-xs uppercase text-[#A84D2A] font-bold">{stats.pendingTransactions + stats.pendingCampaigns} Action Items</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono text-xs">
             <div className="p-3 bg-[#FDF4F0] border border-[#A84D2A]">
               <div className="font-bold text-[10px] uppercase text-[#A84D2A]">Pending MFS Verifications</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{pendingTxCount} Tx</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.pendingTransactions} Tx</div>
             </div>
             <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
               <div className="font-bold text-[10px] uppercase text-[#8C7A5B]">Campaign Reviews</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{campaigns.length} Active</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.pendingCampaigns} Pending</div>
             </div>
             <div className="p-3 bg-[#E5EEE8] border border-[#355C52]">
-              <div className="font-bold text-[10px] uppercase text-[#355C52]">Assigned Admin Tasks</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{pendingTaskCount} Tasks</div>
+              <div className="font-bold text-[10px] uppercase text-[#355C52]">Verification Rate</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.verificationRate}%</div>
+            </div>
+            <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <div className="font-bold text-[10px] uppercase text-[#8C7A5B]">Today&apos;s Volume</div>
+              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{formatCurrency(stats.todayDonationVolume)}</div>
             </div>
           </div>
         </PaperLift>
 
         <PaperLift className="lg:col-span-4 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3 font-mono text-xs">
           <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-2 font-bold uppercase text-[#1D2927]">
-            <span>My Assigned Tasks</span>
-            <span className="text-[10px] text-[#8C7A5B]">Jira Protocol</span>
+            <span>Platform Snapshot</span>
+            <span className="text-[10px] text-[#8C7A5B]">Live DB</span>
           </div>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
-            {tasks.filter(t => t.status !== "COMPLETED").map((t) => (
-              <div key={t.id} className="p-2 bg-[#F7F4ED] border border-[#D9D3C7] flex justify-between items-center">
-                <div>
-                  <div className="font-bold text-[11px] text-[#1D2927]">{t.title}</div>
-                  <div className="text-[9px] text-[#8C7A5B] uppercase">{t.workspace} • Assigned: {t.assignedTo}</div>
-                </div>
-                <button onClick={() => handleTaskComplete(t.id)} className="p-1 hover:bg-[#EAE5DB]">
-                  <CheckSquare className="h-4 w-4 text-[#355C52]" />
-                </button>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <span className="text-[#8C7A5B]">Total Users</span>
+              <span className="font-bold text-[#1D2927]">{stats.totalUsers}</span>
+            </div>
+            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <span className="text-[#8C7A5B]">Total Campaigns</span>
+              <span className="font-bold text-[#1D2927]">{stats.totalCampaigns}</span>
+            </div>
+            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <span className="text-[#8C7A5B]">Active Campaigns</span>
+              <span className="font-bold text-[#1D2927]">{stats.activeCampaigns}</span>
+            </div>
+            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <span className="text-[#8C7A5B]">Total Donations</span>
+              <span className="font-bold text-[#1D2927]">{formatCurrency(stats.totalDonationVolume)}</span>
+            </div>
+            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
+              <span className="text-[#8C7A5B]">Total Transactions</span>
+              <span className="font-bold text-[#1D2927]">{stats.totalTransactions}</span>
+            </div>
           </div>
         </PaperLift>
       </div>
@@ -277,25 +231,67 @@ export function AdminClientHub({
             <div>
               <h1 className="font-editorial text-4xl text-[#1D2927]">Executive Command Center</h1>
               <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
-                Live Database Operational Status • Enterprise Audit Logs
+                Live Database Operational Status • Persisted Audit Logs
               </p>
             </div>
           </FadeIn>
 
+          {/* Live Stats Row */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {[
+              { label: "Total Revenue", value: formatCurrency(stats.totalDonationVolume), color: "#1D2927" },
+              { label: "Total Users", value: stats.totalUsers.toString(), color: "#355C52" },
+              { label: "Total Campaigns", value: stats.totalCampaigns.toString(), color: "#8C7A5B" },
+              { label: "Verified Tx", value: stats.verifiedTransactions.toString(), color: "#355C52" },
+              { label: "Pending Tx", value: stats.pendingTransactions.toString(), color: "#A84D2A" },
+            ].map((s, i) => (
+              <PaperLift key={i} className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
+                <div className="font-mono text-[10px] uppercase font-bold" style={{ color: s.color }}>{s.label}</div>
+                <div className="font-editorial text-2xl text-[#1D2927] mt-1">{s.value}</div>
+              </PaperLift>
+            ))}
+          </div>
+
+          {/* Audit Trail from DB */}
           <div className="space-y-4">
-            <h3 className="font-editorial text-2xl text-[#1D2927]">Platform Audit Trail (Immutable)</h3>
+            <h3 className="font-editorial text-2xl text-[#1D2927]">Platform Audit Trail (Persisted)</h3>
             <AdvancedTable
               title="Audit Logs"
               columns={[
-                { header: "Log ID", accessorKey: "id" },
-                { header: "Timestamp", accessorKey: "timestamp" },
+                { header: "Timestamp", accessorKey: (r) => new Date(r.createdAt).toLocaleString() },
                 { header: "Actor", accessorKey: (r) => `${r.actorName} (${r.actorRole})` },
                 { header: "Action", accessorKey: "action" },
-                { header: "Resource", accessorKey: (r) => `${r.resourceType}:${r.resourceId}` },
-                { header: "Reason / Notes", accessorKey: "reason" },
+                { header: "Resource", accessorKey: (r) => `${r.resourceType}:${r.resourceId.slice(0, 8)}...` },
+                { header: "Reason", accessorKey: (r) => r.reason || "—" },
               ]}
-              data={auditLogs}
-              searchPlaceholder="Filter audit trail by actor, IP or action..."
+              data={initialAuditLogs}
+              searchPlaceholder="Filter audit trail by actor or action..."
+            />
+          </div>
+
+          {/* Users Table with Investigate Links */}
+          <div className="space-y-4">
+            <h3 className="font-editorial text-2xl text-[#1D2927]">All Users</h3>
+            <AdvancedTable
+              title="Users"
+              columns={[
+                { header: "Name", accessorKey: "name" },
+                { header: "Username", accessorKey: "username" },
+                { header: "Email", accessorKey: (r) => r.email || "—" },
+                { header: "Role", accessorKey: "role" },
+                { header: "Joined", accessorKey: (r) => new Date(r.createdAt).toLocaleDateString() },
+                {
+                  header: "Investigate",
+                  accessorKey: "id",
+                  cell: (r) => (
+                    <Link href={`/admin/users/${r.id}`} className="px-2 py-1 bg-[#1D2927] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                      <Search className="h-3 w-3" /> Open
+                    </Link>
+                  )
+                }
+              ]}
+              data={initialUsers}
+              searchPlaceholder="Search users by name or email..."
             />
           </div>
         </div>
@@ -308,47 +304,42 @@ export function AdminClientHub({
             <div>
               <h1 className="font-editorial text-4xl text-[#1D2927]">Finance Workspace</h1>
               <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
-                Manual MFS Verification Queue (Version 1)
+                Manual MFS Verification Queue • Actions Persist to Database
               </p>
             </div>
-            <button 
-              onClick={() => showToast("Statement CSV Imported! Transactions auto-matched.")}
-              className="h-9 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-ink"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-[#A84D2A]" /> Import Statement CSV
-            </button>
           </FadeIn>
 
           <AdvancedTable
             title="MFS Verification Ledger"
             columns={[
-              { header: "Tx ID", accessorKey: "id" },
+              { header: "Tx ID", accessorKey: (r) => r.id.slice(0, 8) + "..." },
               { header: "Donor Name", accessorKey: (r) => r.donorName || "Anonymous" },
               { header: "Amount", accessorKey: (r) => formatCurrency(r.amount) },
               { header: "Method", accessorKey: (r) => r.method || "bKash" },
-              { header: "Sender Phone", accessorKey: (r) => r.phone || "N/A" },
+              { header: "Phone", accessorKey: (r) => r.phone || "N/A" },
+              { header: "Campaign", accessorKey: (r) => r.campaign || "—" },
               { header: "Status", accessorKey: "status" },
               {
-                header: "Internal Notes",
+                header: "Investigate",
                 accessorKey: "id",
                 cell: (r) => (
-                  <button
-                    onClick={() => setSelectedNoteEntity({ type: "Transaction", id: r.id, title: r.donorName })}
-                    className="px-2 py-1 bg-[#EAE5DB] text-[#1D2927] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase flex items-center gap-1"
-                  >
-                    <StickyNote className="h-3 w-3 text-[#A84D2A]" /> Notes
-                  </button>
+                  <Link href={`/admin/transactions/${r.id}`} className="px-2 py-1 bg-[#355C52] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                    <Search className="h-3 w-3" /> Open
+                  </Link>
                 )
               },
               {
                 header: "Action",
                 accessorKey: "status",
-                cell: (r) => r.status === "VERIFIED" || r.status === "verified" ? (
+                cell: (r) => r.status === "verified" ? (
                   <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified</span>
+                ) : r.status === "rejected" ? (
+                  <span className="px-2 py-0.5 bg-[#FDF4F0] text-[#A84D2A] font-mono text-[9px] font-bold uppercase border border-[#A84D2A]">Rejected</span>
                 ) : (
                   <button
                     onClick={() => handleVerifyTransaction(r.id)}
-                    className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors"
+                    disabled={isPending}
+                    className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
                   >
                     Verify Tx
                   </button>
@@ -367,44 +358,48 @@ export function AdminClientHub({
           <FadeIn className="border-b border-[#D9D3C7] pb-4">
             <h1 className="font-editorial text-4xl text-[#1D2927]">Campaign Moderation Workspace</h1>
             <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
-              Review Submitted Campaigns & Government ID Evidence
+              Review Submitted Campaigns • Actions Persist to Database
             </p>
           </FadeIn>
 
           <AdvancedTable
             title="Campaign Approval Desk"
             columns={[
-              { header: "CMP ID", accessorKey: "id" },
               { header: "Title", accessorKey: "title" },
               { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
-              { header: "Goal Amount", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+              { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+              { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
               { header: "Category", accessorKey: "category" },
+              { header: "Status", accessorKey: (r) => r.status },
               {
-                header: "Notes",
+                header: "Investigate",
                 accessorKey: "id",
                 cell: (r) => (
-                  <button
-                    onClick={() => setSelectedNoteEntity({ type: "Campaign", id: r.id, title: r.title })}
-                    className="px-2 py-1 bg-[#EAE5DB] text-[#1D2927] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase flex items-center gap-1"
-                  >
-                    <StickyNote className="h-3 w-3 text-[#A84D2A]" /> Notes
-                  </button>
+                  <Link href={`/admin/campaigns/${r.id}`} className="px-2 py-1 bg-[#355C52] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                    <Search className="h-3 w-3" /> Open
+                  </Link>
                 )
               },
               {
                 header: "Action",
                 accessorKey: "id",
-                cell: (r) => (
+                cell: (r) => r.status === "active" ? (
+                  <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Approved</span>
+                ) : r.status === "rejected" ? (
+                  <span className="px-2 py-0.5 bg-[#FDF4F0] text-[#A84D2A] font-mono text-[9px] font-bold uppercase border border-[#A84D2A]">Rejected</span>
+                ) : (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleApproveCampaign(r.id)}
-                      className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors"
+                      disabled={isPending}
+                      className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
                     >
                       Approve
                     </button>
                     <button
-                      onClick={() => showToast(`Campaign ${r.id} rejected.`)}
-                      className="px-2 py-1 bg-[#FDF4F0] text-[#A84D2A] border border-[#A84D2A] font-mono text-[10px] font-bold uppercase"
+                      onClick={() => handleRejectCampaign(r.id)}
+                      disabled={isPending}
+                      className="px-2 py-1 bg-[#FDF4F0] text-[#A84D2A] border border-[#A84D2A] font-mono text-[10px] font-bold uppercase disabled:opacity-50"
                     >
                       Reject
                     </button>
@@ -431,6 +426,16 @@ export function AdminClientHub({
               <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Platform Risk Score</div>
               <div className="font-editorial text-3xl text-[#1D2927]">0.01 / 1.0</div>
               <p className="font-mono text-[9px] uppercase text-[#355C52]">Low Risk Profile</p>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-2">
+              <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Rejected Campaigns</div>
+              <div className="font-editorial text-3xl text-[#1D2927]">{stats.rejectedCampaigns}</div>
+              <p className="font-mono text-[9px] uppercase text-[#53605C]">All time</p>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-2">
+              <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Verification Rate</div>
+              <div className="font-editorial text-3xl text-[#1D2927]">{stats.verificationRate}%</div>
+              <p className="font-mono text-[9px] uppercase text-[#53605C]">Transactions verified</p>
             </PaperLift>
           </div>
         </div>
@@ -460,14 +465,34 @@ export function AdminClientHub({
             <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Live Database Intelligence</p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
             <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927]">Total Database Campaigns</div>
-              <div className="font-editorial text-4xl">{campaigns.length}</div>
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Revenue</div>
+              <div className="font-editorial text-4xl text-[#1D2927]">{formatCurrency(stats.totalDonationVolume)}</div>
             </PaperLift>
             <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927]">Total Registered Users</div>
-              <div className="font-editorial text-4xl">{initialUsers.length}</div>
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Campaigns</div>
+              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalCampaigns}</div>
+              <div className="text-[#53605C]">{stats.activeCampaigns} active • {stats.rejectedCampaigns} rejected</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Users</div>
+              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalUsers}</div>
+            </PaperLift>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Transactions</div>
+              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalTransactions}</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Verified Tx</div>
+              <div className="font-editorial text-4xl text-[#355C52]">{stats.verifiedTransactions}</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
+              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Today&apos;s Volume</div>
+              <div className="font-editorial text-4xl text-[#A84D2A]">{formatCurrency(stats.todayDonationVolume)}</div>
             </PaperLift>
           </div>
         </div>
