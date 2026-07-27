@@ -37,6 +37,8 @@ export async function loginAction(formData: FormData) {
   redirect("/dashboard");
 }
 
+import { sendVerificationEmail } from "@/lib/email";
+
 export async function signupAction(formData: FormData) {
   const name = formData.get("name") as string;
   const username = formData.get("username") as string;
@@ -71,6 +73,11 @@ export async function signupAction(formData: FormData) {
     }
   });
 
+  // Trigger verification email via Resend
+  if (user.email) {
+    await sendVerificationEmail(user.email, user.name);
+  }
+
   await loginSession(user.id);
   
   redirect("/dashboard");
@@ -80,3 +87,4 @@ export async function logoutAction() {
   await logoutSession();
   redirect("/login");
 }
+

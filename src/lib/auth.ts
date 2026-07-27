@@ -28,13 +28,26 @@ export async function loginSession(userId: string) {
 
   // Save the session in a cookie
   const cookieStore = await cookies();
-  cookieStore.set("session", session, { expires, httpOnly: true, secure: process.env.NODE_ENV === "production" });
+  cookieStore.set("session", session, { 
+    expires, 
+    httpOnly: true, 
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production" 
+  });
 }
 
 export async function logoutSession() {
   const cookieStore = await cookies();
-  cookieStore.set("session", "", { expires: new Date(0), httpOnly: true, secure: process.env.NODE_ENV === "production" });
+  cookieStore.set("session", "", { 
+    expires: new Date(0), 
+    httpOnly: true, 
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production" 
+  });
 }
+
 
 export async function getSession() {
   const cookieStore = await cookies();
