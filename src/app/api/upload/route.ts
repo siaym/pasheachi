@@ -21,12 +21,25 @@ export async function POST(req: Request) {
     if (supabaseAnonKey) {
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-      const { error } = await supabase.storage
+      // Attempt upload
+      let { error } = await supabase.storage
         .from(bucketName)
         .upload(filename, buffer, {
           contentType: file.type,
           upsert: true,
         });
+
+      // If bucket does not exist, create it automatically and retry
+      if (error && (error.message?.includes("not found") || error.message?.includes("Bucket"))) {
+        await supabase.storage.createBucket(bucketName, { public: true });
+        const retry = await supabase.storage
+          .from(bucketName)
+          .upload(filename, buffer, {
+            contentType: file.type,
+            upsert: true,
+          });
+        error = retry.error;
+      }
 
       if (!error) {
         const { data: publicUrlData } = supabase.storage
@@ -36,6 +49,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, url: publicUrlData.publicUrl });
       }
     }
+
 
     // High performance fallback: base64 Data URL
     const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
