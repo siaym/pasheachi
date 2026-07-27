@@ -1,43 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Menu, X } from "lucide-react";
-import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "@/components/shared/logo";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  
-  const { scrollY } = useScroll();
-  const smoothScrollY = useSpring(scrollY, { stiffness: 60, damping: 25, mass: 0.5 });
-  
-  // Morphing values based on smooth scroll
-  // Width shrinks slightly on desktop to become a compact pill
-  const navWidth = useTransform(smoothScrollY, [0, 150], ["100%", "90%"]);
-  const navMaxWidth = useTransform(smoothScrollY, [0, 150], ["1280px", "1024px"]);
-  // Margin top gives it the floating effect
-  const navY = useTransform(smoothScrollY, [0, 150], [16, 24]);
-  // Border radius goes from small/medium to fully rounded pill
-  const navRadius = useTransform(smoothScrollY, [0, 150], ["12px", "9999px"]);
-  // Background becomes slightly more opaque
-  const navBg = useTransform(smoothScrollY, [0, 150], ["rgba(250, 247, 240, 0.7)", "rgba(250, 247, 240, 0.95)"]);
-  const navBorderColor = useTransform(smoothScrollY, [0, 150], ["rgba(217, 211, 199, 0.5)", "rgba(29, 41, 39, 1)"]);
-  // Shadow deepens
-  const navShadow = useTransform(
-    smoothScrollY, 
-    [0, 150], 
-    [
-      "0 4px 20px -5px rgba(29, 41, 39, 0.05), 0 2px 5px -2px rgba(29, 41, 39, 0.02)", 
-      "0 24px 48px -12px rgba(29, 41, 39, 0.15), 0 8px 16px -6px rgba(29, 41, 39, 0.08)"
-    ]
-  );
-  const navBackdropBlur = useTransform(smoothScrollY, [0, 150], ["blur(8px)", "blur(16px)"]);
-  // Padding shrinks
-  const navPaddingY = useTransform(smoothScrollY, [0, 150], ["16px", "10px"]);
-  const navPaddingX = useTransform(smoothScrollY, [0, 150], ["32px", "20px"]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navLinks = [
     { label: "Explore", href: "/discover" },
@@ -48,33 +30,18 @@ export function Navbar() {
   ];
 
   return (
-    <motion.header 
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
-      style={{ y: navY }}
-    >
-      <motion.div
-        className="flex flex-col w-full pointer-events-auto origin-top"
-        style={{ 
-          width: navWidth,
-          maxWidth: navMaxWidth,
-        }}
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none transition-all duration-300">
+      <div 
+        className={`flex flex-col w-full pointer-events-auto origin-top transition-all duration-300 ease-out ${
+          scrolled ? "mt-4 max-w-5xl" : "mt-4 max-w-7xl"
+        }`}
       >
-        <motion.div
-          className="flex items-center justify-between gap-4 lg:gap-8"
-          style={{
-            paddingTop: navPaddingY,
-            paddingBottom: navPaddingY,
-            paddingLeft: navPaddingX,
-            paddingRight: navPaddingX,
-            backgroundColor: navBg,
-            borderColor: navBorderColor,
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderRadius: navRadius,
-            boxShadow: navShadow,
-            backdropFilter: navBackdropBlur,
-            WebkitBackdropFilter: navBackdropBlur,
-          }}
+        <div
+          className={`flex items-center justify-between gap-4 lg:gap-8 transition-all duration-300 ease-out border backdrop-blur-md ${
+            scrolled
+              ? "py-2.5 px-6 rounded-full border-[#1D2927] bg-[#FAF7F0]/95 shadow-lg"
+              : "py-4 px-8 rounded-xl border-[#D9D3C7]/50 bg-[#FAF7F0]/80 shadow-sm"
+          }`}
         >
           {/* Brand Logo */}
           <Logo />
@@ -82,7 +49,7 @@ export function Navbar() {
           {/* Center Navigation Links (Desktop) */}
           <nav className="hidden lg:flex items-center lg:gap-4 xl:gap-8">
             {navLinks.map((link) => {
-              const active = pathname === link.href || (pathname === '/' && link.href.includes('#') && false); // Simplified active state for hash links
+              const active = pathname === link.href;
               return (
                 <Link
                   key={link.label}
@@ -91,17 +58,10 @@ export function Navbar() {
                     active ? "text-[#A84D2A]" : "text-[#1D2927] hover:text-[#A84D2A]"
                   }`}
                 >
-                  {/* Subtle paper lift on hover */}
-                  <motion.span 
-                    className="inline-block relative z-10"
-                    whileHover={{ y: -1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
+                  <span className="inline-block relative z-10 transition-transform hover:-translate-y-0.5">
                     {link.label}
-                  </motion.span>
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#A84D2A] transition-all duration-300 origin-left ${active ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                  {/* Hover pseudo element handled by CSS class for link if needed, but we use a distinct line */}
-                  <div className="ink-underline absolute inset-0 w-full h-full pointer-events-none"></div>
+                  </span>
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#A84D2A] transition-all duration-300 origin-left ${active ? 'w-full' : 'w-0 hover:w-full'}`}></span>
                 </Link>
               );
             })}
@@ -138,7 +98,7 @@ export function Navbar() {
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Mobile Navigation Dropdown */}
         <AnimatePresence>
@@ -176,8 +136,9 @@ export function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
-    </motion.header>
+      </div>
+    </header>
   );
 }
+
 
