@@ -21,6 +21,9 @@ import {
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 
+import { calculateCampaignHealth } from "@/lib/campaign-health";
+import { generateCampaignTimeline } from "@/lib/campaign-timeline";
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 
@@ -35,6 +38,7 @@ export default async function DashboardPage() {
         include: {
           transactions: true,
         },
+        orderBy: { createdAt: "desc" }
       },
     },
   });
@@ -63,7 +67,36 @@ export default async function DashboardPage() {
     totalSupporters += uniqueSupporters.size;
   });
 
-  const availableBalance = verifiedAmount; // Could subtract fees here
+  const availableBalance = verifiedAmount;
+  const activeCampaign = userData.campaigns[0] || {
+    description: "",
+    coverImageUrl: "",
+    transactions: [],
+    creator: userData
+  };
+
+  const healthResult = calculateCampaignHealth({
+    description: activeCampaign.description,
+    coverImageUrl: activeCampaign.coverImageUrl,
+    bkashNumber: (activeCampaign as any).bkashNumber,
+    nagadNumber: (activeCampaign as any).nagadNumber,
+    bankDetails: (activeCampaign as any).bankDetails,
+    transactions: activeCampaign.transactions,
+    creator: userData,
+  });
+
+  const timelineEvents = generateCampaignTimeline(activeCampaign);
+
+  // Calculate Publishing Checklist
+  const checklistItems = [
+    { label: "Campaign Story Description", done: (activeCampaign.description || "").length > 100 },
+    { label: "Cover Image Uploaded", done: (activeCampaign.coverImageUrl || "").length > 10 },
+    { label: "Goal Amount Specified", done: (activeCampaign.goalAmount || 0) > 0 },
+    { label: "Payment Receiving Method", done: Boolean((activeCampaign as any).bkashNumber || (activeCampaign as any).nagadNumber || (activeCampaign as any).bankDetails) },
+    { label: "Creator Profile Information", done: Boolean(userData.bio && userData.name) },
+  ];
+  const completedChecklistCount = checklistItems.filter(i => i.done).length;
+  const checklistPercentage = Math.round((completedChecklistCount / checklistItems.length) * 100);
 
   const metrics = {
     totalRaised,
@@ -85,6 +118,14 @@ export default async function DashboardPage() {
             Workspace Overview • {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/create"
+            className="h-10 px-5 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink"
+          >
+            <PlusCircle className="h-4 w-4" /> Start New Campaign
+          </Link>
+        </div>
       </FadeIn>
 
       {/* Main Stats Grid */}
@@ -99,8 +140,8 @@ export default async function DashboardPage() {
                 {formatCurrency(metrics.totalRaised)}
               </div>
             </div>
-            <p className="font-mono text-[9px] uppercase tracking-widest text-[#A84D2A] flex items-center gap-1.5 mt-4">
-              <TrendingUp className="h-3 w-3" /> +৳12,500 this week
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#355C52] flex items-center gap-1.5 mt-4">
+              <TrendingUp className="h-3 w-3" /> Live Database Sync
             </p>
           </PaperLift>
         </FadeIn>
@@ -108,15 +149,15 @@ export default async function DashboardPage() {
         <FadeIn delay={0.15}>
           <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between">
             <div>
-              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5" /> Verified
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#355C52] mb-2 block flex items-center gap-2">
+                <ShieldCheck className="h-3.5 w-3.5" /> Verified Balance
               </span>
               <div className="font-editorial text-3xl text-[#1D2927] mb-1">
                 {formatCurrency(metrics.verifiedAmount)}
               </div>
             </div>
             <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
-              Ready for withdrawal
+              Available for payout
             </p>
           </PaperLift>
         </FadeIn>
@@ -125,46 +166,117 @@ export default async function DashboardPage() {
           <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between">
             <div>
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A] mb-2 block flex items-center gap-2">
-                <Clock className="h-3.5 w-3.5" /> Pending
+                <Clock className="h-3.5 w-3.5" /> Pending Audit
               </span>
               <div className="font-editorial text-3xl text-[#1D2927] mb-1">
                 {formatCurrency(metrics.pendingDonations)}
               </div>
             </div>
             <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
-              Awaiting verification
+              Manual MFS verification in progress
             </p>
           </PaperLift>
         </FadeIn>
 
         <FadeIn delay={0.25}>
           <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm h-full flex flex-col justify-between relative overflow-hidden">
-             {/* Decorative stamp */}
-             <div className="absolute -right-4 -bottom-4 opacity-10 pointer-events-none">
-              <Users className="h-24 w-24" />
-            </div>
-            <div className="relative z-10">
+            <div>
               <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C7A5B] mb-2 block flex items-center gap-2">
-                <Users className="h-3.5 w-3.5" /> Supporters
+                <Users className="h-3.5 w-3.5" /> Total Supporters
               </span>
               <div className="font-editorial text-3xl text-[#1D2927] mb-1">
                 {metrics.totalSupporters}
               </div>
-              <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
-                From 12 districts
-              </p>
+            </div>
+            <p className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-4">
+              Community contributors
+            </p>
+          </PaperLift>
+        </FadeIn>
+      </div>
+
+      {/* Campaign Health Score & Readiness Checklist */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Campaign Health Score Card */}
+        <FadeIn delay={0.3} className="lg:col-span-7">
+          <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-6 sm:p-8 shadow-paper h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4 mb-6">
+                <div>
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A]">
+                    Campaign Performance Audit
+                  </span>
+                  <h3 className="font-editorial text-2xl text-[#1D2927] mt-1">Campaign Health Score</h3>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono text-3xl font-bold text-[#1D2927]">
+                    {healthResult.score} <span className="text-xs text-[#8C7A5B]">/ 100</span>
+                  </div>
+                  <span className="inline-block px-2.5 py-0.5 border border-[#355C52] bg-[#E5EEE8] font-mono text-[9px] font-bold uppercase text-[#355C52] mt-1">
+                    Grade {healthResult.grade}
+                  </span>
+                </div>
+              </div>
+
+              {/* Suggestions List */}
+              <div className="space-y-3">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#53605C]">
+                  Actionable Suggestions to Boost Health
+                </span>
+                {healthResult.suggestions.map((suggestion, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-[#F7F4ED] border border-[#D9D3C7] text-xs font-mono text-[#1D2927]">
+                    <CheckCircle2 className="h-4 w-4 text-[#A84D2A] shrink-0 mt-0.5" />
+                    <span>{suggestion}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </PaperLift>
+        </FadeIn>
+
+        {/* Publishing Readiness Checklist */}
+        <FadeIn delay={0.35} className="lg:col-span-5">
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 sm:p-8 shadow-sm h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4 mb-6">
+                <h3 className="font-editorial text-xl text-[#1D2927]">Campaign Readiness</h3>
+                <span className="font-mono text-sm font-bold text-[#A84D2A]">
+                  {checklistPercentage}% Complete
+                </span>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="h-2 w-full bg-[#EAE5DB] border border-[#D9D3C7] overflow-hidden mb-6">
+                <div 
+                  className="h-full bg-[#1D2927] transition-all duration-700" 
+                  style={{ width: `${checklistPercentage}%` }}
+                />
+              </div>
+
+              <div className="space-y-3">
+                {checklistItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs font-mono">
+                    <span className={item.done ? "text-[#1D2927]" : "text-[#8C7A5B] line-through"}>
+                      {item.label}
+                    </span>
+                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase ${item.done ? 'bg-[#E5EEE8] text-[#355C52]' : 'bg-[#EAE5DB] text-[#8C7A5B]'}`}>
+                      {item.done ? 'Done' : 'Pending'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </PaperLift>
         </FadeIn>
       </div>
 
+      {/* Automatic Campaign Timeline & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Column: Quick Actions & Tasks */}
-        <div className="lg:col-span-8 space-y-12">
-          
-          {/* Quick Actions */}
-          <FadeIn delay={0.3} className="space-y-6">
+        <div className="lg:col-span-8 space-y-8">
+          <FadeIn delay={0.4} className="space-y-4">
             <h2 className="font-editorial text-2xl text-[#1D2927] border-b border-[#D9D3C7] pb-2">
               Quick Actions
             </h2>
@@ -183,154 +295,52 @@ export default async function DashboardPage() {
                 </PaperLift>
               </Link>
 
-              <button className="group text-left">
-                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927] w-full">
-                  <Rss className="h-6 w-6 text-[#8C7A5B] group-hover:text-[#1D2927] transition-colors" />
-                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Post Update</span>
+              <Link href="/dashboard/donors" className="group">
+                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927]">
+                  <Users className="h-6 w-6 text-[#8C7A5B] group-hover:text-[#1D2927] transition-colors" />
+                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Supporter CRM</span>
                 </PaperLift>
-              </button>
+              </Link>
 
-              <button className="group text-left">
-                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927] w-full">
+              <Link href={`/${user.username}`} className="group">
+                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927]">
                   <Share2 className="h-6 w-6 text-[#8C7A5B] group-hover:text-[#1D2927] transition-colors" />
-                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Share Campaign</span>
+                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Public Profile</span>
                 </PaperLift>
-              </button>
-
-              <button className="group text-left">
-                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927] w-full">
-                  <Download className="h-6 w-6 text-[#8C7A5B] group-hover:text-[#1D2927] transition-colors" />
-                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Download Report</span>
-                </PaperLift>
-              </button>
-
-              <button className="group text-left">
-                <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4 text-[#1D2927] h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:border-[#1D2927] w-full">
-                  <LinkIcon className="h-6 w-6 text-[#8C7A5B] group-hover:text-[#1D2927] transition-colors" />
-                  <span className="font-mono text-[9px] uppercase tracking-widest font-bold">Copy Link</span>
-                </PaperLift>
-              </button>
+              </Link>
             </div>
           </FadeIn>
-
-          {/* Upcoming Tasks */}
-          <FadeIn delay={0.4} className="space-y-6">
-            <h2 className="font-editorial text-2xl text-[#1D2927] border-b border-[#D9D3C7] pb-2">
-              Needs Attention
-            </h2>
-            <div className="space-y-4">
-              <PaperLift className="bg-[#F7F4ED] border-l-4 border-[#A84D2A] border-y border-r border-y-[#D9D3C7] border-r-[#D9D3C7] p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <AlertCircle className="h-5 w-5 text-[#A84D2A]" />
-                  <div>
-                    <h4 className="font-bold text-sm text-[#1D2927]">Post an update to "Laptop Fund"</h4>
-                    <p className="text-xs text-[#53605C] mt-0.5">It's been 14 days since your last update. Supporters want to hear from you.</p>
-                  </div>
-                </div>
-                <button className="h-8 px-4 border border-[#1D2927] text-[#1D2927] font-bold text-[10px] uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors whitespace-nowrap">
-                  Draft Update
-                </button>
-              </PaperLift>
-
-              <PaperLift className="bg-[#F7F4ED] border-l-4 border-[#1D2927] border-y border-r border-y-[#D9D3C7] border-r-[#D9D3C7] p-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <CheckCircle2 className="h-5 w-5 text-[#1D2927]" />
-                  <div>
-                    <h4 className="font-bold text-sm text-[#1D2927]">Reply to 3 new supporter messages</h4>
-                    <p className="text-xs text-[#53605C] mt-0.5">Engaging with supporters increases the likelihood of them sharing your campaign.</p>
-                  </div>
-                </div>
-                <Link href="/dashboard/supporters" className="h-8 flex items-center px-4 border border-[#1D2927] text-[#1D2927] font-bold text-[10px] uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors whitespace-nowrap">
-                  View Messages
-                </Link>
-              </PaperLift>
-            </div>
-          </FadeIn>
-
         </div>
 
-        {/* Right Column: Ledger Log */}
+        {/* Right Column: Automatic Campaign Timeline */}
         <div className="lg:col-span-4 space-y-6">
           <FadeIn delay={0.5}>
             <div className="border-b border-[#D9D3C7] pb-2 mb-6">
               <h2 className="font-editorial text-2xl text-[#1D2927]">
-                Log Entries
+                Automatic Campaign Timeline
               </h2>
             </div>
 
             <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 shadow-sm">
-              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-[15px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-gradient-to-b before:from-transparent before:via-[#D9D3C7] before:to-transparent">
-                
-                {/* Activity 1 */}
-                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[#1D2927] bg-[#F7F4ED] text-[#1D2927] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2">
-                    <Wallet className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] ml-12 md:ml-0 p-3 rounded border border-[#D9D3C7] bg-[#F7F4ED] shadow-sm">
-                    <div className="font-mono text-[10px] font-bold text-[#10B981] mb-1">
-                      +৳500 Verified
+              <div className="space-y-6">
+                {timelineEvents.map((evt) => (
+                  <div key={evt.id} className="flex gap-4 items-start border-l-2 border-[#1D2927] pl-4">
+                    <div>
+                      <span className="font-mono text-[9px] uppercase font-bold text-[#A84D2A] tracking-widest block">
+                        {evt.date}
+                      </span>
+                      <h4 className="font-bold text-sm text-[#1D2927] mt-0.5">{evt.title}</h4>
+                      <p className="font-mono text-xs text-[#53605C] mt-1">{evt.description}</p>
                     </div>
-                    <div className="text-xs text-[#53605C] leading-snug">
-                      Arif Ahmed • "Laptop Fund"
-                    </div>
-                    <div className="font-mono text-[9px] text-[#8C7A5B] mt-2 uppercase">2m ago</div>
                   </div>
-                </div>
-
-                {/* Activity 2 */}
-                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D3C7] bg-[#F7F4ED] text-[#A84D2A] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2">
-                    <Clock className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] ml-12 md:ml-0 p-3 rounded border border-[#D9D3C7] bg-[#FAF8F3] shadow-sm">
-                    <div className="font-mono text-[10px] font-bold text-[#A84D2A] mb-1">
-                      ৳1,200 Pending
-                    </div>
-                    <div className="text-xs text-[#53605C] leading-snug">
-                      Awaiting bKash verification
-                    </div>
-                    <div className="font-mono text-[9px] text-[#8C7A5B] mt-2 uppercase">1h ago</div>
-                  </div>
-                </div>
-
-                {/* Activity 3 */}
-                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] ml-12 md:ml-0 p-3 rounded border border-[#1D2927] bg-[#F7F4ED] shadow-sm">
-                    <div className="font-mono text-[10px] font-bold text-[#1D2927] mb-1">
-                      Withdrawal Complete
-                    </div>
-                    <div className="text-xs text-[#53605C] leading-snug">
-                      ৳15,000 sent to ending in 5678
-                    </div>
-                    <div className="font-mono text-[9px] text-[#8C7A5B] mt-2 uppercase">1d ago</div>
-                  </div>
-                </div>
-
-                {/* Activity 4 */}
-                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[#D9D3C7] bg-[#F7F4ED] text-[#53605C] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 mx-auto absolute left-0 md:left-1/2 -translate-x-1/2">
-                    <Eye className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] ml-12 md:ml-0 p-3 rounded border border-[#D9D3C7] bg-[#FAF8F3] shadow-sm">
-                    <div className="font-mono text-[10px] font-bold text-[#1D2927] mb-1">
-                      Traffic Spike
-                    </div>
-                    <div className="text-xs text-[#53605C] leading-snug">
-                      45 new visitors today
-                    </div>
-                    <div className="font-mono text-[9px] text-[#8C7A5B] mt-2 uppercase">2d ago</div>
-                  </div>
-                </div>
-                
+                ))}
               </div>
             </PaperLift>
           </FadeIn>
         </div>
-
       </div>
     </div>
   );
 }
+
+

@@ -99,11 +99,36 @@ export function WithdrawalsClient({ availableBalance }: { availableBalance: numb
         </PaperLift>
       </FadeIn>
 
+      {/* Withdrawal Workflow Timeline Banner */}
+      <FadeIn delay={0.15}>
+        <PaperLift className="bg-[#F7F4ED] border border-[#D9D3C7] p-6 shadow-sm">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#A84D2A] mb-4 block">
+            5-Stage Withdrawal Audit Protocol (Processing Time: 1–2 Business Days)
+          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {[
+              { step: "1", title: "Request", desc: "Submitted by creator" },
+              { step: "2", title: "Pending Audit", desc: "Manual Ledger Check" },
+              { step: "3", title: "Approved", desc: "Authorized for Payout" },
+              { step: "4", title: "Transferred", desc: "MFS / Bank Dispatch" },
+              { step: "5", title: "Completed", desc: "Funds Cleared" },
+            ].map((st, i) => (
+              <div key={st.step} className={`p-3 border font-mono text-xs ${i === 0 ? 'border-[#1D2927] bg-[#FAF8F3]' : 'border-[#D9D3C7] bg-[#EAE5DB]'}`}>
+                <div className="text-[10px] font-bold text-[#A84D2A] mb-1">STAGE 0{st.step}</div>
+                <div className="font-bold text-[#1D2927]">{st.title}</div>
+                <div className="text-[9px] text-[#53605C] mt-1">{st.desc}</div>
+              </div>
+            ))}
+          </div>
+        </PaperLift>
+      </FadeIn>
+
       {/* Withdrawal History Ledger */}
       <FadeIn delay={0.2} className="space-y-4">
         <h2 className="font-editorial text-2xl text-[#1D2927] border-b border-[#D9D3C7] pb-2">
           Payout History
         </h2>
+
 
         <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
