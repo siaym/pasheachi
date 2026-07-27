@@ -34,12 +34,13 @@ export default function BackOfficeLayout({
   const currentWorkspace = WORKSPACES[activeWorkspaceId];
 
   return (
-    <div className="min-h-screen pt-28 pb-20 sm:pb-32 bg-[#F7F4ED]">
+    <div className="min-h-screen pt-16 pb-20 sm:pb-32 bg-[#F7F4ED]">
       {/* Global Command Search Modal */}
       <GlobalSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* Top Back Office Enterprise Bar */}
-      <div className="fixed top-16 left-0 right-0 z-40 bg-[#1D2927] text-[#F7F4ED] border-b border-[#D9D3C7]/20 shadow-md py-2 px-4 sm:px-8">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#1D2927] text-[#F7F4ED] border-b border-[#D9D3C7]/20 shadow-md py-2 px-4 sm:px-8">
+
         <Container variant="wide" className="flex items-center justify-between gap-4">
           
           {/* Workspace Switcher Component */}

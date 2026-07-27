@@ -16,6 +16,10 @@ export function Navbar({ user }: { user?: User | null }) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40);
@@ -24,6 +28,7 @@ export function Navbar({ user }: { user?: User | null }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   const navLinks = [
     { label: "Explore", href: "/discover" },
