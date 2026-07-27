@@ -46,24 +46,36 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const [tab, setTab] = useState<"upload" | "url" | "presets">("upload");
   const [urlInput, setUrlInput] = useState(value);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         alert("Image file size should be less than 5MB.");
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          onChange(reader.result);
+      setUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.url) {
+          onChange(data.url);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Upload error:", err);
+      } finally {
+        setUploading(false);
+      }
     }
   };
+
 
   const aspectClasses = {
     square: "aspect-square max-w-[200px]",
@@ -145,8 +157,10 @@ export function ImageUploader({
         <>
           {tab === "upload" && (
             <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-[#1D2927] bg-[#EAE5DB]/40 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-[#EAE5DB] transition-all text-center group"
+              onClick={() => !uploading && fileInputRef.current?.click()}
+              className={`border-2 border-dashed border-[#1D2927] bg-[#EAE5DB]/40 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-[#EAE5DB] transition-all text-center group ${
+                uploading ? "opacity-60 pointer-events-none" : ""
+              }`}
             >
               <input
                 ref={fileInputRef}
@@ -154,16 +168,29 @@ export function ImageUploader({
                 accept="image/*"
                 onChange={handleFileChange}
                 className="hidden"
+                disabled={uploading}
               />
-              <Upload className="h-8 w-8 text-[#1D2927] mb-3 group-hover:scale-110 transition-transform" />
-              <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#1D2927]">
-                Click or Drop Image File
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-1">
-                PNG, JPG, WEBP • Max 5MB
-              </span>
+              {uploading ? (
+                <>
+                  <div className="h-8 w-8 border-2 border-[#1D2927] border-t-transparent rounded-full animate-spin mb-3"></div>
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                    Uploading to CDN...
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-8 w-8 text-[#1D2927] mb-3 group-hover:scale-110 transition-transform" />
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#1D2927]">
+                    Click or Drop Image File
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-[#53605C] mt-1">
+                    PNG, JPG, WEBP • Max 5MB
+                  </span>
+                </>
+              )}
             </div>
           )}
+
 
           {tab === "url" && (
             <div className="space-y-3 bg-[#EAE5DB]/30 p-4 border border-[#D9D3C7]">
