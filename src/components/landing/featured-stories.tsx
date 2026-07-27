@@ -33,8 +33,23 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
 
         <InkDivider className="mb-8 hidden md:block opacity-30" />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#D9D3C7] bg-[#F7F4ED]/80 backdrop-blur-md shadow-paper">
-          {featured.map((campaign, index) => {
+        {featured.length === 0 ? (
+          <div className="border border-[#1D2927] bg-[#FAF8F3] p-12 text-center shadow-paper space-y-6 max-w-xl mx-auto">
+            <h3 className="font-editorial text-3xl text-[#1D2927]">Be the First to Share a Dream</h3>
+            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C] leading-relaxed">
+              No campaigns have been published yet. Start your campaign today and let your community stand beside you.
+            </p>
+            <Link
+              href="/create"
+              className="inline-flex items-center justify-center bg-[#A84D2A] text-[#F7F4ED] h-12 px-8 font-bold text-xs uppercase tracking-widest hover:bg-[#843B20] transition-colors shadow-ink"
+            >
+              Start a Campaign
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#D9D3C7] bg-[#F7F4ED]/80 backdrop-blur-md shadow-paper">
+            {featured.map((campaign, index) => {
+
             const progress = calculateProgress(campaign.raisedAmount, campaign.goalAmount || 0);
             return (
               <FadeIn
@@ -127,7 +142,9 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
             );
           })}
         </div>
+        )}
       </Container>
+
     </section>
   );
 }

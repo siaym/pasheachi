@@ -6,33 +6,41 @@ import { Heart, ShieldCheck, Users, Sparkles } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { FadeIn, RevealText } from "@/components/ui/motion";
 
-export function CommunityImpact() {
+export function CommunityImpact({ stats: customStats }: { stats?: { totalRaised: number; totalSupporters: number; totalCampaigns: number; successRate: number } }) {
+  const activeStats = customStats || {
+    totalRaised: MOCK_STATS.totalRaised,
+    totalSupporters: MOCK_STATS.totalSupporters,
+    totalCampaigns: MOCK_STATS.totalCampaigns,
+    successRate: MOCK_STATS.successRate,
+  };
+
   const stats = [
     {
       label: "Total Support Raised",
-      value: formatCurrency(MOCK_STATS.totalRaised),
+      value: formatCurrency(activeStats.totalRaised),
       subtitle: "Direct financial support transferred",
       icon: Heart,
     },
     {
       label: "Generous Supporters",
-      value: MOCK_STATS.totalSupporters.toLocaleString(),
+      value: activeStats.totalSupporters.toLocaleString(),
       subtitle: "Neighbors, friends, and strangers",
       icon: Users,
     },
     {
       label: "Dreams Supported",
-      value: MOCK_STATS.totalCampaigns.toLocaleString(),
+      value: activeStats.totalCampaigns.toLocaleString(),
       subtitle: "Medical, tuition, and community",
       icon: Sparkles,
     },
     {
       label: "Verified Security",
-      value: `${MOCK_STATS.successRate}%`,
+      value: `${activeStats.successRate}%`,
       subtitle: "Manual MFS transaction audit",
       icon: ShieldCheck,
     },
   ];
+
 
   return (
     <section id="impact" className="py-24 sm:py-32 bg-transparent text-[#1D2927]">

@@ -191,11 +191,12 @@ Your sponsorship helps me dedicate more full-time hours to open source maintenan
 ];
 
 export const MOCK_STATS = {
-  totalRaised: 24500000, // ৳2.45 Crore
-  totalCampaigns: 1247,
-  totalSupporters: 15832,
-  successRate: 94,
+  totalRaised: 0,
+  totalCampaigns: 0,
+  totalSupporters: 0,
+  successRate: 100,
 };
+
 
 export const MOCK_SUCCESS_STORIES: SuccessStory[] = [
   {
@@ -282,3 +283,5 @@ export const MOCK_TRANSACTIONS = [
     method: "Nagad"
   }
 ];
+
+

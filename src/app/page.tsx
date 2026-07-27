@@ -42,12 +42,28 @@ export default async function HomePage() {
     };
   });
 
+  const totalRaisedResult = await prisma.transaction.aggregate({
+    where: { status: "verified" },
+    _sum: { amount: true },
+  });
+  const totalSupportersCount = await prisma.transaction.count({
+    where: { status: "verified" },
+  });
+  const totalCampaignsCount = await prisma.campaign.count();
+
+  const liveStats = {
+    totalRaised: totalRaisedResult._sum.amount || 0,
+    totalSupporters: totalSupportersCount || 0,
+    totalCampaigns: totalCampaignsCount || 0,
+    successRate: 100,
+  };
+
   return (
     <>
       <Hero />
       <LiveActivity transactions={formattedTransactions} />
       <FeaturedStories campaigns={campaigns} />
-      <CommunityImpact />
+      <CommunityImpact stats={liveStats} />
       <PaperCategories />
       <SuccessStories />
       <DonorCommunity />
@@ -58,3 +74,4 @@ export default async function HomePage() {
     </>
   );
 }
+
