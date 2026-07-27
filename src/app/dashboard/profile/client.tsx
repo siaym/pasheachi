@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
-import { User, Mail, Smartphone, Landmark, Save, ShieldCheck } from "lucide-react";
+import { User, Mail, Smartphone, Landmark, Save, ShieldCheck, LogOut } from "lucide-react";
+
 
 import { ImageUploader } from "@/components/shared/image-uploader";
 
@@ -182,9 +183,29 @@ export function ProfileClient({ user }: { user: any }) {
             <p className="text-xs text-[#53605C] mt-6 italic bg-[#EAE5DB] p-4 border-l-2 border-[#1D2927]">
               To add or change withdrawal accounts, please contact PasheAchi support with your verification documents.
             </p>
+
+            {/* Profile Session Log Out */}
+            <div className="mt-8 border-t border-[#D9D3C7] pt-6">
+              <PaperLift className="bg-[#FAF8F3] border border-[#A84D2A] p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="font-editorial text-xl text-[#1D2927]">Session Management</h4>
+                  <p className="font-mono text-xs text-[#53605C] mt-0.5">End your creator session on this browser.</p>
+                </div>
+                <button
+                  onClick={async () => {
+                    const { logoutAction } = await import("@/app/(auth)/actions");
+                    await logoutAction();
+                  }}
+                  className="h-10 px-6 bg-[#A84D2A] text-[#FAF8F3] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#843B20] transition-colors flex items-center gap-2 shadow-ink shrink-0"
+                >
+                  <LogOut className="h-4 w-4" /> Log Out
+                </button>
+              </PaperLift>
+            </div>
           </FadeIn>
         </div>
       </div>
     </div>
   );
 }
+

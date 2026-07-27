@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { ProfileClient } from "../profile/client";
+import { SettingsClient } from "./client";
 import { prisma } from "@/lib/prisma";
 
 export default async function DashboardSettingsPage() {
@@ -11,5 +11,5 @@ export default async function DashboardSettingsPage() {
     where: { id: user.id }
   });
 
-  return <ProfileClient user={fullUser || user} />;
+  return <SettingsClient user={fullUser || user} />;
 }
