@@ -4,11 +4,15 @@ import { useState } from "react";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { User, Mail, Smartphone, Landmark, Save, ShieldCheck } from "lucide-react";
 
+import { ImageUploader } from "@/components/shared/image-uploader";
+
 export function ProfileClient({ user }: { user: any }) {
   const [isSaving, setIsSaving] = useState(false);
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email || "");
   const [bio, setBio] = useState(user.bio || "");
+  const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || "");
+  const [coverUrl, setCoverUrl] = useState(user.coverUrl || "");
 
   const handleSave = () => {
     setIsSaving(true);
@@ -16,6 +20,7 @@ export function ProfileClient({ user }: { user: any }) {
       setIsSaving(false);
     }, 1000);
   };
+
 
   return (
     <div className="space-y-12 pb-24">
@@ -46,23 +51,33 @@ export function ProfileClient({ user }: { user: any }) {
               </h3>
               
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                  {/* Avatar Placeholder */}
-                  <div className="h-24 w-24 rounded-full bg-[#EAE5DB] border-2 border-[#1D2927] flex items-center justify-center overflow-hidden shrink-0">
-                    <User className="h-10 w-10 text-[#53605C]" />
-                  </div>
-                  <div className="space-y-2 flex-1">
-                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ImageUploader
+                    value={avatarUrl}
+                    onChange={setAvatarUrl}
+                    label="Profile Avatar Photo"
+                    aspectRatio="square"
+                  />
+                  <ImageUploader
+                    value={coverUrl}
+                    onChange={setCoverUrl}
+                    label="Profile Cover Banner"
+                    aspectRatio="banner"
+                  />
                 </div>
+
+                <div className="space-y-2">
+                  <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-transparent border-b border-[#D9D3C7] focus:border-[#1D2927] py-2 font-mono text-lg text-[#1D2927] outline-none transition-colors"
+                  />
+                </div>
+
 
                 <div className="space-y-2">
                   <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B] flex items-center gap-2">

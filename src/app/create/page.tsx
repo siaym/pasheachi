@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createCampaignAction } from "./actions";
+import { ImageUploader } from "@/components/shared/image-uploader";
+
 
 export default function CreateCampaignPage() {
   const router = useRouter();
@@ -345,16 +347,14 @@ export default function CreateCampaignPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="relative">
-                      <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
-                        Image Gallery (Cover & Details) *
-                      </label>
-                      <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#1D2927] bg-[#EAE5DB]/50 cursor-pointer hover:bg-[#EAE5DB] transition-colors">
-                        <Upload className="h-6 w-6 text-[#1D2927] mb-2" />
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927]">
-                          Upload Images
-                        </span>
-                      </div>
+                      <ImageUploader 
+                        value={coverImageUrl} 
+                        onChange={setCoverImageUrl} 
+                        label="Campaign Cover Photo (Upload or Select Preset)" 
+                        aspectRatio="landscape"
+                      />
                     </div>
+
 
                     <div className="relative">
                       <label className="block font-mono text-[10px] uppercase tracking-widest text-[#53605C] mb-4">
