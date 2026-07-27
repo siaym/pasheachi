@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CampaignDetailClient } from "./client";
 
@@ -8,11 +8,18 @@ export default async function CampaignDetailPage({
   params: Promise<{ username: string; campaign: string }>;
 }) {
   const { username, campaign: campaignSlug } = await params;
-  const cleanUsername = username.replace(/^(@|%40)/, "").toLowerCase();
+  const decodedUsername = decodeURIComponent(username);
+  const cleanUsername = decodedUsername.replace(/^@/, "").toLowerCase();
+
+  // Canonical URL redirection (e.g., /siyam/help-rina -> /@siyam/help-rina)
+  if (decodedUsername !== `@${cleanUsername}`) {
+    redirect(`/@${cleanUsername}/${campaignSlug}`);
+  }
 
   const campaign = await prisma.campaign.findFirst({
     where: { 
       slug: campaignSlug,
+      status: { in: ["active", "completed"] },
       creator: { username: cleanUsername }
     },
     include: {
@@ -32,3 +39,4 @@ export default async function CampaignDetailPage({
     />
   );
 }
+

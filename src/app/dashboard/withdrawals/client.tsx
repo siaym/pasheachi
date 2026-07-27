@@ -187,23 +187,56 @@ export function WithdrawalsClient({ availableBalance }: { availableBalance: numb
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
-                  Account Number
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={accountNo}
-                  onChange={(e) => setAccountNo(e.target.value)}
-                  className="h-12 w-full bg-transparent border-b border-[#D9D3C7] font-mono text-xl text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
-                />
-              </div>
+              {method === "bank" ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B] mb-1">
+                      Bank & Branch Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Dutch-Bangla Bank, Dhanmondi Branch"
+                      value={accountNo}
+                      onChange={(e) => setAccountNo(e.target.value)}
+                      className="h-10 w-full bg-transparent border-b border-[#D9D3C7] font-mono text-sm text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                    Mobile Account Number (11-digit)
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="e.g. 01700000000"
+                    value={accountNo}
+                    onChange={(e) => setAccountNo(e.target.value)}
+                    className="h-12 w-full bg-transparent border-b border-[#D9D3C7] font-mono text-xl text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
-                <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
-                  Amount (৳)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
+                    Amount (৳)
+                  </label>
+                  <div className="flex gap-1.5 font-mono text-[9px]">
+                    {[25, 50, 100].map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        onClick={() => setWithdrawAmount(Math.floor((availableBalance * pct) / 100).toString())}
+                        className="px-2 py-0.5 border border-[#D9D3C7] hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all text-[#1D2927]"
+                      >
+                        {pct}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <input
                   type="number"
                   required
@@ -220,11 +253,12 @@ export function WithdrawalsClient({ availableBalance }: { availableBalance: numb
 
               <button 
                 type="submit" 
-                disabled={submitting || Number(withdrawAmount) < 500 || Number(withdrawAmount) > availableBalance}
+                disabled={submitting || Number(withdrawAmount) < 500 || Number(withdrawAmount) > availableBalance || !accountNo}
                 className="w-full h-12 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-xs uppercase tracking-widest hover:bg-[#1D2927]/90 shadow-ink transition-all mt-4 disabled:opacity-50"
               >
                 {submitting ? "Processing..." : "Authorize Payout"}
               </button>
+
             </form>
           </PaperLift>
         </div>

@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import { User, Campaign } from "@/types";
 
+import { formatCurrency, formatCompactNumber } from "@/lib/utils";
+import { Check } from "lucide-react";
+
 export function UserProfileClient({
   user,
   userCampaigns,
@@ -25,10 +28,23 @@ export function UserProfileClient({
   userCampaigns: Campaign[];
 }) {
   const [activeTab, setActiveTab] = useState<"active" | "completed" | "achievements" | "about">("active");
+  const [copied, setCopied] = useState(false);
 
   const activeCampaigns = userCampaigns.filter((c) => c.status === "active");
   const completedCampaigns = userCampaigns.filter((c) => c.status === "completed");
   const pinnedCampaign = userCampaigns.find((c) => c.isPinned);
+
+  const totalRaised = userCampaigns.reduce((sum, c) => sum + (c.raisedAmount || 0), 0);
+  const totalSupporters = userCampaigns.reduce((sum, c) => sum + (c.transactions?.length || 0), 0);
+  const joinedYear = user.createdAt ? new Date(user.createdAt).getFullYear() : 2026;
+
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(`${window.location.origin}/@${user.username}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="min-h-screen pb-20 pt-20">
@@ -69,36 +85,79 @@ export function UserProfileClient({
 
             <div className="space-y-3 pt-4 sm:pt-0 sm:pb-4">
               <FadeIn>
-                <h1 className="font-editorial text-4xl sm:text-5xl font-medium leading-[1.1] text-[#1D2927]">
-                  {user.name}
-                </h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="font-editorial text-4xl sm:text-5xl font-medium leading-[1.1] text-[#1D2927]">
+                    {user.name}
+                  </h1>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-[#355C52] bg-[#E5EEE8] px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#355C52]">
+                    <CheckCircle2 className="h-3 w-3" /> Verified Creator
+                  </span>
+                </div>
               </FadeIn>
               
               <FadeIn delay={0.1}>
                 <div className="font-mono text-xs uppercase tracking-widest text-[#53605C] flex flex-wrap gap-4 items-center">
                   <span className="font-bold text-[#A84D2A]">@{user.username}</span>
                   <span className="w-1 h-1 rounded-full bg-[#D9D3C7]"></span>
-                  {user.location && <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {user.location}</span>}
+                  <span>Joined {joinedYear}</span>
+                  {user.location && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-[#D9D3C7]"></span>
+                      <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {user.location}</span>
+                    </>
+                  )}
                 </div>
               </FadeIn>
 
               <FadeIn delay={0.2} className="pt-2">
-                <div className="flex gap-8 font-mono text-[10px] uppercase tracking-widest text-[#53605C]">
-                  <div><span className="font-bold text-[#A84D2A] text-sm">{userCampaigns.length}</span> Campaigns</div>
+                <div className="flex flex-wrap gap-6 sm:gap-8 font-mono text-[10px] uppercase tracking-widest text-[#53605C] border-t border-dashed border-[#D9D3C7] pt-3">
+                  <div>
+                    <span className="font-bold text-[#1D2927] text-base block">{formatCurrency(totalRaised)}</span>
+                    <span className="text-[#8C7A5B]">Total Raised</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#A84D2A] text-base block">{formatCompactNumber(totalSupporters)}</span>
+                    <span className="text-[#8C7A5B]">Supporters</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#355C52] text-base block">{activeCampaigns.length}</span>
+                    <span className="text-[#8C7A5B]">Active</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#1D2927] text-base block">{completedCampaigns.length}</span>
+                    <span className="text-[#8C7A5B]">Completed</span>
+                  </div>
                 </div>
               </FadeIn>
             </div>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto sm:self-end sm:pb-4">
-            <button className="h-10 px-6 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink active:scale-[0.98]">
-              <Heart className="h-3 w-3" /> Support
-            </button>
-            <button className="h-10 px-4 border border-[#D9D3C7] bg-transparent text-[#1D2927] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all active:scale-[0.98]">
-              <Share2 className="h-3 w-3" /> Share
+            {activeCampaigns.length > 0 && (
+              <a
+                href={`/@${user.username}/${activeCampaigns[0].slug}`}
+                className="h-10 px-6 border border-[#1D2927] bg-[#1D2927] text-[#F7F4ED] font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#FAF8F3] hover:text-[#1D2927] transition-all shadow-ink active:scale-[0.98]"
+              >
+                <Heart className="h-3 w-3" /> Support Cause
+              </a>
+            )}
+            <button
+              onClick={handleShare}
+              className="h-10 px-4 border border-[#D9D3C7] bg-transparent text-[#1D2927] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 hover:border-[#1D2927] hover:bg-[#EAE5DB] transition-all active:scale-[0.98]"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3 w-3 text-[#355C52]" /> Copied Link
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-3 w-3" /> Share Profile
+                </>
+              )}
             </button>
           </div>
         </div>
+
 
         <div className="flex items-end gap-1 sm:gap-2 border-b-2 border-[#1D2927] pt-8">
           {[

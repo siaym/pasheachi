@@ -27,6 +27,23 @@ export async function markNotificationReadAction(notificationId: string) {
   }
 }
 
+export async function markAllNotificationsReadAction() {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Unauthorized" };
+
+  try {
+    await prisma.notification.updateMany({
+      where: { userId: user.id, isRead: false },
+      data: { isRead: true }
+    });
+
+    revalidatePath("/dashboard/notifications");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message || "Failed to mark notifications as read" };
+  }
+}
+
 export async function clearAllNotificationsAction() {
   const user = await getCurrentUser();
   if (!user) return { error: "Unauthorized" };
@@ -42,3 +59,4 @@ export async function clearAllNotificationsAction() {
     return { error: error.message || "Failed to clear notifications" };
   }
 }
+

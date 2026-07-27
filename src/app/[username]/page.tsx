@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { UserProfileClient } from "@/components/profile/user-profile-client";
 
@@ -9,7 +9,13 @@ export default async function UserProfilePage({
 }) {
   const { username } = await params;
   
-  const cleanUsername = username.replace(/^(@|%40)/, "").toLowerCase();
+  const decodedUsername = decodeURIComponent(username);
+  const cleanUsername = decodedUsername.replace(/^@/, "").toLowerCase();
+
+  // Canonical URL redirection (e.g., /siyam or /Siyam -> /@siyam)
+  if (decodedUsername !== `@${cleanUsername}`) {
+    redirect(`/@${cleanUsername}`);
+  }
   
   // Fetch user from DB
   const user = await prisma.user.findUnique({
@@ -20,16 +26,21 @@ export default async function UserProfilePage({
     notFound();
   }
 
-  // Get user's campaigns
+  // Get user's public campaigns only
   const userCampaigns = await prisma.campaign.findMany({
     where: {
-      creator: { username: cleanUsername }
+      creator: { username: cleanUsername },
+      status: { in: ["active", "completed"] }
     },
     include: {
       creator: true,
       transactions: true
+    },
+    orderBy: {
+      createdAt: "desc"
     }
   });
 
   return <UserProfileClient user={user as any} userCampaigns={userCampaigns as any} />;
 }
+

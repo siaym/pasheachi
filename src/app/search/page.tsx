@@ -15,14 +15,16 @@ export default async function SearchPage({
   if (query) {
     campaigns = await prisma.campaign.findMany({
       where: {
+        status: { in: ["active", "completed"] },
         OR: [
           { title: { contains: query, mode: "insensitive" } },
           { description: { contains: query, mode: "insensitive" } },
           { category: { contains: query, mode: "insensitive" } },
+          { location: { contains: query, mode: "insensitive" } },
         ]
       },
       include: { creator: true },
-      take: 10
+      take: 20
     });
 
     users = await prisma.user.findMany({
@@ -35,6 +37,7 @@ export default async function SearchPage({
       take: 10
     });
   }
+
 
   return (
     <Suspense fallback={<div className="min-h-screen pt-32 pb-20 relative bg-[#FDFBF7]"></div>}>

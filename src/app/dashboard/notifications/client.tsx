@@ -3,7 +3,7 @@
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { Bell, Heart, Wallet, CheckCircle2, Megaphone, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { markNotificationReadAction, clearAllNotificationsAction } from "./actions";
+import { markNotificationReadAction, clearAllNotificationsAction, markAllNotificationsReadAction } from "./actions";
 import { useTransition, useState } from "react";
 
 const getIconForType = (type: string) => {
@@ -37,12 +37,21 @@ export function NotificationsClient({ initialNotifications }: { initialNotificat
     });
   };
 
+  const handleMarkAllRead = () => {
+    startTransition(async () => {
+      await markAllNotificationsReadAction();
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    });
+  };
+
   const handleClearAll = () => {
     startTransition(async () => {
       await clearAllNotificationsAction();
       setNotifications([]);
     });
   };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <div className="space-y-8 pb-24">
@@ -51,17 +60,29 @@ export function NotificationsClient({ initialNotifications }: { initialNotificat
         <div>
           <h2 className="font-editorial text-4xl text-[#1D2927] mb-1">Activity Feed</h2>
           <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
-            Stay updated on your campaigns
+            Stay updated on your campaigns {unreadCount > 0 && `• ${unreadCount} unread`}
           </p>
         </div>
-        <button 
-          onClick={handleClearAll}
-          disabled={notifications.length === 0 || isPending}
-          className="h-10 px-4 border border-[#1D2927] text-[#1D2927] font-bold text-[10px] uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors flex items-center gap-2 disabled:opacity-50"
-        >
-          Clear all
-        </button>
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <button 
+              onClick={handleMarkAllRead}
+              disabled={isPending}
+              className="h-10 px-4 border border-[#D9D3C7] bg-[#FAF8F3] text-[#1D2927] font-bold text-[10px] uppercase tracking-widest hover:border-[#1D2927] transition-colors disabled:opacity-50"
+            >
+              Mark all as read
+            </button>
+          )}
+          <button 
+            onClick={handleClearAll}
+            disabled={notifications.length === 0 || isPending}
+            className="h-10 px-4 border border-[#1D2927] text-[#1D2927] font-bold text-[10px] uppercase tracking-widest hover:bg-[#EAE5DB] transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            Clear all
+          </button>
+        </div>
       </FadeIn>
+
 
       <FadeIn delay={0.1}>
         <div className="max-w-3xl space-y-4">

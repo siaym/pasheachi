@@ -39,6 +39,7 @@ export default function CreateCampaignPage() {
   const [goalAmount, setGoalAmount] = useState("");
   const [deadline, setDeadline] = useState("30");
   const [tags, setTags] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
 
   const [story, setStory] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -47,6 +48,7 @@ export default function CreateCampaignPage() {
   const [bkashNumber, setBkashNumber] = useState("");
   const [nagadNumber, setNagadNumber] = useState("");
   const [bankDetails, setBankDetails] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const calculatedGoal = campaignType === "fixed" && fixedAmount && targetParticipants 
     ? (Number(fixedAmount) * Number(targetParticipants)).toString() 
@@ -54,12 +56,14 @@ export default function CreateCampaignPage() {
 
   const handleSubmit = async () => {
     setLoading(true);
+    setErrorMessage("");
     try {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("subtitle", subtitle);
       formData.append("category", category);
       formData.append("campaignType", campaignType);
+      formData.append("coverImageUrl", coverImageUrl);
       
       if (campaignType === "fixed") {
         formData.append("fixedAmount", fixedAmount);
@@ -79,19 +83,20 @@ export default function CreateCampaignPage() {
 
       const result = await createCampaignAction(formData);
       
-      if (result.error) {
-        alert(result.error);
+      if (!result.success || result.error) {
+        setErrorMessage(result.error || "Failed to create campaign");
         setLoading(false);
         return;
       }
       
-      router.push("/dashboard/campaigns");
-    } catch (error) {
+      router.push(result.redirectUrl || "/dashboard/campaigns");
+    } catch (error: any) {
       console.error(error);
-      alert("Something went wrong");
+      setErrorMessage("Something went wrong while creating the campaign.");
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen pt-32 pb-24 relative overflow-hidden bg-[#F8FAFC]">
@@ -127,7 +132,13 @@ export default function CreateCampaignPage() {
             </div>
 
             {/* Application Header (Progress) */}
+            {errorMessage && (
+              <div className="mb-6 rounded-sm border border-[#A84D2A] bg-[#FDF3F0] p-4 text-xs font-mono font-medium text-[#A84D2A]">
+                ⚠️ {errorMessage}
+              </div>
+            )}
             <div className="flex items-center justify-between border-b-2 border-[#1D2927] pb-6 mb-8">
+
               <div className="font-mono text-[10px] uppercase tracking-widest text-[#8C7A5B]">
                 Page {step} of 5
               </div>
