@@ -28,10 +28,11 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       <div className="relative aspect-[4/3] w-full overflow-hidden border border-[#1D2927] bg-[#EAE5DB] mb-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={campaign.coverImageUrl || "/placeholder.jpg"}
+          src={campaign.coverImageUrl || "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop"}
           alt={campaign.title}
           className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
         />
+
         <div className="absolute inset-0 bg-[#A84D2A]/10 mix-blend-multiply pointer-events-none transition-opacity duration-700 group-hover:opacity-0"></div>
 
         {/* Category Overlay (Editorial Stamp) */}

@@ -76,13 +76,14 @@ export function UserProfileClient({
               <div className="w-full h-full relative overflow-hidden border border-[#1D2927] grayscale transition-all duration-700 hover:grayscale-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={user.avatarUrl || "https://i.pravatar.cc/300"}
+                  src={user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1D2927&color=FAF8F3&bold=true`}
                   alt={user.name}
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-[#A84D2A]/10 mix-blend-multiply pointer-events-none"></div>
               </div>
             </PaperLift>
+
 
             <div className="space-y-3 pt-4 sm:pt-0 sm:pb-4">
               <FadeIn>
