@@ -129,11 +129,12 @@ export function CampaignDetailClient({
                 The Story
               </h2>
               <div className="prose prose-stone max-w-none text-base sm:text-lg leading-relaxed text-[#53605C]">
-                {campaign.story.split('\n').map((paragraph: string, idx: number) => (
+                {(campaign.description || campaign.story || "").split('\n').map((paragraph: string, idx: number) => (
                   <p key={idx} className="mb-4">{paragraph}</p>
                 ))}
               </div>
             </FadeIn>
+
 
             <InkDivider />
 
