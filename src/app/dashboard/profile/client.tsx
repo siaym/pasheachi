@@ -6,20 +6,28 @@ import { User, Mail, Smartphone, Landmark, Save, ShieldCheck } from "lucide-reac
 
 import { ImageUploader } from "@/components/shared/image-uploader";
 
+import { updateProfilePageAction } from "../campaigns/[id]/actions";
+
 export function ProfileClient({ user }: { user: any }) {
   const [isSaving, setIsSaving] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email || "");
   const [bio, setBio] = useState(user.bio || "");
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || "");
   const [coverUrl, setCoverUrl] = useState(user.coverUrl || "");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-    }, 1000);
+    setSavedSuccess(false);
+    const result = await updateProfilePageAction(name, bio, avatarUrl, coverUrl);
+    setIsSaving(false);
+    if (result.success) {
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    }
   };
+
 
 
   return (
