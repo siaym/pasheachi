@@ -30,11 +30,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { getCurrentUser } from "@/lib/auth";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html
       lang="en"
@@ -43,11 +47,12 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen flex-col bg-[#F7F4ED] text-[#1D2927] antialiased">
         <BackgroundSystem />
-        <Navbar />
+        <Navbar user={user as any} />
         <main className="flex-1 pb-16 md:pb-0 relative z-10">{children}</main>
         <Footer />
-        <MobileNav />
+        <MobileNav user={user as any} />
       </body>
     </html>
   );
 }
+

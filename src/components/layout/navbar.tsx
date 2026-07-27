@@ -7,7 +7,11 @@ import { Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "@/components/shared/logo";
 
-export function Navbar() {
+import { User } from "@/types";
+import { User as UserIcon, LayoutDashboard, LogOut } from "lucide-react";
+import { logoutAction } from "@/app/(auth)/actions";
+
+export function Navbar({ user }: { user?: User | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -77,9 +81,29 @@ export function Navbar() {
               <Search className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" />
             </Link>
 
-            <Link href="/login" className="hidden sm:inline-block text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors relative">
-              <span className="ink-underline">Sign In</span>
-            </Link>
+            {user ? (
+              <div className="hidden sm:flex items-center gap-4">
+                <Link 
+                  href="/dashboard" 
+                  className="text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors flex items-center gap-1.5"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5 text-[#A84D2A]" />
+                  <span>Dashboard</span>
+                </Link>
+
+                <Link 
+                  href={`/${user.username}`} 
+                  className="text-xs font-bold uppercase tracking-widest text-[#355C52] hover:text-[#1D2927] transition-colors flex items-center gap-1 bg-[#E5EEE8] px-2.5 py-1 rounded-full"
+                >
+                  <UserIcon className="h-3 w-3" />
+                  <span>@{user.username}</span>
+                </Link>
+              </div>
+            ) : (
+              <Link href="/login" className="hidden sm:inline-block text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:text-[#A84D2A] transition-colors relative">
+                <span className="ink-underline">Sign In</span>
+              </Link>
+            )}
 
             <Link 
               href="/create"
@@ -128,9 +152,20 @@ export function Navbar() {
                   <Link href="/search" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927] flex items-center justify-center gap-2">
                     <Search className="h-4 w-4" /> Search
                   </Link>
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927]">
-                    Sign In
-                  </Link>
+                  {user ? (
+                    <>
+                      <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#A84D2A]">
+                        Dashboard
+                      </Link>
+                      <Link href={`/${user.username}`} onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927]">
+                        My Profile (@{user.username})
+                      </Link>
+                    </>
+                  ) : (
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-[#1D2927]">
+                      Sign In
+                    </Link>
+                  )}
                 </div>
               </nav>
             </motion.div>
@@ -140,5 +175,6 @@ export function Navbar() {
     </header>
   );
 }
+
 
 

@@ -5,16 +5,19 @@ import { usePathname } from "next/navigation";
 import { Home, Search, PlusCircle, Bell, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function MobileNav() {
+import { User as UserType } from "@/types";
+
+export function MobileNav({ user }: { user?: UserType | null }) {
   const pathname = usePathname();
 
   const items = [
     { label: "Home", href: "/", icon: Home },
     { label: "Search", href: "/search", icon: Search },
     { label: "Create", href: "/create", icon: PlusCircle, isMain: true },
-    { label: "Alerts", href: "/notifications", icon: Bell },
-    { label: "Profile", href: "/dashboard", icon: User },
+    { label: "Alerts", href: "/dashboard/notifications", icon: Bell },
+    { label: "Profile", href: user ? `/${user.username}` : "/login", icon: User },
   ];
+
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#D9D3C7] bg-[#F7F4ED] px-4 py-2 md:hidden">
