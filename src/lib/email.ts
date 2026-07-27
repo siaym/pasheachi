@@ -6,7 +6,7 @@ export async function sendVerificationEmail(toEmail: string, name: string, verif
   try {
     const code = verificationCode || Math.floor(100000 + Math.random() * 900000).toString();
     const data = await resend.emails.send({
-      from: "PasheAchi <onboarding@resend.dev>",
+      from: "PasheAchi <info@pasheachi.bro.bd>",
       to: [toEmail],
       subject: "Welcome to PasheAchi — Verify your account",
       html: `

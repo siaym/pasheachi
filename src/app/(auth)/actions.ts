@@ -73,15 +73,18 @@ export async function signupAction(formData: FormData) {
     }
   });
 
-  // Trigger verification email via Resend
+  // Trigger verification email via Resend in background without blocking response
   if (user.email) {
-    await sendVerificationEmail(user.email, user.name);
+    sendVerificationEmail(user.email, user.name).catch((err) => {
+      console.error("Async email error:", err);
+    });
   }
 
   await loginSession(user.id);
   
   redirect("/dashboard");
 }
+
 
 export async function logoutAction() {
   await logoutSession();
