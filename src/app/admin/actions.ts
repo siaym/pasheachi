@@ -99,6 +99,32 @@ export async function getAdminNotesAction(targetType: string, targetId: string) 
   return notes;
 }
 
+export async function toggleFeaturedCampaignAction(campaignId: string, isFeatured: boolean) {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Unauthorized" };
+
+  await prisma.campaign.update({
+    where: { id: campaignId },
+    data: { isFeatured },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      actorName: user.name,
+      actorRole: user.role || "SuperAdmin",
+      action: isFeatured ? "FEATURE_CAMPAIGN" : "UNFEATURE_CAMPAIGN",
+      resourceType: "Campaign",
+      resourceId: campaignId,
+      newValue: isFeatured ? "featured" : "standard",
+      reason: isFeatured ? "Featured story enabled for homepage showcase" : "Removed from featured stories",
+    }
+  });
+
+  return { success: true };
+}
+
+
 export async function getAuditLogsAction(resourceType?: string, resourceId?: string) {
   const where: any = {};
   if (resourceType) where.resourceType = resourceType;

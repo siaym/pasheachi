@@ -9,7 +9,7 @@ import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
 import { AdvancedTable } from "@/components/back-office/advanced-table";
 import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
-import { verifyCampaignAction, verifyTransactionAction } from "@/app/admin/actions";
+import { verifyCampaignAction, verifyTransactionAction, toggleFeaturedCampaignAction } from "@/app/admin/actions";
 import { useAdminNav } from "./layout";
 import {
   Building2,
@@ -72,7 +72,6 @@ function AdminClientHubContent({
     setWorkspace(wsId, "overview");
   };
 
-
   const [transactions, setTransactions] = useState(initialTransactions);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [isImpersonateOpen, setIsImpersonateOpen] = useState(false);
@@ -84,6 +83,17 @@ function AdminClientHubContent({
     setFeedbackMsg(msg);
     setTimeout(() => setFeedbackMsg(""), 3000);
   };
+
+  const handleToggleFeatured = (id: string, currentFeatured: boolean) => {
+    startTransition(async () => {
+      const res = await toggleFeaturedCampaignAction(id, !currentFeatured);
+      if (res.success) {
+        setCampaigns(prev => prev.map(c => c.id === id ? { ...c, isFeatured: !currentFeatured } : c));
+        showToast(`Campaign ${!currentFeatured ? 'added to' : 'removed from'} Featured Stories!`);
+      }
+    });
+  };
+
 
   const handleVerifyTransaction = (id: string) => {
     startTransition(async () => {
@@ -642,7 +652,7 @@ function AdminClientHubContent({
                navTab === "emails" ? "Automated Email & Notification Templates" :
                "Platform Content & CMS"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Homepage & Banner Controls</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Homepage & Featured Dreams Controls</p>
           </FadeIn>
 
           <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
@@ -659,6 +669,50 @@ function AdminClientHubContent({
               Update Banner Text
             </button>
           </PaperLift>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-editorial text-2xl text-[#1D2927]">Featured Dreams & Stories Curator Desk</h3>
+                <p className="font-mono text-xs text-[#53605C]">Manage which verified campaigns are featured on the homepage carousel and cards.</p>
+              </div>
+            </div>
+
+            <AdvancedTable
+              title="Featured Stories Curator"
+              columns={[
+                { header: "Title", accessorKey: "title" },
+                { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
+                { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+                { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
+                { header: "Category", accessorKey: "category" },
+                {
+                  header: "Featured Status",
+                  accessorKey: "isFeatured",
+                  cell: (r) => r.isFeatured ? (
+                    <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Featured Story</span>
+                  ) : (
+                    <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">Standard</span>
+                  )
+                },
+                {
+                  header: "Actions",
+                  accessorKey: "id",
+                  cell: (r) => (
+                    <button
+                      onClick={() => handleToggleFeatured(r.id, !!r.isFeatured)}
+                      disabled={isPending}
+                      className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.isFeatured ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#1D2927] text-[#FAF8F3] hover:bg-[#A84D2A]'}`}
+                    >
+                      {r.isFeatured ? "Remove Featured" : "Make Featured Story"}
+                    </button>
+                  )
+                }
+              ]}
+              data={campaigns}
+              searchPlaceholder="Filter campaigns to feature..."
+            />
+          </div>
         </div>
       )}
 
