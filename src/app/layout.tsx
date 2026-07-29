@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     "Open source sponsorship",
   ],
   authors: [{ name: "PasheAchi Team" }],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
+  },
   openGraph: {
     title: "PasheAchi — Stand Beside Every Dream",
     description: "Support creators, students, emergency treatments, and personal dreams across Bangladesh.",
