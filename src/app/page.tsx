@@ -12,6 +12,9 @@ import { Newsletter } from "@/components/landing/newsletter";
 
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const campaigns = await prisma.campaign.findMany({
     include: {

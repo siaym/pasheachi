@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function verifyCampaignAction(campaignId: string, newStatus: "approved" | "rejected", reason: string) {
   const user = await getCurrentUser();
@@ -30,6 +31,10 @@ export async function verifyCampaignAction(campaignId: string, newStatus: "appro
       reason,
     }
   });
+
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/discover", "layout");
 
   return { success: true };
 }
@@ -69,6 +74,9 @@ export async function verifyTransactionAction(transactionId: string, newStatus: 
       reason,
     }
   });
+
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
 
   return { success: true };
 }
@@ -121,6 +129,10 @@ export async function toggleFeaturedCampaignAction(campaignId: string, isFeature
     }
   });
 
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/discover", "layout");
+
   return { success: true };
 }
 
@@ -145,6 +157,9 @@ export async function toggleSuccessStoryAction(campaignId: string, isCompleted: 
       reason: isCompleted ? "Marked as completed Success Story for homepage slider" : "Reverted to active status",
     }
   });
+
+  revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
 
   return { success: true };
 }
