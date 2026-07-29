@@ -132,6 +132,9 @@ export async function toggleFeaturedCampaignAction(campaignId: string, isFeature
   revalidatePath("/", "layout");
   revalidatePath("/admin", "layout");
   revalidatePath("/discover", "layout");
+  revalidatePath("/", "page");
+  revalidatePath("/admin", "page");
+  revalidatePath("/discover", "page");
 
   return { success: true };
 }
@@ -160,6 +163,8 @@ export async function toggleSuccessStoryAction(campaignId: string, isCompleted: 
 
   revalidatePath("/", "layout");
   revalidatePath("/admin", "layout");
+  revalidatePath("/", "page");
+  revalidatePath("/admin", "page");
 
   return { success: true };
 }

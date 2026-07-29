@@ -72,6 +72,7 @@ function AdminClientHubContent({
     setWorkspace(wsId, "overview");
   };
 
+  const router = useRouter();
   const [transactions, setTransactions] = useState(initialTransactions);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [isImpersonateOpen, setIsImpersonateOpen] = useState(false);
@@ -90,6 +91,7 @@ function AdminClientHubContent({
       if (res.success) {
         setCampaigns(prev => prev.map(c => c.id === id ? { ...c, isFeatured: !currentFeatured } : c));
         showToast(`Campaign ${!currentFeatured ? 'added to' : 'removed from'} Featured Stories!`);
+        router.refresh();
       }
     });
   };
@@ -101,6 +103,7 @@ function AdminClientHubContent({
       if (res.success) {
         setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: !isCompleted ? "completed" : "active" } : c));
         showToast(`Campaign ${!isCompleted ? 'marked as' : 'removed from'} Success Stories!`);
+        router.refresh();
       }
     });
   };
