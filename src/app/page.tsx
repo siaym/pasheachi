@@ -70,6 +70,16 @@ export default async function HomePage() {
     successRate: 100,
   };
 
+  const completedCampaigns = await prisma.campaign.findMany({
+    where: { status: "completed" },
+    include: {
+      creator: true,
+      transactions: true,
+    },
+    take: 10,
+    orderBy: { updatedAt: "desc" },
+  });
+
   return (
     <>
       <Hero campaign={featuredCampaign} />
@@ -77,7 +87,7 @@ export default async function HomePage() {
       <FeaturedStories campaigns={latestCampaigns} />
       <CommunityImpact stats={liveStats} />
       <PaperCategories />
-      <SuccessStories campaigns={latestCampaigns} />
+      <SuccessStories campaigns={completedCampaigns} />
       <DonorCommunity />
       <HowItWorks />
       <TrustSection />
