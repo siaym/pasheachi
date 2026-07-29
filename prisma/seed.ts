@@ -4,16 +4,9 @@ import { MOCK_USERS, MOCK_CAMPAIGNS, MOCK_TRANSACTIONS } from '../src/data/mock'
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding...');
+  console.log('Start non-destructive seeding...');
 
-  // Clean existing data
-  await prisma.verificationDocument.deleteMany();
-  await prisma.notification.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.transaction.deleteMany();
-  await prisma.milestone.deleteMany();
-  await prisma.campaign.deleteMany();
-  await prisma.user.deleteMany();
+  // Safe seeding without deleteMany to preserve user-created accounts & campaigns
 
   // Create Users
   for (const key of Object.keys(MOCK_USERS)) {
@@ -33,30 +26,36 @@ async function main() {
     });
     console.log(`Created user with id: ${user.id}`);
 
-    // Seed KYC documents for creator
-    await prisma.verificationDocument.create({
-      data: {
-        documentType: "National ID (Front)",
-        storageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-        mimeType: "image/png",
-        size: 345000,
-        status: "verified",
-        remarks: "NID Front authenticated via Bangladesh Election Commission API stub",
-        creatorId: user.id,
-      }
+    // Seed KYC documents for creator safely if not present
+    const existingDoc = await prisma.verificationDocument.findFirst({
+      where: { creatorId: user.id, documentType: "National ID (Front)" }
     });
 
-    await prisma.verificationDocument.create({
-      data: {
-        documentType: "Biometric Selfie with NID",
-        storageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-        mimeType: "image/jpeg",
-        size: 512000,
-        status: "verified",
-        remarks: "Face match confidence score 99.4%",
-        creatorId: user.id,
-      }
-    });
+    if (!existingDoc) {
+      await prisma.verificationDocument.create({
+        data: {
+          documentType: "National ID (Front)",
+          storageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+          mimeType: "image/png",
+          size: 345000,
+          status: "verified",
+          remarks: "NID Front authenticated via Bangladesh Election Commission API stub",
+          creatorId: user.id,
+        }
+      });
+
+      await prisma.verificationDocument.create({
+        data: {
+          documentType: "Biometric Selfie with NID",
+          storageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
+          mimeType: "image/jpeg",
+          size: 512000,
+          status: "verified",
+          remarks: "Face match confidence score 99.4%",
+          creatorId: user.id,
+        }
+      });
+    }
   }
 
   // Create Campaigns
@@ -89,45 +88,51 @@ async function main() {
     });
     console.log(`Created campaign with id: ${campaign.id}`);
 
-    // Create verification documents for this campaign
-    await prisma.verificationDocument.create({
-      data: {
-        documentType: "National ID (Front)",
-        storageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-        mimeType: "image/png",
-        size: 345000,
-        status: "verified",
-        remarks: "Creator NID verified against Election Commission database",
-        campaignId: campaign.id,
-        creatorId: mockCampaign.creator.id,
-      }
+    // Create verification documents for this campaign safely if not present
+    const existingCmpDoc = await prisma.verificationDocument.findFirst({
+      where: { campaignId: campaign.id }
     });
 
-    await prisma.verificationDocument.create({
-      data: {
-        documentType: "Medical Certificate / Clinical Summary",
-        storageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
-        mimeType: "application/pdf",
-        size: 1240000,
-        status: "verified",
-        remarks: "Signed by Senior Consultant Cardiologist",
-        campaignId: campaign.id,
-        creatorId: mockCampaign.creator.id,
-      }
-    });
+    if (!existingCmpDoc) {
+      await prisma.verificationDocument.create({
+        data: {
+          documentType: "National ID (Front)",
+          storageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+          mimeType: "image/png",
+          size: 345000,
+          status: "verified",
+          remarks: "Creator NID verified against Election Commission database",
+          campaignId: campaign.id,
+          creatorId: mockCampaign.creator.id,
+        }
+      });
 
-    await prisma.verificationDocument.create({
-      data: {
-        documentType: "Hospital Cost Estimate & Quotation",
-        storageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
-        mimeType: "application/pdf",
-        size: 890000,
-        status: "verified",
-        remarks: "Hospital billing department verified quotation",
-        campaignId: campaign.id,
-        creatorId: mockCampaign.creator.id,
-      }
-    });
+      await prisma.verificationDocument.create({
+        data: {
+          documentType: "Medical Certificate / Clinical Summary",
+          storageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+          mimeType: "application/pdf",
+          size: 1240000,
+          status: "verified",
+          remarks: "Signed by Senior Consultant Cardiologist",
+          campaignId: campaign.id,
+          creatorId: mockCampaign.creator.id,
+        }
+      });
+
+      await prisma.verificationDocument.create({
+        data: {
+          documentType: "Hospital Cost Estimate & Quotation",
+          storageUrl: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
+          mimeType: "application/pdf",
+          size: 890000,
+          status: "verified",
+          remarks: "Hospital billing department verified quotation",
+          campaignId: campaign.id,
+          creatorId: mockCampaign.creator.id,
+        }
+      });
+    }
 
     // Create Milestones for this campaign
     if (mockCampaign.milestones) {
