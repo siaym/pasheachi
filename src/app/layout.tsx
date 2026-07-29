@@ -26,6 +26,12 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${fontHeading.variable} ${fontSerif.variable} ${fontBody.variable} ${fontMono.variable} ${fontBengali.variable} ${fontScript.variable}`}
     >
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/icon.png" type="image/png" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+      </head>
       <body className="flex min-h-screen flex-col bg-[#F7F4ED] text-[#1D2927] antialiased">
         <OrganizationJsonLd />
         <WebSiteJsonLd />

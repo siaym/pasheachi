@@ -85,11 +85,12 @@ export function constructMetadata({
     },
     icons: {
       icon: [
+        { url: "/favicon.ico", sizes: "32x32" },
+        { url: "/icon.png", type: "image/png", sizes: "64x64" },
         { url: "/icon.svg", type: "image/svg+xml" },
-        { url: "/favicon.ico" },
       ],
-      shortcut: ["/icon.svg"],
-      apple: ["/icon.svg"],
+      shortcut: ["/favicon.ico"],
+      apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
     },
     ...(SITE_CONFIG.verifications.google || SITE_CONFIG.verifications.bing
       ? {
