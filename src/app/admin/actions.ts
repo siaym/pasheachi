@@ -53,13 +53,17 @@ export async function verifyTransactionAction(transactionId: string, newStatus: 
     data: { status: newStatus }
   });
 
-  // If verifying, update campaign raised amount
-  if (newStatus === "verified" && oldStatus === "pending") {
-    await prisma.campaign.update({
-      where: { id: tx.campaignId },
-      data: { raisedAmount: { increment: tx.amount } }
-    });
-  }
+  // Recalculate exact total raised amount for campaign from all verified transactions
+  const verifiedSum = await prisma.transaction.aggregate({
+    where: { campaignId: tx.campaignId, status: "verified" },
+    _sum: { amount: true }
+  });
+
+  const updatedCampaign = await prisma.campaign.update({
+    where: { id: tx.campaignId },
+    data: { raisedAmount: verifiedSum._sum.amount || 0 },
+    include: { creator: true }
+  });
 
   await prisma.auditLog.create({
     data: {
@@ -77,6 +81,11 @@ export async function verifyTransactionAction(transactionId: string, newStatus: 
 
   revalidatePath("/", "layout");
   revalidatePath("/admin", "layout");
+  revalidatePath("/discover", "layout");
+  if (updatedCampaign.creator?.username && updatedCampaign.slug) {
+    revalidatePath(`/${updatedCampaign.creator.username}/${updatedCampaign.slug}`, "layout");
+    revalidatePath(`/${updatedCampaign.creator.username}/${updatedCampaign.slug}`, "page");
+  }
 
   return { success: true };
 }
