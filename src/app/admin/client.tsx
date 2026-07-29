@@ -8,6 +8,9 @@ import { formatCurrency } from "@/lib/utils";
 import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
 import { AdvancedTable } from "@/components/back-office/advanced-table";
 import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
+import { VerificationSettingsHub } from "@/components/back-office/workspaces/VerificationSettingsHub";
+import { EmailCenterHub } from "@/components/back-office/workspaces/EmailCenterHub";
+import { FeatureFlagsHub } from "@/components/back-office/workspaces/FeatureFlagsHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
 import { verifyCampaignAction, verifyTransactionAction, toggleFeaturedCampaignAction, toggleSuccessStoryAction } from "@/app/admin/actions";
 import { useAdminNav } from "./layout";
@@ -677,112 +680,118 @@ function AdminClientHubContent({
           <FadeIn className="border-b border-[#D9D3C7] pb-4">
             <h1 className="font-editorial text-4xl text-[#1D2927]">
               {navTab === "homepage" ? "Homepage Curator & Featured Stories" :
-               navTab === "emails" ? "Automated Email & Notification Templates" :
+               navTab === "emails" ? "Resend Email & Communication Center" :
                "Platform Content & CMS"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Homepage & Featured Dreams Controls</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Homepage & Content Controls</p>
           </FadeIn>
 
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
-            <h3 className="font-editorial text-2xl text-[#1D2927]">Global Announcement Banner</h3>
-            <input
-              type="text"
-              defaultValue="Emergency Sylhet Flood Relief: 100% of contributions reach families directly."
-              className="w-full h-10 px-4 border border-[#D9D3C7] bg-[#F7F4ED] font-mono text-xs focus:outline-none focus:border-[#1D2927]"
-            />
-            <button
-              onClick={() => showToast("Announcement bar updated!")}
-              className="h-9 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase"
-            >
-              Update Banner Text
-            </button>
-          </PaperLift>
+          {navTab === "emails" ? (
+            <EmailCenterHub showToast={showToast} />
+          ) : (
+            <>
+              <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
+                <h3 className="font-editorial text-2xl text-[#1D2927]">Global Announcement Banner</h3>
+                <input
+                  type="text"
+                  defaultValue="Emergency Sylhet Flood Relief: 100% of contributions reach families directly."
+                  className="w-full h-10 px-4 border border-[#D9D3C7] bg-[#F7F4ED] font-mono text-xs focus:outline-none focus:border-[#1D2927]"
+                />
+                <button
+                  onClick={() => showToast("Announcement bar updated!")}
+                  className="h-9 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase"
+                >
+                  Update Banner Text
+                </button>
+              </PaperLift>
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-editorial text-2xl text-[#1D2927]">Featured Dreams & Stories Curator Desk</h3>
-                <p className="font-mono text-xs text-[#53605C]">Manage which verified campaigns are featured on the homepage carousel and cards.</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-editorial text-2xl text-[#1D2927]">Featured Dreams & Stories Curator Desk</h3>
+                    <p className="font-mono text-xs text-[#53605C]">Manage which verified campaigns are featured on the homepage carousel and cards.</p>
+                  </div>
+                </div>
+
+                <AdvancedTable
+                  title="Featured Stories Curator"
+                  columns={[
+                    { header: "Title", accessorKey: "title" },
+                    { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
+                    { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+                    { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
+                    { header: "Category", accessorKey: "category" },
+                    {
+                      header: "Featured Status",
+                      accessorKey: "isFeatured",
+                      cell: (r) => r.isFeatured ? (
+                        <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Featured Story</span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">Standard</span>
+                      )
+                    },
+                    {
+                      header: "Actions",
+                      accessorKey: "id",
+                      cell: (r) => (
+                        <button
+                          onClick={() => handleToggleFeatured(r.id, !!r.isFeatured)}
+                          disabled={isPending}
+                          className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.isFeatured ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#1D2927] text-[#FAF8F3] hover:bg-[#A84D2A]'}`}
+                        >
+                          {r.isFeatured ? "Remove Featured" : "Make Featured Story"}
+                        </button>
+                      )
+                    }
+                  ]}
+                  data={campaigns}
+                  searchPlaceholder="Filter campaigns to feature..."
+                />
               </div>
-            </div>
 
-            <AdvancedTable
-              title="Featured Stories Curator"
-              columns={[
-                { header: "Title", accessorKey: "title" },
-                { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
-                { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
-                { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
-                { header: "Category", accessorKey: "category" },
-                {
-                  header: "Featured Status",
-                  accessorKey: "isFeatured",
-                  cell: (r) => r.isFeatured ? (
-                    <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Featured Story</span>
-                  ) : (
-                    <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">Standard</span>
-                  )
-                },
-                {
-                  header: "Actions",
-                  accessorKey: "id",
-                  cell: (r) => (
-                    <button
-                      onClick={() => handleToggleFeatured(r.id, !!r.isFeatured)}
-                      disabled={isPending}
-                      className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.isFeatured ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#1D2927] text-[#FAF8F3] hover:bg-[#A84D2A]'}`}
-                    >
-                      {r.isFeatured ? "Remove Featured" : "Make Featured Story"}
-                    </button>
-                  )
-                }
-              ]}
-              data={campaigns}
-              searchPlaceholder="Filter campaigns to feature..."
-            />
-          </div>
+              <div className="space-y-4 pt-6 border-t border-[#D9D3C7]">
+                <div>
+                  <h3 className="font-editorial text-2xl text-[#1D2927]">Success Stories Curator (&quot;The pages we write together&quot;)</h3>
+                  <p className="font-mono text-xs text-[#53605C]">Manage completed campaigns featured on the homepage Success Stories carousel.</p>
+                </div>
 
-          <div className="space-y-4 pt-6 border-t border-[#D9D3C7]">
-            <div>
-              <h3 className="font-editorial text-2xl text-[#1D2927]">Success Stories Curator (&quot;The pages we write together&quot;)</h3>
-              <p className="font-mono text-xs text-[#53605C]">Manage completed campaigns featured on the homepage Success Stories carousel.</p>
-            </div>
-
-            <AdvancedTable
-              title="Success Stories Curator"
-              columns={[
-                { header: "Title", accessorKey: "title" },
-                { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
-                { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
-                { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
-                { header: "Status", accessorKey: (r) => r.status },
-                {
-                  header: "Success Story Badge",
-                  accessorKey: "status",
-                  cell: (r) => r.status === "completed" ? (
-                    <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified Success</span>
-                  ) : (
-                    <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">In Progress</span>
-                  )
-                },
-                {
-                  header: "Actions",
-                  accessorKey: "id",
-                  cell: (r) => (
-                    <button
-                      onClick={() => handleToggleSuccessStory(r.id, r.status)}
-                      disabled={isPending}
-                      className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.status === "completed" ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#355C52] text-[#FAF8F3] hover:bg-[#1D2927]'}`}
-                    >
-                      {r.status === "completed" ? "Remove Success Story" : "Mark as Success Story"}
-                    </button>
-                  )
-                }
-              ]}
-              data={campaigns}
-              searchPlaceholder="Filter campaigns for success stories..."
-            />
-          </div>
+                <AdvancedTable
+                  title="Success Stories Curator"
+                  columns={[
+                    { header: "Title", accessorKey: "title" },
+                    { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
+                    { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+                    { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
+                    { header: "Status", accessorKey: (r) => r.status },
+                    {
+                      header: "Success Story Badge",
+                      accessorKey: "status",
+                      cell: (r) => r.status === "completed" ? (
+                        <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified Success</span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">In Progress</span>
+                      )
+                    },
+                    {
+                      header: "Actions",
+                      accessorKey: "id",
+                      cell: (r) => (
+                        <button
+                          onClick={() => handleToggleSuccessStory(r.id, r.status)}
+                          disabled={isPending}
+                          className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.status === "completed" ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#355C52] text-[#FAF8F3] hover:bg-[#1D2927]'}`}
+                        >
+                          {r.status === "completed" ? "Remove Success Story" : "Mark as Success Story"}
+                        </button>
+                      )
+                    }
+                  ]}
+                  data={campaigns}
+                  searchPlaceholder="Filter campaigns for success stories..."
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -792,11 +801,17 @@ function AdminClientHubContent({
           <FadeIn className="border-b border-[#D9D3C7] pb-4">
             <h1 className="font-editorial text-4xl text-[#1D2927]">
               {navTab === "maintenance" ? "Maintenance Mode & Feature Flags" :
-               navTab === "security" ? "Security Parameters & Active Sessions" :
+               navTab === "verification_settings" ? "Document Verification Settings" :
                "Platform Configuration"}
             </h1>
             <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">System Controls & Feature Flags</p>
           </FadeIn>
+
+          <VerificationSettingsHub showToast={showToast} />
+          
+          <div className="pt-6 border-t border-[#D9D3C7]">
+            <FeatureFlagsHub showToast={showToast} />
+          </div>
 
           <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-6 shadow-paper space-y-6">
             <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4">

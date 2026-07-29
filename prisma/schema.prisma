@@ -19,6 +19,11 @@ model User {
   avatarUrl String?
   coverUrl  String?
   role      String   @default("user")
+  status    String   @default("active") // active, suspended, banned
+  banReason String?  @db.Text
+  banExpiresAt DateTime?
+  lastLoginIp  String?
+  lastLoginAt  DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -47,6 +52,8 @@ model Campaign {
   isFeatured     Boolean  @default(false)
   isPinned       Boolean  @default(false)
   status         String   @default("active")
+  deletedAt      DateTime?
+  pausedAt       DateTime?
 
   bkashNumber    String?
   nagadNumber    String?
@@ -62,6 +69,7 @@ model Campaign {
   transactions   Transaction[]
   updates        Update[]
   withdrawals    Withdrawal[]
+  reports        Report[]
 }
 
 model Milestone {
@@ -175,5 +183,68 @@ model Withdrawal {
 
   @@index([status])
   @@index([creatorId])
+}
+
+model VerificationSettings {
+  id                              String   @id @default("default")
+  requireNid                      Boolean  @default(true)
+  requireSelfie                   Boolean  @default(true)
+  requireMedicalCert              Boolean  @default(true)
+  requireHospitalQuotation        Boolean  @default(true)
+  requireIncomeProof              Boolean  @default(false)
+  requireGuardianDoc              Boolean  @default(false)
+  requireSupportingImages        Boolean  @default(true)
+  requireAdditionalAttachments   Boolean  @default(false)
+  updatedAt                       DateTime @updatedAt
+}
+
+model FeatureFlag {
+  id          String   @id
+  key         String   @unique
+  enabled     Boolean  @default(true)
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model EmailLog {
+  id             String   @id @default(cuid())
+  recipientEmail String
+  recipientName  String?
+  subject        String
+  body           String   @db.Text
+  templateName   String?
+  status         String   @default("sent") // sent, failed
+  senderId       String?
+  createdAt      DateTime @default(now())
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  body        String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Report {
+  id              String   @id @default(cuid())
+  targetType      String   // Campaign, User
+  targetId        String
+  reporterName    String   @default("Anonymous User")
+  reason          String   @db.Text
+  status          String   @default("under_review") // under_review, resolved, dismissed
+  priority        String   @default("NORMAL") // NORMAL, HIGH, URGENT
+  assignedTo      String?
+  resolutionNotes String?  @db.Text
+
+  campaignId      String?
+  campaign        Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([targetType, targetId])
+  @@index([status])
 }
 
