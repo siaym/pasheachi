@@ -36,9 +36,25 @@ export default async function CampaignDetailPage({
     notFound();
   }
 
+  // Calculate live verified raised amount from database verified transactions
+  const verifiedTxSum = await prisma.transaction.aggregate({
+    where: {
+      campaignId: campaign.id,
+      status: "verified"
+    },
+    _sum: { amount: true }
+  });
+
+  const liveRaisedAmount = verifiedTxSum._sum.amount ?? campaign.raisedAmount ?? 0;
+
+  const campaignWithLiveAmount = {
+    ...campaign,
+    raisedAmount: liveRaisedAmount
+  };
+
   return (
     <CampaignDetailClient 
-      campaign={campaign as any} 
+      campaign={campaignWithLiveAmount as any} 
       creator={campaign.creator as any} 
     />
   );

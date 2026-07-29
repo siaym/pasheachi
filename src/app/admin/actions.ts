@@ -83,6 +83,9 @@ export async function verifyTransactionAction(transactionId: string, newStatus: 
   revalidatePath("/admin", "layout");
   revalidatePath("/discover", "layout");
   if (updatedCampaign.creator?.username && updatedCampaign.slug) {
+    const uName = updatedCampaign.creator.username.toLowerCase();
+    revalidatePath(`/${uName}/${updatedCampaign.slug}`, "layout");
+    revalidatePath(`/${uName}/${updatedCampaign.slug}`, "page");
     revalidatePath(`/${updatedCampaign.creator.username}/${updatedCampaign.slug}`, "layout");
     revalidatePath(`/${updatedCampaign.creator.username}/${updatedCampaign.slug}`, "page");
   }
