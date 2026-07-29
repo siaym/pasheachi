@@ -190,6 +190,7 @@ function BackOfficeLayoutContent({
 
               <div className="flex items-center gap-2 font-mono text-xs text-[#F7F4ED] border-l border-[#53605C] pl-3">
                 <span className="font-bold text-[#A84D2A]">SuperAdmin</span>
+                <span className="bg-[#2F3E3B] px-1.5 py-0.5 border border-[#53605C] text-[9px] font-bold text-[#D9D3C7]">ID: usr-admin-1</span>
                 <span className="text-[10px] text-[#D9D3C7] hidden sm:inline">(saifulsiam10000@gmail.com)</span>
               </div>
 
