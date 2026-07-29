@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { formatCurrency } from "@/lib/utils";
 import { StatusTimeline } from "@/components/back-office/status-timeline";
+import { FilePreviewTrigger } from "@/components/back-office/file-preview";
 import { verifyTransactionAction, addAdminNoteAction } from "@/app/admin/actions";
 import {
   ArrowLeft, Wallet, User, Megaphone, Phone, Calendar,
@@ -148,6 +149,28 @@ export function TransactionInvestigationClient({
                 <div className="text-[10px] uppercase text-[#8C7A5B] font-bold flex items-center gap-1"><Hash className="h-3 w-3" /> Reference ID</div>
                 <div className="text-[#1D2927] font-bold mt-1">{transaction.referenceId || "N/A"}</div>
               </div>
+            </div>
+          </PaperLift>
+
+          {/* MFS Payment Screenshot Evidence */}
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
+              <h3 className="font-editorial text-xl text-[#1D2927]">MFS Payment Proof Screenshot</h3>
+              <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] border border-[#355C52] font-mono text-[9px] font-bold uppercase">
+                Submitted Evidence
+              </span>
+            </div>
+
+            <div className="h-56 bg-[#EAE5DB] border border-[#D9D3C7] relative flex items-center justify-center overflow-hidden">
+              <FilePreviewTrigger 
+                url={transaction.proofUrl || "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"} 
+                label={`Payment Screenshot (${transaction.method})`} 
+              />
+            </div>
+            
+            <div className="flex justify-between items-center font-mono text-xs text-[#53605C]">
+              <span>MFS Provider: {transaction.method}</span>
+              <span>Trx ID: {transaction.referenceId || transaction.id}</span>
             </div>
           </PaperLift>
 

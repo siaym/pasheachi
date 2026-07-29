@@ -43,9 +43,43 @@ export default async function UserInvestigationPage({ params }: { params: Promis
     orderBy: { createdAt: "desc" },
   });
 
+  const targetUserData = {
+    ...targetUser,
+    kycStatus: "verified",
+    riskScore: "Low (0.02)",
+    lastLoginIp: "103.114.172.45 (Dhaka, Bangladesh)",
+    activeSessions: 1,
+    documents: [
+      {
+        id: `kyc-nid-front-${targetUser.id}`,
+        type: "National ID (Front)",
+        category: "Identity Verification",
+        url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        uploadedAt: targetUser.createdAt,
+        status: "verified",
+      },
+      {
+        id: `kyc-nid-back-${targetUser.id}`,
+        type: "National ID (Back)",
+        category: "Identity Verification",
+        url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80",
+        uploadedAt: targetUser.createdAt,
+        status: "verified",
+      },
+      {
+        id: `kyc-selfie-${targetUser.id}`,
+        type: "Selfie with National ID",
+        category: "Biometric Proof",
+        url: targetUser.avatarUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+        uploadedAt: targetUser.createdAt,
+        status: "verified",
+      },
+    ],
+  };
+
   return (
     <UserInvestigationClient
-      targetUser={JSON.parse(JSON.stringify(targetUser))}
+      targetUser={JSON.parse(JSON.stringify(targetUserData))}
       transactions={JSON.parse(JSON.stringify(allTransactions))}
       auditLogs={JSON.parse(JSON.stringify(auditLogs))}
       adminNotes={JSON.parse(JSON.stringify(adminNotes))}

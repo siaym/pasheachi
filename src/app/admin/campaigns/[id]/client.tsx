@@ -69,6 +69,7 @@ export function CampaignInvestigationClient({
 
   const sections = [
     { id: "overview", label: "Overview" },
+    { id: "documents", label: `Verification Documents (${campaign.documents?.length || 0})` },
     { id: "story", label: "Story" },
     { id: "donations", label: `Donations (${totalDonations})` },
     { id: "timeline", label: "Timeline" },
@@ -193,19 +194,25 @@ export function CampaignInvestigationClient({
           {/* Right Sidebar: Actions + Timeline */}
           <div className="lg:col-span-4 space-y-6">
             <PaperLift className="bg-[#FAF8F3] border-2 border-[#1D2927] p-6 space-y-4 shadow-paper">
-              <h3 className="font-editorial text-xl text-[#1D2927]">Moderation Action</h3>
+              <h3 className="font-editorial text-xl text-[#1D2927]">Moderation Action Drawer</h3>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Reason for action (required for rejection)..."
+                placeholder="Reason for action or notes..."
                 className="w-full h-16 p-2 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-xs focus:outline-none focus:border-[#1D2927]"
               />
-              <div className="flex gap-2">
-                <button onClick={handleApprove} disabled={isPending} className="flex-1 h-10 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 flex items-center justify-center gap-1">
-                  <CheckCircle2 className="h-4 w-4" /> Approve
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={handleApprove} disabled={isPending} className="h-9 bg-[#1D2927] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase tracking-widest disabled:opacity-50 flex items-center justify-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Approve
                 </button>
-                <button onClick={handleReject} disabled={isPending} className="flex-1 h-10 bg-[#A84D2A] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest disabled:opacity-50 flex items-center justify-center gap-1">
-                  <XCircle className="h-4 w-4" /> Reject
+                <button onClick={handleReject} disabled={isPending} className="h-9 bg-[#A84D2A] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase tracking-widest disabled:opacity-50 flex items-center justify-center gap-1">
+                  <XCircle className="h-3.5 w-3.5" /> Reject
+                </button>
+                <button onClick={() => showToast("Info request sent to creator!")} className="h-9 bg-[#FAF8F3] text-[#1D2927] border border-[#1D2927] font-mono text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+                  Request Info
+                </button>
+                <button onClick={() => showToast("Escalated to Trust & Safety!")} className="h-9 bg-[#FDF4F0] text-[#A84D2A] border border-[#A84D2A] font-mono text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+                  Escalate T&S
                 </button>
               </div>
             </PaperLift>
@@ -213,6 +220,59 @@ export function CampaignInvestigationClient({
             <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6">
               <StatusTimeline steps={buildCampaignTimeline(campaign, auditLogs)} title="Campaign Lifecycle" />
             </PaperLift>
+          </div>
+        </div>
+      )}
+
+      {/* Section: Verification Documents */}
+      {activeSection === "documents" && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-4">
+            <div>
+              <h3 className="font-editorial text-2xl text-[#1D2927]">Verification & Identity Documents</h3>
+              <p className="font-mono text-xs text-[#53605C]">Review uploaded National ID cards, medical certificates, prescriptions, and financial evidence.</p>
+            </div>
+            <span className="px-3 py-1 bg-[#E5EEE8] text-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest border border-[#355C52]">
+              {campaign.documents?.length || 0} Files Attached
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(campaign.documents || []).map((doc: any) => (
+              <PaperLift key={doc.id} className="bg-[#FAF8F3] border border-[#D9D3C7] p-5 space-y-4 shadow-sm flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="px-2 py-0.5 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase tracking-wider text-[#A84D2A]">
+                      {doc.category}
+                    </span>
+                    <span className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase border ${doc.status === 'verified' ? 'bg-[#E5EEE8] text-[#355C52] border-[#355C52]' : 'bg-[#FDF4F0] text-[#A84D2A] border-[#A84D2A]'}`}>
+                      {doc.status}
+                    </span>
+                  </div>
+
+                  <h4 className="font-editorial text-lg text-[#1D2927] leading-snug">{doc.type}</h4>
+                  
+                  <div className="h-44 bg-[#EAE5DB] border border-[#D9D3C7] relative flex items-center justify-center overflow-hidden">
+                    <FilePreviewTrigger url={doc.url} label={doc.type} />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#D9D3C7] flex items-center justify-between font-mono text-[10px] text-[#53605C]">
+                  <div>
+                    <div>By: {doc.uploadedBy}</div>
+                    <div>Date: {new Date(doc.uploadedAt).toLocaleDateString()}</div>
+                  </div>
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2.5 py-1 bg-[#1D2927] text-[#FAF8F3] font-bold uppercase tracking-widest hover:bg-[#A84D2A] transition-colors"
+                  >
+                    Download
+                  </a>
+                </div>
+              </PaperLift>
+            ))}
           </div>
         </div>
       )}

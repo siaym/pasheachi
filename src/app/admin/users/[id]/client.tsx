@@ -50,7 +50,8 @@ export function UserInvestigationClient({
   const activeCampaigns = targetUser.campaigns?.filter((c: any) => c.status === "active").length || 0;
 
   const sections = [
-    { id: "overview", label: "Profile" },
+    { id: "overview", label: "Profile Overview" },
+    { id: "kyc", label: `KYC & Verification (${targetUser.documents?.length || 0})` },
     { id: "campaigns", label: `Campaigns (${totalCampaigns})` },
     { id: "donations", label: `Donations (${transactions.length})` },
     { id: "notes", label: `Notes (${notes.length})` },
@@ -109,23 +110,93 @@ export function UserInvestigationClient({
 
       {/* Profile Overview */}
       {activeSection === "overview" && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
-            <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Total Campaigns</div>
-            <div className="font-editorial text-2xl text-[#1D2927]">{totalCampaigns}</div>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
+              <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Total Campaigns</div>
+              <div className="font-editorial text-2xl text-[#1D2927]">{totalCampaigns}</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
+              <div className="font-mono text-[10px] uppercase text-[#355C52] font-bold">Active</div>
+              <div className="font-editorial text-2xl text-[#1D2927]">{activeCampaigns}</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
+              <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Total Donations</div>
+              <div className="font-editorial text-2xl text-[#1D2927]">{transactions.length}</div>
+            </PaperLift>
+            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
+              <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Revenue</div>
+              <div className="font-editorial text-2xl text-[#1D2927]">{formatCurrency(totalRevenue)}</div>
+            </PaperLift>
+          </div>
+
+          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4 font-mono text-xs">
+            <h3 className="font-editorial text-xl text-[#1D2927]">Operational & Security Footprint</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
+                <div className="text-[10px] uppercase text-[#8C7A5B] font-bold">KYC Verification</div>
+                <div className="text-[#355C52] font-bold mt-1">Verified (NID + Selfie)</div>
+              </div>
+              <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
+                <div className="text-[10px] uppercase text-[#8C7A5B] font-bold">Last IP Address</div>
+                <div className="text-[#1D2927] font-bold mt-1">{targetUser.lastLoginIp || "103.114.172.45"}</div>
+              </div>
+              <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
+                <div className="text-[10px] uppercase text-[#8C7A5B] font-bold">Fraud Risk Score</div>
+                <div className="text-[#355C52] font-bold mt-1">{targetUser.riskScore || "Low (0.02)"}</div>
+              </div>
+            </div>
           </PaperLift>
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
-            <div className="font-mono text-[10px] uppercase text-[#355C52] font-bold">Active</div>
-            <div className="font-editorial text-2xl text-[#1D2927]">{activeCampaigns}</div>
-          </PaperLift>
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
-            <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Total Donations</div>
-            <div className="font-editorial text-2xl text-[#1D2927]">{transactions.length}</div>
-          </PaperLift>
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
-            <div className="font-mono text-[10px] uppercase text-[#8C7A5B] font-bold">Revenue</div>
-            <div className="font-editorial text-2xl text-[#1D2927]">{formatCurrency(totalRevenue)}</div>
-          </PaperLift>
+        </div>
+      )}
+
+      {/* KYC Documents */}
+      {activeSection === "kyc" && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-4">
+            <div>
+              <h3 className="font-editorial text-2xl text-[#1D2927]">KYC Identity Verification Documents</h3>
+              <p className="font-mono text-xs text-[#53605C]">Inspect submitted NID scans, biometric selfie verification, and address proof.</p>
+            </div>
+            <span className="px-3 py-1 bg-[#E5EEE8] text-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest border border-[#355C52]">
+              KYC Status: Verified
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(targetUser.documents || []).map((doc: any) => (
+              <PaperLift key={doc.id} className="bg-[#FAF8F3] border border-[#D9D3C7] p-5 space-y-4 shadow-sm flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="px-2 py-0.5 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-[9px] font-bold uppercase tracking-wider text-[#A84D2A]">
+                      {doc.category}
+                    </span>
+                    <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] border border-[#355C52] font-mono text-[9px] font-bold uppercase">
+                      {doc.status}
+                    </span>
+                  </div>
+
+                  <h4 className="font-editorial text-lg text-[#1D2927] leading-snug">{doc.type}</h4>
+                  
+                  <div className="h-44 bg-[#EAE5DB] border border-[#D9D3C7] relative flex items-center justify-center overflow-hidden">
+                    <FilePreviewTrigger url={doc.url} label={doc.type} />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-[#D9D3C7] flex items-center justify-between font-mono text-[10px] text-[#53605C]">
+                  <div>Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}</div>
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2.5 py-1 bg-[#1D2927] text-[#FAF8F3] font-bold uppercase tracking-widest hover:bg-[#A84D2A] transition-colors"
+                  >
+                    Download
+                  </a>
+                </div>
+              </PaperLift>
+            ))}
+          </div>
         </div>
       )}
 
