@@ -3,6 +3,10 @@ import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { User } from "@/types";
 
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("CRITICAL SECURITY FATAL: JWT_SECRET environment variable is missing in production mode!");
+}
+
 const secretKey = process.env.JWT_SECRET || "default_secret_for_development_only_12345";
 const key = new TextEncoder().encode(secretKey);
 
@@ -64,5 +68,27 @@ export async function getCurrentUser(): Promise<User | null> {
     where: { id: session.userId as string },
   });
 
-  return user;
+  if (!user) return null;
+
+  // Security check: Immediately revoke session if user is banned or suspended
+  if (user.status === "banned" || user.status === "suspended") {
+    if (user.banExpiresAt && user.banExpiresAt < new Date()) {
+      // Auto-reactivate expired temporary suspension
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { status: "active", banReason: null, banExpiresAt: null }
+      });
+      return user as any;
+    } else {
+      // User is actively banned - clear session cookie & deny access
+      try {
+        await logoutSession();
+      } catch (e) {
+        // Safe fallback in static context
+      }
+      return null;
+    }
+  }
+
+  return user as any;
 }

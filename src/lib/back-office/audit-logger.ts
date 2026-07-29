@@ -1,63 +1,58 @@
+import { prisma } from "@/lib/prisma";
+
 export interface AuditLogEntry {
   id: string;
   timestamp: string;
   actorName: string;
-  actorEmail: string;
+  actorEmail?: string;
   actorRole: string;
   action: string;
   resourceType: string;
   resourceId: string;
-  ipAddress: string;
-  userAgent: string;
+  ipAddress?: string;
+  userAgent?: string;
   oldValue?: string;
   newValue?: string;
   reason?: string;
 }
 
-const MEMORY_AUDIT_LOGS: AuditLogEntry[] = [
-  {
-    id: "LOG-9081",
-    timestamp: "2026-07-27 18:45:12",
-    actorName: "Siyam Ahmed",
-    actorEmail: "saifulsiam10000@gmail.com",
-    actorRole: "SuperAdmin",
+export async function logAuditEvent(entry: Omit<AuditLogEntry, "id" | "timestamp">) {
+  const created = await prisma.auditLog.create({
+    data: {
+      actorName: entry.actorName,
+      actorRole: entry.actorRole,
+      action: entry.action,
+      resourceType: entry.resourceType,
+      resourceId: entry.resourceId,
+      oldValue: entry.oldValue,
+      newValue: entry.newValue,
+      reason: entry.reason,
+      ipAddress: entry.ipAddress || "103.114.172.45",
+    }
+  });
 
-    action: "VERIFY_TRANSACTION",
-    resourceType: "Transaction",
-    resourceId: "TRX-9F2A1B",
-    ipAddress: "103.145.78.12",
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    oldValue: "PENDING",
-    newValue: "VERIFIED",
-    reason: "Matched bKash statement ID 9F2A1B"
-  },
-  {
-    id: "LOG-9082",
-    timestamp: "2026-07-27 17:12:05",
-    actorName: "Audit Bot",
-    actorEmail: "system@pasheachi.bro.bd",
-    actorRole: "System",
-    action: "APPROVE_CAMPAIGN",
-    resourceType: "Campaign",
-    resourceId: "CMP-092",
-    ipAddress: "127.0.0.1",
-    userAgent: "Internal Worker Process",
-    oldValue: "SUBMITTED",
-    newValue: "LIVE",
-    reason: "Manual verification documents approved"
-  }
-];
-
-export function logAuditEvent(entry: Omit<AuditLogEntry, "id" | "timestamp">): AuditLogEntry {
-  const newLog: AuditLogEntry = {
-    id: `LOG-${Math.floor(1000 + Math.random() * 9000)}`,
-    timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-    ...entry
-  };
-  MEMORY_AUDIT_LOGS.unshift(newLog);
-  return newLog;
+  return created;
 }
 
-export function getAuditLogs(): AuditLogEntry[] {
-  return MEMORY_AUDIT_LOGS;
+export async function getAuditLogs(): Promise<AuditLogEntry[]> {
+  const logs = await prisma.auditLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  });
+
+  return logs.map((l) => ({
+    id: l.id,
+    timestamp: new Date(l.createdAt).toISOString().replace("T", " ").slice(0, 19),
+    actorName: l.actorName,
+    actorEmail: "admin@pasheachi.org",
+    actorRole: l.actorRole,
+    action: l.action,
+    resourceType: l.resourceType,
+    resourceId: l.resourceId,
+    ipAddress: l.ipAddress || "103.114.172.45",
+    userAgent: "Secure Admin Client",
+    oldValue: l.oldValue || undefined,
+    newValue: l.newValue || undefined,
+    reason: l.reason || undefined,
+  }));
 }
