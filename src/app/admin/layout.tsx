@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
 import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
@@ -19,19 +20,34 @@ import {
 } from "lucide-react";
 import { logoutAction } from "../(auth)/actions";
 
-
-export default function BackOfficeLayout({
+function BackOfficeLayoutContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [activeWorkspaceId, setActiveWorkspaceId] = useState<WorkspaceId>("SUPER_ADMIN");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const workspaceParam = searchParams.get("workspace") as WorkspaceId | null;
+  const tabParam = searchParams.get("tab");
+
+  const activeWorkspaceId: WorkspaceId = (workspaceParam && WORKSPACES[workspaceParam]) ? workspaceParam : "SUPER_ADMIN";
+  const activeNavItem = tabParam || "overview";
+
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState("overview");
 
   const currentWorkspace = WORKSPACES[activeWorkspaceId];
+
+  const handleSelectWorkspace = (wsKey: WorkspaceId) => {
+    setIsWorkspaceDropdownOpen(false);
+    router.push(`/admin?workspace=${wsKey}&tab=overview`);
+  };
+
+  const handleSelectNavItem = (tabId: string) => {
+    router.push(`/admin?workspace=${activeWorkspaceId}&tab=${tabId}`);
+  };
 
   return (
     <div className="min-h-screen pt-16 pb-20 sm:pb-32 bg-[#F7F4ED]">
@@ -67,11 +83,7 @@ export default function BackOfficeLayout({
                   return (
                     <button
                       key={wsKey}
-                      onClick={() => {
-                        setActiveWorkspaceId(wsKey);
-                        setActiveNavItem("overview");
-                        setIsWorkspaceDropdownOpen(false);
-                      }}
+                      onClick={() => handleSelectWorkspace(wsKey)}
                       className={`w-full text-left p-3 flex items-start gap-3 transition-colors ${isCurrent ? 'bg-[#1D2927] text-[#F7F4ED]' : 'hover:bg-[#F7F4ED]'}`}
                     >
                       <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${isCurrent ? 'text-[#A84D2A]' : 'text-[#1D2927]'}`} />
@@ -177,7 +189,7 @@ export default function BackOfficeLayout({
                     return (
                       <button
                         key={item.id}
-                        onClick={() => setActiveNavItem(item.id)}
+                        onClick={() => handleSelectNavItem(item.id)}
                         className={`w-full flex items-center justify-between px-3 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors border ${isActive ? 'bg-[#1D2927] text-[#F7F4ED] border-[#1D2927]' : 'bg-[#FAF8F3] text-[#53605C] border-transparent hover:border-[#D9D3C7] hover:text-[#1D2927]'}`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -206,3 +218,16 @@ export default function BackOfficeLayout({
     </div>
   );
 }
+
+export default function BackOfficeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<div className="p-8 font-mono text-xs">Loading Enterprise Back-Office...</div>}>
+      <BackOfficeLayoutContent>{children}</BackOfficeLayoutContent>
+    </Suspense>
+  );
+}
+
