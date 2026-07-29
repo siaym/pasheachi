@@ -112,10 +112,10 @@ export default function HelpPage() {
               <p className="font-mono text-sm text-[#D9D3C7] max-w-md mx-auto mb-8 leading-relaxed">
                 Our support team is active 7 days a week to verify transactions and assist creators. Reach out to us directly.
               </p>
-              <div className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#A84D2A] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#843B20] transition-colors cursor-pointer">
+              <a href="mailto:siyam.diucse@gmail.com" className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#A84D2A] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#843B20] transition-colors cursor-pointer text-[#FAF8F3]">
                 <Mail className="h-4 w-4" />
-                <span>support@pasheachi.bro.bd</span>
-              </div>
+                <span>siyam.diucse@gmail.com</span>
+              </a>
             </div>
           </div>
         </FadeIn>

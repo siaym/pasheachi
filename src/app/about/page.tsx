@@ -118,8 +118,8 @@ export default function AboutPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-8 font-mono text-xs font-bold uppercase tracking-widest text-[#F7F4ED] pt-8 border-t border-[#53605C]">
-                <a href="mailto:support@pasheachi.bro.bd" className="flex items-center gap-3 hover:text-[#A84D2A] transition-colors">
-                  <Mail className="h-5 w-5" /> support@pasheachi.bro.bd
+                <a href="mailto:siyam.diucse@gmail.com" className="flex items-center gap-3 hover:text-[#A84D2A] transition-colors">
+                  <Mail className="h-5 w-5" /> siyam.diucse@gmail.com
                 </a>
                 <span className="hidden sm:inline text-[#53605C]">|</span>
                 <span className="flex items-center gap-3">

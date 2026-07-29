@@ -55,8 +55,8 @@ export function Footer() {
             <p className="text-xs text-slate-300">
               Need assistance launching a campaign or verifying a transaction?
             </p>
-            <a href="mailto:support@pasheachi.bro.bd" className="text-xs font-bold text-[#FAF8F3] hover:underline">
-              support@pasheachi.bro.bd
+            <a href="mailto:siyam.diucse@gmail.com" className="text-xs font-bold text-[#FAF8F3] hover:underline">
+              siyam.diucse@gmail.com
             </a>
           </div>
         </div>
