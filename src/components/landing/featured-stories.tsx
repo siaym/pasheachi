@@ -57,10 +57,13 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
                 <FadeIn
                   key={campaign.id}
                   delay={0.1 * index}
-                  className={`group flex flex-col p-8 sm:p-10 ${index !== featured.length - 1 ? 'border-b md:border-b-0 md:border-r border-[#D9D3C7]' : ''}`}
+                  className={`flex flex-col ${index !== featured.length - 1 ? 'border-b md:border-b-0 md:border-r border-[#D9D3C7]' : ''}`}
                 >
-                  {/* Media Container */}
-                  <Link href={targetHref} className="block w-full">
+                  <Link
+                    href={targetHref}
+                    className="group flex flex-col p-8 sm:p-10 h-full w-full hover:bg-[#F0EBE1]/40 transition-colors cursor-pointer"
+                  >
+                    {/* Media Container */}
                     <PaperLift className="relative aspect-[4/3] w-full overflow-hidden border border-[#1D2927] p-1 bg-[#FAF8F3]">
                       <div className="relative h-full w-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -76,74 +79,69 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
                         {campaign.category}
                       </div>
                     </PaperLift>
-                  </Link>
 
-                  {/* Creator Info */}
-                  <div className="mt-8 flex items-center justify-between border-b border-[#D9D3C7] pb-4">
-                    <Link href={`/${cleanUsername}`} className="hover:text-[#A84D2A] transition-colors">
-                      <div className="text-xs font-bold uppercase tracking-wider text-[#1D2927]">
-                        {campaign.creator?.name || "Creator"}
+                    {/* Creator Info */}
+                    <div className="mt-8 flex items-center justify-between border-b border-[#D9D3C7] pb-4">
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-wider text-[#1D2927] group-hover:text-[#A84D2A] transition-colors">
+                          {campaign.creator?.name || "Creator"}
+                        </div>
+                        <div className="text-[10px] font-mono text-[#53605C] mt-1">
+                          @{cleanUsername}
+                        </div>
                       </div>
-                      <div className="text-[10px] font-mono text-[#53605C] mt-1">
-                        @{cleanUsername}
-                      </div>
-                    </Link>
-                    <div className="text-right">
-                      <div className="text-[10px] font-mono uppercase tracking-widest text-[#8C7A5B]">
-                        Time Left
-                      </div>
-                      <div className="text-xs font-bold text-[#1D2927] mt-1">
-                        Active
+                      <div className="text-right">
+                        <div className="text-[10px] font-mono uppercase tracking-widest text-[#8C7A5B]">
+                          Time Left
+                        </div>
+                        <div className="text-xs font-bold text-[#1D2927] mt-1">
+                          Active
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Story Title & Description */}
-                  <div className="py-6 flex-1">
-                    <Link href={targetHref}>
+                    {/* Story Title & Description */}
+                    <div className="py-6 flex-1">
                       <h3 className="font-editorial text-2xl font-medium leading-snug text-[#1D2927] transition-colors group-hover:text-[#A84D2A]">
                         {campaign.title}
                       </h3>
-                    </Link>
-                    <Link href={targetHref}>
                       <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-[#53605C]">
                         {campaign.description}
                       </p>
-                    </Link>
-                  </div>
+                    </div>
 
-                  {/* Progress Bar & Amount */}
-                  <div className="pt-6 border-t border-[#D9D3C7]">
-                    <div className="flex justify-between items-end mb-3">
-                      <div>
-                        <p className="font-mono text-lg font-medium text-[#1D2927]">
-                          {formatCurrency(campaign.raisedAmount)}
-                        </p>
-                        <p className="text-[10px] font-bold tracking-widest text-[#53605C] mt-1 uppercase">
-                          Raised of {formatCurrency(campaign.goalAmount || 0)}
-                        </p>
+                    {/* Progress Bar & Amount */}
+                    <div className="pt-6 border-t border-[#D9D3C7]">
+                      <div className="flex justify-between items-end mb-3">
+                        <div>
+                          <p className="font-mono text-lg font-medium text-[#1D2927]">
+                            {formatCurrency(campaign.raisedAmount)}
+                          </p>
+                          <p className="text-[10px] font-bold tracking-widest text-[#53605C] mt-1 uppercase">
+                            Raised of {formatCurrency(campaign.goalAmount || 0)}
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs font-bold text-[#A84D2A]">{progress}%</span>
                       </div>
-                      <span className="font-mono text-xs font-bold text-[#A84D2A]">{progress}%</span>
+                      {/* Custom Sharp Progress Bar */}
+                      <div className="h-1.5 w-full bg-[#EAE5DB] border border-[#D9D3C7] overflow-hidden">
+                        <div 
+                          className="h-full bg-[#1D2927] transition-all duration-1000 origin-left"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
                     </div>
-                    {/* Custom Sharp Progress Bar */}
-                    <div className="h-1.5 w-full bg-[#EAE5DB] border border-[#D9D3C7] overflow-hidden">
-                      <div 
-                        className="h-full bg-[#1D2927] transition-all duration-1000 origin-left"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </div>
 
-                  {/* Action Link */}
-                  <div className="mt-8">
-                    <Link
-                      href={targetHref}
-                      className="inline-flex items-center justify-between w-full h-12 px-6 border border-[#1D2927] text-xs font-bold uppercase tracking-widest text-[#1D2927] hover:bg-[#1D2927] hover:text-[#F7F4ED] transition-colors"
-                    >
-                      <span>Read Full Story</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                    {/* Action Link Indicator */}
+                    <div className="mt-8">
+                      <div
+                        className="inline-flex items-center justify-between w-full h-12 px-6 border border-[#1D2927] text-xs font-bold uppercase tracking-widest text-[#1D2927] group-hover:bg-[#1D2927] group-hover:text-[#F7F4ED] transition-colors"
+                      >
+                        <span>Read Full Story</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </Link>
                 </FadeIn>
               );
             })}
