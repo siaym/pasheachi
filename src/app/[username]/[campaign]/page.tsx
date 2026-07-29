@@ -1,9 +1,46 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CampaignDetailClient } from "./client";
+import { constructMetadata } from "@/lib/seo/metadata";
+import { CampaignJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string; campaign: string }>;
+}) {
+  const { username, campaign: campaignSlug } = await params;
+  const cleanUsername = decodeURIComponent(username).replace(/^@/, "").toLowerCase();
+
+  const campaign = await prisma.campaign.findFirst({
+    where: {
+      slug: campaignSlug,
+      status: { in: ["active", "completed"] },
+      creator: { username: cleanUsername },
+    },
+    include: { creator: true },
+  });
+
+  if (!campaign) {
+    return constructMetadata({ title: "Campaign Not Found", noIndex: true });
+  }
+
+  const uName = campaign.creator?.username ? campaign.creator.username.toLowerCase() : cleanUsername;
+  const canonicalUrl = `/${uName}/${campaign.slug}`;
+
+  return constructMetadata({
+    title: `${campaign.title} | PasheAchi`,
+    description: campaign.description.slice(0, 160),
+    keywords: [campaign.category, campaign.location, campaign.title, "Crowdfunding Bangladesh", "PasheAchi"],
+    image: campaign.coverImageUrl || undefined,
+    canonicalUrlRelative: canonicalUrl,
+    authorName: campaign.creator?.name || "Campaign Creator",
+    publishedTime: campaign.createdAt.toISOString(),
+  });
+}
 
 export default async function CampaignDetailPage({
   params,
@@ -18,7 +55,6 @@ export default async function CampaignDetailPage({
   if (decodedUsername !== cleanUsername) {
     redirect(`/${cleanUsername}/${campaignSlug}`);
   }
-
 
   const campaign = await prisma.campaign.findFirst({
     where: { 
@@ -52,11 +88,34 @@ export default async function CampaignDetailPage({
     raisedAmount: liveRaisedAmount
   };
 
+  const canonicalPath = `/${cleanUsername}/${campaign.slug}`;
+
   return (
-    <CampaignDetailClient 
-      campaign={campaignWithLiveAmount as any} 
-      creator={campaign.creator as any} 
-    />
+    <>
+      <CampaignJsonLd
+        title={campaign.title}
+        description={campaign.description.slice(0, 200)}
+        url={`https://pasheachi.bro.bd${canonicalPath}`}
+        image={campaign.coverImageUrl || "https://images.unsplash.com/photo-1532629345422-7515f3d16bb0"}
+        goalAmount={campaign.goalAmount || 0}
+        raisedAmount={liveRaisedAmount}
+        creatorName={campaign.creator?.name || "Creator"}
+        category={campaign.category}
+        datePublished={campaign.createdAt.toISOString()}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", item: "/" },
+          { name: "Discover", item: "/discover" },
+          { name: campaign.category, item: `/discover?category=${encodeURIComponent(campaign.category)}` },
+          { name: campaign.title, item: canonicalPath },
+        ]}
+      />
+      <CampaignDetailClient 
+        campaign={campaignWithLiveAmount as any} 
+        creator={campaign.creator as any} 
+      />
+    </>
   );
 }
 

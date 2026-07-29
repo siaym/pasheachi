@@ -8,6 +8,14 @@ import { SearchBar } from "@/components/discover/search-bar";
 import { Filter, FolderOpen, RotateCcw } from "lucide-react";
 import { Suspense } from "react";
 
+import { constructMetadata } from "@/lib/seo/metadata";
+
+export const metadata = constructMetadata({
+  title: "Explore Campaigns & Dreams",
+  description: "Browse verified Bangladesh medical treatment, education, emergency, and creative crowdfunding campaigns on PasheAchi.",
+  canonicalUrlRelative: "/discover",
+});
+
 export default async function DiscoverPage({
   searchParams,
 }: {

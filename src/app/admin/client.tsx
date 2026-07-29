@@ -11,6 +11,7 @@ import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
 import { VerificationSettingsHub } from "@/components/back-office/workspaces/VerificationSettingsHub";
 import { EmailCenterHub } from "@/components/back-office/workspaces/EmailCenterHub";
 import { FeatureFlagsHub } from "@/components/back-office/workspaces/FeatureFlagsHub";
+import { SeoSettingsHub } from "@/components/back-office/workspaces/SeoSettingsHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
 import { verifyCampaignAction, verifyTransactionAction, toggleFeaturedCampaignAction, toggleSuccessStoryAction } from "@/app/admin/actions";
 import { useAdminNav } from "./layout";
@@ -811,6 +812,10 @@ function AdminClientHubContent({
           
           <div className="pt-6 border-t border-[#D9D3C7]">
             <FeatureFlagsHub showToast={showToast} />
+          </div>
+
+          <div className="pt-6 border-t border-[#D9D3C7]">
+            <SeoSettingsHub showToast={showToast} />
           </div>
 
           <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-6 shadow-paper space-y-6">
