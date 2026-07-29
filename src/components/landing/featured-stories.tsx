@@ -8,8 +8,7 @@ import { calculateProgress, formatCurrency } from "@/lib/utils";
 import { FadeIn, RevealText, InkDivider, PaperLift } from "@/components/ui/motion";
 
 export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
-  const explicitlyFeatured = campaigns.filter((c) => c.isFeatured);
-  const featured = explicitlyFeatured.length > 0 ? explicitlyFeatured.slice(0, 3) : campaigns.slice(0, 3);
+  const featured = campaigns.slice(0, 3);
 
   return (
     <section id="featured-stories" className="py-20 sm:py-32 bg-transparent border-b border-[#D9D3C7]">
@@ -19,7 +18,7 @@ export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
             <FadeIn>
               <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#A84D2A] mb-6">
                 <span className="h-px w-8 bg-[#A84D2A]"></span>
-                <span className="font-mono">Featured Dreams</span>
+                <span className="font-mono">Latest Stories</span>
               </div>
             </FadeIn>
             <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-medium leading-[1.1] text-[#1D2927]">

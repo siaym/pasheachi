@@ -16,17 +16,23 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const campaigns = await prisma.campaign.findMany({
+  const latestCampaigns = await prisma.campaign.findMany({
     include: {
       creator: true,
       transactions: true,
     },
     take: 10,
-    orderBy: [
-      { isFeatured: "desc" },
-      { createdAt: "desc" },
-    ],
+    orderBy: { createdAt: "desc" },
   });
+
+  const featuredCampaign = (await prisma.campaign.findFirst({
+    where: { isFeatured: true },
+    include: {
+      creator: true,
+      transactions: true,
+    },
+    orderBy: { createdAt: "desc" },
+  })) || latestCampaigns[0];
 
   const recentTransactions = await prisma.transaction.findMany({
     where: { status: "verified" },
@@ -64,16 +70,14 @@ export default async function HomePage() {
     successRate: 100,
   };
 
-  const featuredCampaign = campaigns.find((c) => c.isFeatured) || campaigns[0];
-
   return (
     <>
       <Hero campaign={featuredCampaign} />
       <LiveActivity transactions={formattedTransactions} />
-      <FeaturedStories campaigns={campaigns} />
+      <FeaturedStories campaigns={latestCampaigns} />
       <CommunityImpact stats={liveStats} />
       <PaperCategories />
-      <SuccessStories campaigns={campaigns} />
+      <SuccessStories campaigns={latestCampaigns} />
       <DonorCommunity />
       <HowItWorks />
       <TrustSection />
