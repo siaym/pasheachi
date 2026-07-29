@@ -27,10 +27,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  campaigns     Campaign[]
-  messages      Message[]
-  notifications Notification[]
-  withdrawals   Withdrawal[]
+  campaigns        Campaign[]
+  messages         Message[]
+  notifications    Notification[]
+  withdrawals      Withdrawal[]
+  verificationDocs VerificationDocument[]
 }
 
 model Campaign {
@@ -65,11 +66,12 @@ model Campaign {
   creatorId      String
   creator        User     @relation(fields: [creatorId], references: [id])
   
-  milestones     Milestone[]
-  transactions   Transaction[]
-  updates        Update[]
-  withdrawals    Withdrawal[]
-  reports        Report[]
+  milestones       Milestone[]
+  transactions     Transaction[]
+  updates          Update[]
+  withdrawals      Withdrawal[]
+  reports          Report[]
+  verificationDocs VerificationDocument[]
 }
 
 model Milestone {
@@ -245,6 +247,29 @@ model Report {
   updatedAt       DateTime @updatedAt
 
   @@index([targetType, targetId])
+  @@index([status])
+}
+
+model VerificationDocument {
+  id            String    @id @default(cuid())
+  documentType  String    // "National ID (Front)", "National ID (Back)", "Biometric Selfie with NID", "Medical Certificate", "Hospital Cost Estimate"
+  storageUrl    String    // Local asset path or Cloud Storage URL
+  mimeType      String    @default("image/png")
+  size          Int       @default(245000) // bytes
+  status        String    @default("verified") // "pending", "verified", "flagged", "rejected"
+  remarks       String?   @db.Text
+  uploadedAt    DateTime  @default(now())
+  verifiedAt    DateTime?
+  verifiedBy    String?
+
+  campaignId    String?
+  campaign      Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  creatorId     String?
+  creator       User?     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([creatorId])
   @@index([status])
 }
 

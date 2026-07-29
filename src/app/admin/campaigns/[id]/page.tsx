@@ -16,6 +16,9 @@ export default async function CampaignInvestigationPage({ params }: { params: Pr
       transactions: { orderBy: { date: "desc" } },
       milestones: true,
       updates: { orderBy: { date: "desc" } },
+      verificationDocs: true,
+      reports: true,
+      withdrawals: true,
     }
   });
 
@@ -31,9 +34,21 @@ export default async function CampaignInvestigationPage({ params }: { params: Pr
     orderBy: { createdAt: "desc" },
   });
 
+  const dbDocs = campaign.verificationDocs.map((doc) => ({
+    id: doc.id,
+    type: doc.documentType,
+    category: doc.documentType.includes("NID") ? "Identity Verification" : "Medical & Financial Evidence",
+    url: doc.storageUrl,
+    uploadedAt: doc.uploadedAt,
+    uploadedBy: campaign.creator?.name || "Creator",
+    status: doc.status,
+    fileType: doc.mimeType,
+    fileSize: `${Math.round(doc.size / 1024)} KB`,
+  }));
+
   const campaignData = {
     ...campaign,
-    documents: [
+    documents: dbDocs.length > 0 ? dbDocs : [
       {
         id: `doc-nid-front-${campaign.id}`,
         type: "National ID (Front)",
@@ -44,39 +59,6 @@ export default async function CampaignInvestigationPage({ params }: { params: Pr
         status: "verified",
         fileType: "image/jpeg",
         fileSize: "1.8 MB",
-      },
-      {
-        id: `doc-nid-back-${campaign.id}`,
-        type: "National ID (Back)",
-        category: "Identity Verification",
-        url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80",
-        uploadedAt: campaign.createdAt,
-        uploadedBy: campaign.creator?.name || "Creator",
-        status: "verified",
-        fileType: "image/jpeg",
-        fileSize: "1.6 MB",
-      },
-      {
-        id: `doc-medical-cert-${campaign.id}`,
-        type: "Medical Certificate / Hospital Estimate",
-        category: "Medical & Financial Evidence",
-        url: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
-        uploadedAt: campaign.createdAt,
-        uploadedBy: campaign.creator?.name || "Creator",
-        status: "pending",
-        fileType: "application/pdf",
-        fileSize: "3.4 MB",
-      },
-      {
-        id: `doc-prescription-${campaign.id}`,
-        type: "Doctor Prescription & Clinical Notes",
-        category: "Medical Evidence",
-        url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
-        uploadedAt: campaign.createdAt,
-        uploadedBy: campaign.creator?.name || "Creator",
-        status: "verified",
-        fileType: "image/png",
-        fileSize: "2.1 MB",
       },
       {
         id: `doc-selfie-${campaign.id}`,
@@ -90,7 +72,7 @@ export default async function CampaignInvestigationPage({ params }: { params: Pr
         fileSize: "2.5 MB",
       },
     ],
-    reports: [
+    reports: campaign.reports.length > 0 ? campaign.reports : [
       {
         id: `rep-1`,
         reporter: "Anonymous User",

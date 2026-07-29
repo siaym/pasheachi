@@ -18,6 +18,7 @@ export default async function UserInvestigationPage({ params }: { params: Promis
         },
         orderBy: { createdAt: "desc" }
       },
+      verificationDocs: true,
     }
   });
 
@@ -43,13 +44,22 @@ export default async function UserInvestigationPage({ params }: { params: Promis
     orderBy: { createdAt: "desc" },
   });
 
+  const dbDocs = targetUser.verificationDocs.map((doc) => ({
+    id: doc.id,
+    type: doc.documentType,
+    category: doc.documentType.includes("NID") ? "Identity Verification" : "Medical & Financial Evidence",
+    url: doc.storageUrl,
+    uploadedAt: doc.uploadedAt,
+    status: doc.status,
+  }));
+
   const targetUserData = {
     ...targetUser,
-    kycStatus: "verified",
+    kycStatus: targetUser.verificationDocs.length > 0 ? "verified" : "pending",
     riskScore: "Low (0.02)",
-    lastLoginIp: "103.114.172.45 (Dhaka, Bangladesh)",
+    lastLoginIp: targetUser.lastLoginIp || "103.114.172.45 (Dhaka, Bangladesh)",
     activeSessions: 1,
-    documents: [
+    documents: dbDocs.length > 0 ? dbDocs : [
       {
         id: `kyc-nid-front-${targetUser.id}`,
         type: "National ID (Front)",
@@ -59,17 +69,9 @@ export default async function UserInvestigationPage({ params }: { params: Promis
         status: "verified",
       },
       {
-        id: `kyc-nid-back-${targetUser.id}`,
-        type: "National ID (Back)",
-        category: "Identity Verification",
-        url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80",
-        uploadedAt: targetUser.createdAt,
-        status: "verified",
-      },
-      {
         id: `kyc-selfie-${targetUser.id}`,
-        type: "Selfie with National ID",
-        category: "Biometric Proof",
+        type: "Biometric Selfie with NID",
+        category: "Identity Verification",
         url: targetUser.avatarUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
         uploadedAt: targetUser.createdAt,
         status: "verified",
