@@ -8,7 +8,8 @@ import { calculateProgress, formatCurrency } from "@/lib/utils";
 import { FadeIn, RevealText, InkDivider, PaperLift } from "@/components/ui/motion";
 
 export function FeaturedStories({ campaigns }: { campaigns: Campaign[] }) {
-  const featured = campaigns.slice(0, 3);
+  const explicitlyFeatured = campaigns.filter((c) => c.isFeatured);
+  const featured = explicitlyFeatured.length > 0 ? explicitlyFeatured.slice(0, 3) : campaigns.slice(0, 3);
 
   return (
     <section id="featured-stories" className="py-20 sm:py-32 bg-transparent border-b border-[#D9D3C7]">

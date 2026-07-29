@@ -18,8 +18,11 @@ export default async function HomePage() {
       creator: true,
       transactions: true,
     },
-    take: 6,
-    orderBy: { createdAt: "desc" },
+    take: 10,
+    orderBy: [
+      { isFeatured: "desc" },
+      { createdAt: "desc" },
+    ],
   });
 
   const recentTransactions = await prisma.transaction.findMany({
