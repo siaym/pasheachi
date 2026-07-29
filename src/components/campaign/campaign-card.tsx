@@ -26,21 +26,23 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
       {/* Media Header (Paper Framed Image) */}
       <div className="relative aspect-[4/3] w-full overflow-hidden border border-[#1D2927] bg-[#EAE5DB] mb-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={campaign.coverImageUrl || "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop"}
-          alt={campaign.title}
-          className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
-        />
+        <Link href={`/${campaign.creator?.username?.replace(/^@/, "").toLowerCase() || "user"}/${campaign.slug || campaign.id}`} className="block h-full w-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={campaign.coverImageUrl || "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop"}
+            alt={campaign.title}
+            className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
+          />
 
-        <div className="absolute inset-0 bg-[#A84D2A]/10 mix-blend-multiply pointer-events-none transition-opacity duration-700 group-hover:opacity-0"></div>
+          <div className="absolute inset-0 bg-[#A84D2A]/10 mix-blend-multiply pointer-events-none transition-opacity duration-700 group-hover:opacity-0"></div>
 
-        {/* Category Overlay (Editorial Stamp) */}
-        <div className="absolute left-0 top-0">
-          <span className="editorial-stamp !text-[9px] bg-[#FAF8F3] text-[#A84D2A] border-b border-r border-[#1D2927] shadow-none">
-            {campaign.category}
-          </span>
-        </div>
+          {/* Category Overlay (Editorial Stamp) */}
+          <div className="absolute left-0 top-0">
+            <span className="editorial-stamp !text-[9px] bg-[#FAF8F3] text-[#A84D2A] border-b border-r border-[#1D2927] shadow-none">
+              {campaign.category}
+            </span>
+          </div>
+        </Link>
 
         {/* Action Overlay */}
         <div className="absolute right-2 top-2 flex flex-col gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 focus-within:opacity-100">
