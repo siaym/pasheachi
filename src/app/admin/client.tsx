@@ -9,7 +9,7 @@ import { WORKSPACES, WorkspaceId } from "@/lib/back-office/workspaces";
 import { AdvancedTable } from "@/components/back-office/advanced-table";
 import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
-import { verifyCampaignAction, verifyTransactionAction, toggleFeaturedCampaignAction } from "@/app/admin/actions";
+import { verifyCampaignAction, verifyTransactionAction, toggleFeaturedCampaignAction, toggleSuccessStoryAction } from "@/app/admin/actions";
 import { useAdminNav } from "./layout";
 import {
   Building2,
@@ -93,6 +93,18 @@ function AdminClientHubContent({
       }
     });
   };
+
+  const handleToggleSuccessStory = (id: string, currentStatus: string) => {
+    const isCompleted = currentStatus === "completed";
+    startTransition(async () => {
+      const res = await toggleSuccessStoryAction(id, !isCompleted);
+      if (res.success) {
+        setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: !isCompleted ? "completed" : "active" } : c));
+        showToast(`Campaign ${!isCompleted ? 'marked as' : 'removed from'} Success Stories!`);
+      }
+    });
+  };
+
 
 
   const handleVerifyTransaction = (id: string) => {
@@ -711,6 +723,48 @@ function AdminClientHubContent({
               ]}
               data={campaigns}
               searchPlaceholder="Filter campaigns to feature..."
+            />
+          </div>
+
+          <div className="space-y-4 pt-6 border-t border-[#D9D3C7]">
+            <div>
+              <h3 className="font-editorial text-2xl text-[#1D2927]">Success Stories Curator (&quot;The pages we write together&quot;)</h3>
+              <p className="font-mono text-xs text-[#53605C]">Manage completed campaigns featured on the homepage Success Stories carousel.</p>
+            </div>
+
+            <AdvancedTable
+              title="Success Stories Curator"
+              columns={[
+                { header: "Title", accessorKey: "title" },
+                { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
+                { header: "Goal", accessorKey: (r) => formatCurrency(r.goalAmount || 0) },
+                { header: "Raised", accessorKey: (r) => formatCurrency(r.raisedAmount || 0) },
+                { header: "Status", accessorKey: (r) => r.status },
+                {
+                  header: "Success Story Badge",
+                  accessorKey: "status",
+                  cell: (r) => r.status === "completed" ? (
+                    <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified Success</span>
+                  ) : (
+                    <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">In Progress</span>
+                  )
+                },
+                {
+                  header: "Actions",
+                  accessorKey: "id",
+                  cell: (r) => (
+                    <button
+                      onClick={() => handleToggleSuccessStory(r.id, r.status)}
+                      disabled={isPending}
+                      className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.status === "completed" ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#355C52] text-[#FAF8F3] hover:bg-[#1D2927]'}`}
+                    >
+                      {r.status === "completed" ? "Remove Success Story" : "Mark as Success Story"}
+                    </button>
+                  )
+                }
+              ]}
+              data={campaigns}
+              searchPlaceholder="Filter campaigns for success stories..."
             />
           </div>
         </div>

@@ -124,6 +124,32 @@ export async function toggleFeaturedCampaignAction(campaignId: string, isFeature
   return { success: true };
 }
 
+export async function toggleSuccessStoryAction(campaignId: string, isCompleted: boolean) {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Unauthorized" };
+
+  await prisma.campaign.update({
+    where: { id: campaignId },
+    data: { status: isCompleted ? "completed" : "active" }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      actorName: user.name,
+      actorRole: user.role || "SuperAdmin",
+      action: isCompleted ? "MARK_SUCCESS_STORY" : "UNMARK_SUCCESS_STORY",
+      resourceType: "Campaign",
+      resourceId: campaignId,
+      newValue: isCompleted ? "completed" : "active",
+      reason: isCompleted ? "Marked as completed Success Story for homepage slider" : "Reverted to active status",
+    }
+  });
+
+  return { success: true };
+}
+
+
 
 export async function getAuditLogsAction(resourceType?: string, resourceId?: string) {
   const where: any = {};
