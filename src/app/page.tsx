@@ -12,34 +12,51 @@ import { Newsletter } from "@/components/landing/newsletter";
 
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 10;
 
 export default async function HomePage() {
-  const latestCampaigns = await prisma.campaign.findMany({
-    include: {
-      creator: true,
-      transactions: true,
-    },
-    take: 10,
-    orderBy: { createdAt: "desc" },
-  });
+  const [
+    latestCampaigns,
+    featuredCampaignDb,
+    recentTransactions,
+    totalRaisedResult,
+    totalSupportersCount,
+    totalCampaignsCount,
+    completedCampaigns,
+  ] = await Promise.all([
+    prisma.campaign.findMany({
+      include: { creator: true, transactions: true },
+      take: 10,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.campaign.findFirst({
+      where: { isFeatured: true },
+      include: { creator: true, transactions: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.transaction.findMany({
+      where: { status: "verified" },
+      include: { campaign: true },
+      take: 10,
+      orderBy: { date: "desc" },
+    }),
+    prisma.transaction.aggregate({
+      where: { status: "verified" },
+      _sum: { amount: true },
+    }),
+    prisma.transaction.count({
+      where: { status: "verified" },
+    }),
+    prisma.campaign.count(),
+    prisma.campaign.findMany({
+      where: { status: "completed" },
+      include: { creator: true, transactions: true },
+      take: 10,
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
-  const featuredCampaign = (await prisma.campaign.findFirst({
-    where: { isFeatured: true },
-    include: {
-      creator: true,
-      transactions: true,
-    },
-    orderBy: { createdAt: "desc" },
-  })) || latestCampaigns[0];
-
-  const recentTransactions = await prisma.transaction.findMany({
-    where: { status: "verified" },
-    include: { campaign: true },
-    take: 10,
-    orderBy: { date: "desc" },
-  });
+  const featuredCampaign = featuredCampaignDb || latestCampaigns[0];
 
   const formattedTransactions = recentTransactions.map(t => {
     const diffInMinutes = Math.floor((new Date().getTime() - new Date(t.date).getTime()) / 60000);
@@ -54,31 +71,12 @@ export default async function HomePage() {
     };
   });
 
-  const totalRaisedResult = await prisma.transaction.aggregate({
-    where: { status: "verified" },
-    _sum: { amount: true },
-  });
-  const totalSupportersCount = await prisma.transaction.count({
-    where: { status: "verified" },
-  });
-  const totalCampaignsCount = await prisma.campaign.count();
-
   const liveStats = {
     totalRaised: totalRaisedResult._sum.amount || 0,
     totalSupporters: totalSupportersCount || 0,
     totalCampaigns: totalCampaignsCount || 0,
     successRate: 100,
   };
-
-  const completedCampaigns = await prisma.campaign.findMany({
-    where: { status: "completed" },
-    include: {
-      creator: true,
-      transactions: true,
-    },
-    take: 10,
-    orderBy: { updatedAt: "desc" },
-  });
 
   return (
     <>

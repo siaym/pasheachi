@@ -5,7 +5,7 @@ import { constructMetadata } from "@/lib/seo/metadata";
 import { CampaignJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 5;
 
 export async function generateMetadata({
   params,
@@ -21,7 +21,7 @@ export async function generateMetadata({
       status: { in: ["active", "completed"] },
       creator: { username: cleanUsername },
     },
-    include: { creator: true },
+    select: { title: true, description: true, category: true, location: true, coverImageUrl: true, createdAt: true, slug: true, creator: { select: { username: true, name: true } } },
   });
 
   if (!campaign) {

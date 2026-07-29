@@ -10,6 +10,8 @@ import { Suspense } from "react";
 
 import { constructMetadata } from "@/lib/seo/metadata";
 
+export const revalidate = 10;
+
 export const metadata = constructMetadata({
   title: "Explore Campaigns & Dreams",
   description: "Browse verified Bangladesh medical treatment, education, emergency, and creative crowdfunding campaigns on PasheAchi.",
@@ -21,25 +23,33 @@ export default async function DiscoverPage({
 }: {
   searchParams: { category?: string; q?: string };
 }) {
-  const campaigns = await prisma.campaign.findMany({
+  const whereClause: any = {
+    status: { in: ["active", "completed"] },
+    deletedAt: null,
+  };
+
+  if (searchParams.category && searchParams.category !== "all") {
+    whereClause.category = searchParams.category;
+  }
+
+  if (searchParams.q && searchParams.q.trim()) {
+    const q = searchParams.q.trim();
+    whereClause.OR = [
+      { title: { contains: q } },
+      { description: { contains: q } },
+      { category: { contains: q } },
+      { location: { contains: q } },
+    ];
+  }
+
+  const filteredCampaigns = await prisma.campaign.findMany({
+    where: whereClause,
     include: {
       creator: true,
       transactions: true,
     },
-  });
-
-  const filteredCampaigns = campaigns.filter((campaign) => {
-    const matchesCategory =
-      searchParams.category && searchParams.category !== "all"
-        ? campaign.category === searchParams.category
-        : true;
-
-    const matchesQuery = searchParams.q
-      ? campaign.title.toLowerCase().includes(searchParams.q.toLowerCase()) ||
-        campaign.description.toLowerCase().includes(searchParams.q.toLowerCase())
-      : true;
-
-    return matchesCategory && matchesQuery;
+    orderBy: { createdAt: "desc" },
+    take: 50,
   });
 
   return (
