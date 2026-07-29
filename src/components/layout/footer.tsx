@@ -1,8 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/shared/logo";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-[#D9D3C7] bg-[#1D2927] text-[#FAF8F3] py-16 dark:border-slate-800">
       <Container variant="wide">

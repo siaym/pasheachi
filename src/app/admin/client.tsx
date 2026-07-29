@@ -10,6 +10,7 @@ import { AdvancedTable } from "@/components/back-office/advanced-table";
 import { LauncherHub } from "@/components/back-office/workspaces/LauncherHub";
 import { ImpersonationModal } from "@/components/back-office/impersonation-modal";
 import { verifyCampaignAction, verifyTransactionAction } from "@/app/admin/actions";
+import { useAdminNav } from "./layout";
 import {
   Building2,
   Wallet,
@@ -62,23 +63,15 @@ function AdminClientHubContent({
   initialUsers?: any[];
   initialAuditLogs?: any[];
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const { activeWorkspaceId, activeNavItem, setWorkspace } = useAdminNav();
 
-  const workspaceParam = searchParams.get("workspace") as WorkspaceId | "LAUNCHER" | null;
-  const navTab = searchParams.get("tab") || "overview";
-
-  const activeTab: WorkspaceId | "LAUNCHER" = (workspaceParam && (workspaceParam === "LAUNCHER" || WORKSPACES[workspaceParam as WorkspaceId]))
-    ? workspaceParam
-    : "SUPER_ADMIN";
+  const activeTab = activeWorkspaceId;
+  const navTab = activeNavItem || "overview";
 
   const handleSelectWorkspace = (wsId: WorkspaceId | "LAUNCHER") => {
-    if (wsId === "LAUNCHER") {
-      router.push("/admin?workspace=LAUNCHER");
-    } else {
-      router.push(`/admin?workspace=${wsId}&tab=overview`);
-    }
+    setWorkspace(wsId, "overview");
   };
+
 
   const [transactions, setTransactions] = useState(initialTransactions);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
