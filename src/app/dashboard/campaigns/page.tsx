@@ -19,6 +19,9 @@ import {
 
 type FilterStatus = "All" | "Live" | "Draft" | "Pending Approval" | "Completed" | "Archived" | "Rejected";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function MyCampaignsPage({
   searchParams,
 }: {
@@ -95,7 +98,11 @@ export default async function MyCampaignsPage({
         {/* Campaign List */}
         <div className="space-y-6">
           {myCampaigns.map((cmp) => {
-            const progress = calculateProgress(cmp.raisedAmount, cmp.goalAmount || 0);
+            const verifiedTxs = cmp.transactions?.filter((t) => t.status === "verified") || [];
+            const liveRaisedAmount = verifiedTxs.reduce((sum, t) => sum + t.amount, 0);
+            const verifiedSupporters = verifiedTxs.length;
+            const progress = calculateProgress(liveRaisedAmount, cmp.goalAmount || 0);
+            
             return (
               <PaperLift
                 key={cmp.id}
@@ -125,7 +132,7 @@ export default async function MyCampaignsPage({
                         <span>•</span>
                         <span>30 Days Left</span>
                         <span>•</span>
-                        <span>{cmp.transactions?.length || 0} Supporters</span>
+                        <span>{verifiedSupporters} Supporters</span>
                       </div>
                     </div>
                     
@@ -145,13 +152,13 @@ export default async function MyCampaignsPage({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-end">
                     <div className="space-y-2">
                       <div className="flex justify-between font-mono text-xs text-[#1D2927]">
-                        <span className="font-bold">{formatCurrency(cmp.raisedAmount)}</span>
-                        <span className="text-[#355C52]">{cmp.transactions?.length || 0}</span>
+                        <span className="font-bold">{formatCurrency(liveRaisedAmount)}</span>
+                        <span className="text-[#355C52]">{verifiedSupporters} Supporters</span>
                       </div>
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-[#53605C]">Progress</span>
                         <span className="font-mono font-bold text-[#1D2927]">
-                          {Math.round((cmp.raisedAmount / (cmp.goalAmount || 1)) * 100)}%
+                          {progress}%
                         </span>
                       </div>
                       <div className="h-2 w-full bg-[#EAE5DB] overflow-hidden">
