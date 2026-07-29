@@ -64,9 +64,11 @@ export default async function HomePage() {
     successRate: 100,
   };
 
+  const featuredCampaign = campaigns.find((c) => c.isFeatured) || campaigns[0];
+
   return (
     <>
-      <Hero />
+      <Hero campaign={featuredCampaign} />
       <LiveActivity transactions={formattedTransactions} />
       <FeaturedStories campaigns={campaigns} />
       <CommunityImpact stats={liveStats} />
