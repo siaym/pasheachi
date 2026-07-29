@@ -8,6 +8,7 @@ import { User, Mail, Smartphone, Landmark, Save, ShieldCheck, LogOut } from "luc
 import { ImageUploader } from "@/components/shared/image-uploader";
 
 import { updateProfilePageAction } from "../campaigns/[id]/actions";
+import { updateWithdrawalAccountsAction } from "./actions";
 
 export function ProfileClient({ user }: { user: any }) {
   const [isSaving, setIsSaving] = useState(false);
@@ -18,6 +19,12 @@ export function ProfileClient({ user }: { user: any }) {
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || "");
   const [coverUrl, setCoverUrl] = useState(user.coverUrl || "");
 
+  const [bkashNumber, setBkashNumber] = useState(user.bkashNumber || "");
+  const [nagadNumber, setNagadNumber] = useState(user.nagadNumber || "");
+  const [bankDetails, setBankDetails] = useState(user.bankDetails || "");
+  const [isSavingAccounts, setIsSavingAccounts] = useState(false);
+  const [accountSuccess, setAccountSuccess] = useState(false);
+
   const handleSave = async () => {
     setIsSaving(true);
     setSavedSuccess(false);
@@ -26,6 +33,21 @@ export function ProfileClient({ user }: { user: any }) {
     if (result.success) {
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
+    }
+  };
+
+  const handleSaveAccounts = async () => {
+    setIsSavingAccounts(true);
+    setAccountSuccess(false);
+    const res = await updateWithdrawalAccountsAction({
+      bkashNumber,
+      nagadNumber,
+      bankDetails,
+    });
+    setIsSavingAccounts(false);
+    if (res.success) {
+      setAccountSuccess(true);
+      setTimeout(() => setAccountSuccess(false), 3000);
     }
   };
 
@@ -120,9 +142,25 @@ export function ProfileClient({ user }: { user: any }) {
         {/* Withdrawal Accounts */}
         <div className="space-y-6">
           <FadeIn delay={0.2}>
-            <h3 className="font-editorial text-2xl text-[#1D2927] border-b-2 border-[#1D2927] pb-2 mb-6">
-              Verified Accounts
-            </h3>
+            <div className="flex items-center justify-between border-b-2 border-[#1D2927] pb-2 mb-6">
+              <h3 className="font-editorial text-2xl text-[#1D2927]">
+                Verified Payout Accounts
+              </h3>
+              <button
+                onClick={handleSaveAccounts}
+                disabled={isSavingAccounts}
+                className="px-4 py-1.5 bg-[#1D2927] text-[#FAF8F3] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#A84D2A] transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              >
+                <Save className="h-3.5 w-3.5" />
+                {isSavingAccounts ? "Saving..." : "Save Accounts"}
+              </button>
+            </div>
+
+            {accountSuccess && (
+              <div className="p-3 bg-[#E5EEE8] border border-[#355C52] text-[#355C52] font-mono text-xs font-bold mb-4">
+                ✓ Payout account details updated successfully!
+              </div>
+            )}
             
             <div className="space-y-4">
               <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-4 flex flex-col gap-3 shadow-ink">
@@ -138,8 +176,14 @@ export function ProfileClient({ user }: { user: any }) {
                   </div>
                   <ShieldCheck className="h-5 w-5 text-[#10B981]" />
                 </div>
-                <div className="border-t border-[#D9D3C7] pt-3 mt-1 font-mono text-sm tracking-wider text-[#1D2927]">
-                  +880 1712 *** 345
+                <div className="border-t border-[#D9D3C7] pt-2">
+                  <input
+                    type="text"
+                    placeholder="+880 17XXXXXXXX"
+                    value={bkashNumber}
+                    onChange={(e) => setBkashNumber(e.target.value)}
+                    className="w-full h-9 px-3 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-xs text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
+                  />
                 </div>
               </PaperLift>
 
@@ -156,8 +200,14 @@ export function ProfileClient({ user }: { user: any }) {
                   </div>
                   <ShieldCheck className="h-5 w-5 text-[#10B981]" />
                 </div>
-                <div className="border-t border-[#D9D3C7] pt-3 mt-1 font-mono text-sm tracking-wider text-[#1D2927]">
-                  +880 1912 *** 678
+                <div className="border-t border-[#D9D3C7] pt-2">
+                  <input
+                    type="text"
+                    placeholder="+880 19XXXXXXXX"
+                    value={nagadNumber}
+                    onChange={(e) => setNagadNumber(e.target.value)}
+                    className="w-full h-9 px-3 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-xs text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
+                  />
                 </div>
               </PaperLift>
 
@@ -169,19 +219,25 @@ export function ProfileClient({ user }: { user: any }) {
                     </div>
                     <div>
                       <div className="font-bold text-[#1D2927] text-sm">Bank Transfer</div>
-                      <div className="font-mono text-[10px] text-[#53605C] uppercase tracking-widest">Dutch Bangla Bank</div>
+                      <div className="font-mono text-[10px] text-[#53605C] uppercase tracking-widest">Bank Details & Account Number</div>
                     </div>
                   </div>
                   <ShieldCheck className="h-5 w-5 text-[#10B981]" />
                 </div>
-                <div className="border-t border-[#D9D3C7] pt-3 mt-1 font-mono text-sm tracking-wider text-[#1D2927]">
-                  Acct: ****4092
+                <div className="border-t border-[#D9D3C7] pt-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. Dutch Bangla Bank, Acct: 1029384092"
+                    value={bankDetails}
+                    onChange={(e) => setBankDetails(e.target.value)}
+                    className="w-full h-9 px-3 bg-[#F7F4ED] border border-[#D9D3C7] font-mono text-xs text-[#1D2927] focus:outline-none focus:border-[#1D2927]"
+                  />
                 </div>
               </PaperLift>
             </div>
             
             <p className="text-xs text-[#53605C] mt-6 italic bg-[#EAE5DB] p-4 border-l-2 border-[#1D2927]">
-              To add or change withdrawal accounts, please contact PasheAchi support with your verification documents.
+              Enter your verified Mobile Financial Service (MFS) or Bank account details above and click Save. All campaign withdrawal requests will be transferred to your designated account.
             </p>
 
             {/* Profile Session Log Out */}
