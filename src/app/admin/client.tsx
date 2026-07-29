@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, Suspense } from "react";
+import { useState, useEffect, useTransition, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FadeIn, PaperLift } from "@/components/ui/motion";
@@ -80,6 +80,15 @@ function AdminClientHubContent({
   const [feedbackMsg, setFeedbackMsg] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  // Sync state when initial props update from server revalidation
+  useEffect(() => {
+    if (initialCampaigns) setCampaigns(initialCampaigns);
+  }, [initialCampaigns]);
+
+  useEffect(() => {
+    if (initialTransactions) setTransactions(initialTransactions);
+  }, [initialTransactions]);
+
   const showToast = (msg: string) => {
     setFeedbackMsg(msg);
     setTimeout(() => setFeedbackMsg(""), 3000);
@@ -92,6 +101,8 @@ function AdminClientHubContent({
         setCampaigns(prev => prev.map(c => c.id === id ? { ...c, isFeatured: !currentFeatured } : c));
         showToast(`Campaign ${!currentFeatured ? 'added to' : 'removed from'} Featured Stories!`);
         router.refresh();
+      } else {
+        showToast(`Error: ${res.error || "Failed to feature campaign"}`);
       }
     });
   };
@@ -104,6 +115,8 @@ function AdminClientHubContent({
         setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: !isCompleted ? "completed" : "active" } : c));
         showToast(`Campaign ${!isCompleted ? 'marked as' : 'removed from'} Success Stories!`);
         router.refresh();
+      } else {
+        showToast(`Error: ${res.error || "Failed to update success story"}`);
       }
     });
   };

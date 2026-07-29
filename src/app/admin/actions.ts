@@ -108,65 +108,75 @@ export async function getAdminNotesAction(targetType: string, targetId: string) 
 }
 
 export async function toggleFeaturedCampaignAction(campaignId: string, isFeatured: boolean) {
-  const user = await getCurrentUser();
-  if (!user) return { error: "Unauthorized" };
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { error: "Unauthorized" };
 
-  await prisma.campaign.update({
-    where: { id: campaignId },
-    data: { isFeatured },
-  });
+    const updated = await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { isFeatured },
+    });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      actorName: user.name,
-      actorRole: user.role || "SuperAdmin",
-      action: isFeatured ? "FEATURE_CAMPAIGN" : "UNFEATURE_CAMPAIGN",
-      resourceType: "Campaign",
-      resourceId: campaignId,
-      newValue: isFeatured ? "featured" : "standard",
-      reason: isFeatured ? "Featured story enabled for homepage showcase" : "Removed from featured stories",
-    }
-  });
+    await prisma.auditLog.create({
+      data: {
+        actorId: user.id,
+        actorName: user.name,
+        actorRole: user.role || "SuperAdmin",
+        action: isFeatured ? "FEATURE_CAMPAIGN" : "UNFEATURE_CAMPAIGN",
+        resourceType: "Campaign",
+        resourceId: campaignId,
+        newValue: isFeatured ? "featured" : "standard",
+        reason: isFeatured ? "Featured story enabled for homepage showcase" : "Removed from featured stories",
+      }
+    });
 
-  revalidatePath("/", "layout");
-  revalidatePath("/admin", "layout");
-  revalidatePath("/discover", "layout");
-  revalidatePath("/", "page");
-  revalidatePath("/admin", "page");
-  revalidatePath("/discover", "page");
+    revalidatePath("/", "layout");
+    revalidatePath("/admin", "layout");
+    revalidatePath("/discover", "layout");
+    revalidatePath("/", "page");
+    revalidatePath("/admin", "page");
+    revalidatePath("/discover", "page");
 
-  return { success: true };
+    return { success: true, campaign: updated };
+  } catch (err: any) {
+    console.error("Error toggling featured campaign:", err);
+    return { error: err.message || "Failed to update featured status" };
+  }
 }
 
 export async function toggleSuccessStoryAction(campaignId: string, isCompleted: boolean) {
-  const user = await getCurrentUser();
-  if (!user) return { error: "Unauthorized" };
+  try {
+    const user = await getCurrentUser();
+    if (!user) return { error: "Unauthorized" };
 
-  await prisma.campaign.update({
-    where: { id: campaignId },
-    data: { status: isCompleted ? "completed" : "active" }
-  });
+    const updated = await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { status: isCompleted ? "completed" : "active" }
+    });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      actorName: user.name,
-      actorRole: user.role || "SuperAdmin",
-      action: isCompleted ? "MARK_SUCCESS_STORY" : "UNMARK_SUCCESS_STORY",
-      resourceType: "Campaign",
-      resourceId: campaignId,
-      newValue: isCompleted ? "completed" : "active",
-      reason: isCompleted ? "Marked as completed Success Story for homepage slider" : "Reverted to active status",
-    }
-  });
+    await prisma.auditLog.create({
+      data: {
+        actorId: user.id,
+        actorName: user.name,
+        actorRole: user.role || "SuperAdmin",
+        action: isCompleted ? "MARK_SUCCESS_STORY" : "UNMARK_SUCCESS_STORY",
+        resourceType: "Campaign",
+        resourceId: campaignId,
+        newValue: isCompleted ? "completed" : "active",
+        reason: isCompleted ? "Marked as completed Success Story for homepage slider" : "Reverted to active status",
+      }
+    });
 
-  revalidatePath("/", "layout");
-  revalidatePath("/admin", "layout");
-  revalidatePath("/", "page");
-  revalidatePath("/admin", "page");
+    revalidatePath("/", "layout");
+    revalidatePath("/admin", "layout");
+    revalidatePath("/", "page");
+    revalidatePath("/admin", "page");
 
-  return { success: true };
+    return { success: true, campaign: updated };
+  } catch (err: any) {
+    console.error("Error toggling success story:", err);
+    return { error: err.message || "Failed to update success story status" };
+  }
 }
 
 
