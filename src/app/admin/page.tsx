@@ -101,6 +101,8 @@ export default async function AdminPage() {
     raisedAmount: c.raisedAmount,
     category: c.category,
     status: c.status,
+    isFeatured: c.isFeatured,
+    isPinned: c.isPinned,
   }));
 
   return (
