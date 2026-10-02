@@ -10,7 +10,7 @@ import { Suspense } from "react";
 
 import { constructMetadata } from "@/lib/seo/metadata";
 
-export const revalidate = 10;
+export const revalidate = 300;
 
 export const metadata = constructMetadata({
   title: "Explore Campaigns & Dreams",
@@ -42,15 +42,20 @@ export default async function DiscoverPage({
     ];
   }
 
-  const filteredCampaigns = await prisma.campaign.findMany({
+  const filteredCampaignsRaw = await prisma.campaign.findMany({
     where: whereClause,
     include: {
       creator: true,
-      transactions: true,
+      _count: { select: { transactions: { where: { status: "verified" } } } },
     },
     orderBy: { createdAt: "desc" },
     take: 50,
   });
+
+  const filteredCampaigns = filteredCampaignsRaw.map(c => ({
+    ...c,
+    transactions: { length: c._count?.transactions || 0 }
+  })) as any[];
 
   return (
     <div className="min-h-screen pt-32 pb-20 sm:pb-32 relative bg-[#FDFBF7]">

@@ -12,26 +12,26 @@ import { Newsletter } from "@/components/landing/newsletter";
 
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 10;
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [
-    latestCampaigns,
-    featuredCampaignDb,
+    latestCampaignsRaw,
+    featuredCampaignDbRaw,
     recentTransactions,
     totalRaisedResult,
     totalSupportersCount,
     totalCampaignsCount,
-    completedCampaigns,
+    completedCampaignsRaw,
   ] = await Promise.all([
     prisma.campaign.findMany({
-      include: { creator: true, transactions: true },
+      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
       take: 10,
       orderBy: { createdAt: "desc" },
     }),
     prisma.campaign.findFirst({
       where: { isFeatured: true },
-      include: { creator: true, transactions: true },
+      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.transaction.findMany({
@@ -50,11 +50,17 @@ export default async function HomePage() {
     prisma.campaign.count(),
     prisma.campaign.findMany({
       where: { status: "completed" },
-      include: { creator: true, transactions: true },
+      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
       take: 10,
       orderBy: { updatedAt: "desc" },
     }),
   ]);
+
+  const mapCampaign = (c: any) => c ? { ...c, transactions: { length: c._count?.transactions || 0 } } as any : c;
+
+  const latestCampaigns = latestCampaignsRaw.map(mapCampaign);
+  const completedCampaigns = completedCampaignsRaw.map(mapCampaign);
+  const featuredCampaignDb = mapCampaign(featuredCampaignDbRaw);
 
   const featuredCampaign = featuredCampaignDb || latestCampaigns[0];
 

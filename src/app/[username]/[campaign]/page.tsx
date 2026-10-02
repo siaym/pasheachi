@@ -4,8 +4,7 @@ import { CampaignDetailClient } from "./client";
 import { constructMetadata } from "@/lib/seo/metadata";
 import { CampaignJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 5;
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -56,7 +55,7 @@ export default async function CampaignDetailPage({
     redirect(`/${cleanUsername}/${campaignSlug}`);
   }
 
-  const campaign = await prisma.campaign.findFirst({
+  const campaignRaw = await prisma.campaign.findFirst({
     where: { 
       slug: campaignSlug,
       status: { in: ["active", "completed"] },
@@ -64,9 +63,17 @@ export default async function CampaignDetailPage({
     },
     include: {
       creator: true,
-      transactions: true
+      _count: { select: { transactions: { where: { status: "verified" } } } }
     }
   });
+
+  let campaign = null;
+  if (campaignRaw) {
+    campaign = {
+      ...campaignRaw,
+      transactions: { length: campaignRaw._count?.transactions || 0 }
+    } as any;
+  }
 
   if (!campaign) {
     notFound();
