@@ -75,6 +75,11 @@ model Campaign {
   withdrawals      Withdrawal[]
   reports          Report[]
   verificationDocs VerificationDocument[]
+
+  @@index([status])
+  @@index([category])
+  @@index([isFeatured])
+  @@index([creatorId])
 }
 
 model Milestone {
@@ -100,6 +105,10 @@ model Transaction {
 
   campaignId  String
   campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([status])
+  @@index([campaignId, status])
 }
 
 model Update {
