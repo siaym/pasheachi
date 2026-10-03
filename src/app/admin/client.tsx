@@ -137,6 +137,35 @@ function AdminClientHubContent({
     });
   };
 
+  
+  const handleBulkVerifyTransactions = (selectedRows: any[]) => {
+    startTransition(async () => {
+      let count = 0;
+      for (const row of selectedRows) {
+        if (row.status !== "verified") {
+          await verifyTransactionAction(row.id, "verified", "Bulk verified");
+          setTransactions(prev => prev.map(t => t.id === row.id ? { ...t, status: "verified" } : t));
+          count++;
+        }
+      }
+      showToast(`Bulk verified ${count} transactions!`);
+    });
+  };
+
+  const handleBulkApproveCampaigns = (selectedRows: any[]) => {
+    startTransition(async () => {
+      let count = 0;
+      for (const row of selectedRows) {
+        if (row.status !== "active") {
+          await verifyCampaignAction(row.id, "approved", "Bulk approved");
+          setCampaigns(prev => prev.map(c => c.id === row.id ? { ...c, status: "active" } : c));
+          count++;
+        }
+      }
+      showToast(`Bulk approved ${count} campaigns!`);
+    });
+  };
+
   const handleApproveCampaign = (id: string) => {
     startTransition(async () => {
       const res = await verifyCampaignAction(id, "approved", "Approved from Moderation Workspace");
@@ -424,6 +453,7 @@ function AdminClientHubContent({
 
           <AdvancedTable
             title={navTab === "verification_queue" ? "Pending Verifications Queue" : "MFS Verification Ledger"}
+            bulkActions={navTab === "verification_queue" ? [{ label: "Verify Selected", action: handleBulkVerifyTransactions }] : []}
             columns={[
               { header: "Tx ID", accessorKey: (r) => r.id.slice(0, 8) + "..." },
               { header: "Donor Name", accessorKey: (r) => r.donorName || "Anonymous" },
@@ -489,6 +519,7 @@ function AdminClientHubContent({
 
           <AdvancedTable
             title="Campaign Approval Desk"
+            bulkActions={navTab === "pending_campaigns" ? [{ label: "Approve Selected", action: handleBulkApproveCampaigns }] : []}
             columns={[
               { header: "Title", accessorKey: "title" },
               { header: "Creator", accessorKey: (r) => r.creator?.name || "Creator" },
