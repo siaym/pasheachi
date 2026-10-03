@@ -78,17 +78,17 @@ export function AdvancedTable<T extends { id?: string | number }>({
   };
 
   return (
-    <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] shadow-sm overflow-hidden space-y-0">
+    <div className="bg-white border border-slate-200 shadow-sm overflow-hidden space-y-0">
       {/* Header Toolbar */}
-      <div className="p-4 border-b border-[#D9D3C7] bg-[#F7F4ED] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#8C7A5B]" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder={searchPlaceholder}
-            className="h-9 w-full bg-transparent border-b border-[#D9D3C7] pl-9 pr-3 text-xs font-mono text-[#1D2927] focus:outline-none focus:border-[#1D2927] placeholder:text-[#8C7A5B]"
+            className="h-9 w-full bg-transparent border-b border-slate-200 pl-9 pr-3 text-xs font-mono text-slate-900 focus:outline-none focus:border-slate-900 placeholder:text-slate-400"
           />
         </div>
 
@@ -98,7 +98,7 @@ export function AdvancedTable<T extends { id?: string | number }>({
             <button
               key={idx}
               onClick={() => ba.action(selectedRows)}
-              className={`h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-widest border transition-colors ${ba.variant === 'danger' ? 'bg-[#A84D2A] text-[#FAF8F3] border-[#A84D2A]' : 'bg-[#1D2927] text-[#FAF8F3] border-[#1D2927]'}`}
+              className={`h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-wider border transition-colors ${ba.variant === 'danger' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-900 text-white border-slate-900'}`}
             >
               {ba.label} ({selectedRows.length})
             </button>
@@ -106,13 +106,13 @@ export function AdvancedTable<T extends { id?: string | number }>({
 
           <button
             onClick={handleCSV}
-            className="h-8 px-3 border border-[#D9D3C7] bg-[#FAF8F3] hover:bg-[#1D2927] hover:text-[#FAF8F3] text-[10px] font-mono font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5"
+            className="h-8 px-3 border border-slate-200 bg-white hover:bg-slate-900 hover:text-white text-[10px] font-mono font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
           >
             <Download className="h-3.5 w-3.5" /> CSV
           </button>
           <button
             onClick={handlePrint}
-            className="h-8 px-3 border border-[#D9D3C7] bg-[#FAF8F3] hover:bg-[#1D2927] hover:text-[#FAF8F3] text-[10px] font-mono font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5"
+            className="h-8 px-3 border border-slate-200 bg-white hover:bg-slate-900 hover:text-white text-[10px] font-mono font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
           >
             <Printer className="h-3.5 w-3.5" /> PDF
           </button>
@@ -121,15 +121,15 @@ export function AdvancedTable<T extends { id?: string | number }>({
 
       {/* Table Element */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left font-mono text-xs">
-          <thead className="bg-[#EAE5DB] text-[#1D2927] uppercase tracking-widest border-b border-[#1D2927]">
+        <table className="w-full text-left text-xs font-medium">
+          <thead className="bg-slate-100 text-slate-900 uppercase tracking-wider border-b border-slate-200">
             <tr>
               <th className="p-3 w-10 text-center">
                 <button onClick={handleToggleSelectAll}>
                   {selectedIds.size === paginatedData.length && paginatedData.length > 0 ? (
-                    <CheckSquare className="h-4 w-4 text-[#A84D2A]" />
+                    <CheckSquare className="h-4 w-4 text-blue-600" />
                   ) : (
-                    <Square className="h-4 w-4 text-[#8C7A5B]" />
+                    <Square className="h-4 w-4 text-slate-400" />
                   )}
                 </button>
               </th>
@@ -138,10 +138,10 @@ export function AdvancedTable<T extends { id?: string | number }>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#D9D3C7]">
+          <tbody className="divide-y divide-slate-200">
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="p-8 text-center text-[#8C7A5B]">
+                <td colSpan={columns.length + 1} className="p-8 text-center text-slate-400">
                   No matching records found.
                 </td>
               </tr>
@@ -150,14 +150,14 @@ export function AdvancedTable<T extends { id?: string | number }>({
                 const rowId = row.id ?? rowIdx;
                 const isSelected = selectedIds.has(rowId);
                 return (
-                  <tr key={rowIdx} className={`hover:bg-[#F7F4ED] transition-colors ${isSelected ? 'bg-[#E5EEE8]/50' : ''}`}>
+                  <tr key={rowIdx} className={`hover:bg-slate-50 transition-colors ${isSelected ? 'bg-emerald-50/50' : ''}`}>
                     <td className="p-3 text-center">
                       <button onClick={() => handleToggleRow(rowId)}>
-                        {isSelected ? <CheckSquare className="h-4 w-4 text-[#A84D2A]" /> : <Square className="h-4 w-4 text-[#8C7A5B]" />}
+                        {isSelected ? <CheckSquare className="h-4 w-4 text-blue-600" /> : <Square className="h-4 w-4 text-slate-400" />}
                       </button>
                     </td>
                     {columns.map((col, colIdx) => (
-                      <td key={colIdx} className="p-3 text-[#1D2927]">
+                      <td key={colIdx} className="p-3 text-slate-900">
                         {col.cell ? col.cell(row) : (typeof col.accessorKey === 'function' ? col.accessorKey(row) : String(row[col.accessorKey] ?? ""))}
                       </td>
                     ))}
@@ -170,7 +170,7 @@ export function AdvancedTable<T extends { id?: string | number }>({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-3 bg-[#EAE5DB] border-t border-[#D9D3C7] flex items-center justify-between font-mono text-[10px] text-[#53605C]">
+      <div className="p-3 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-sm font-medium text-slate-500">
         <span>
           Showing {paginatedData.length} of {filteredData.length} entries
         </span>
@@ -179,19 +179,19 @@ export function AdvancedTable<T extends { id?: string | number }>({
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            className="p-1 border border-[#D9D3C7] bg-[#FAF8F3] disabled:opacity-40"
+            className="p-1 border border-slate-200 bg-white disabled:opacity-40"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            className="p-1 border border-[#D9D3C7] bg-[#FAF8F3] disabled:opacity-40"
+            className="p-1 border border-slate-200 bg-white disabled:opacity-40"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
-    </PaperLift>
+    </div>
   );
 }

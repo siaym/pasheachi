@@ -169,7 +169,7 @@ function AdminClientHubContent({
     <div className="space-y-8 pb-24">
       {/* Toast Feedback */}
       {feedbackMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1D2927] text-[#F7F4ED] border border-[#355C52] p-4 shadow-paper font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white border border-emerald-600 p-4 shadow-md rounded-xl text-xs font-medium uppercase tracking-wider flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 text-[#10B981]" /> {feedbackMsg}
         </div>
       )}
@@ -177,121 +177,97 @@ function AdminClientHubContent({
       {/* Impersonation Modal */}
       <ImpersonationModal isOpen={isImpersonateOpen} onClose={() => setIsImpersonateOpen(false)} users={initialUsers} />
 
-      {/* Workspace Tabs Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF8F3] border border-[#D9D3C7] p-2">
-        <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
-          <button
-            onClick={() => handleSelectWorkspace("LAUNCHER")}
-            className="px-3 py-2 bg-[#FAF8F3] border border-[#1D2927] font-mono text-[10px] font-bold uppercase tracking-widest text-[#1D2927] hover:bg-[#1D2927] hover:text-[#FAF8F3] transition-colors flex items-center gap-1.5"
-          >
-            <Layers className="h-3.5 w-3.5 text-[#A84D2A]" /> Launcher
-          </button>
+      {/* Workspace Tabs Header Bar removed */}
 
-          {(Object.keys(WORKSPACES) as WorkspaceId[]).map((wsKey) => {
-            const ws = WORKSPACES[wsKey];
-            const isSelected = activeTab === wsKey;
-            const Icon = ws.icon;
-            return (
-              <button
-                key={wsKey}
-                onClick={() => handleSelectWorkspace(wsKey)}
-                className={`px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border transition-all ${isSelected ? 'bg-[#1D2927] text-[#FAF8F3] border-[#1D2927] shadow-sm' : 'bg-[#F7F4ED] text-[#53605C] border-transparent hover:border-[#D9D3C7] hover:text-[#1D2927]'}`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                <span>{ws.shortName}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Super Admin Actions */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsImpersonateOpen(true)}
-            className="h-8 px-3 bg-[#A84D2A] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5"
-          >
-            <Eye className="h-3.5 w-3.5" /> Impersonate User
-          </button>
-        </div>
-      </div>
-
-      {/* Global "Needs Attention" Widget */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <PaperLift className="lg:col-span-8 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
-          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-3">
-            <h3 className="font-editorial text-2xl text-[#1D2927] flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-[#A84D2A]" /> Global Needs Attention Queue
-            </h3>
-            <span className="font-mono text-xs uppercase text-[#A84D2A] font-bold">{stats.pendingTransactions + stats.pendingCampaigns} Action Items</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono text-xs">
-            <div className="p-3 bg-[#FDF4F0] border border-[#A84D2A]">
-              <div className="font-bold text-[10px] uppercase text-[#A84D2A]">Pending MFS Verifications</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.pendingTransactions} Tx</div>
-            </div>
-            <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <div className="font-bold text-[10px] uppercase text-[#8C7A5B]">Campaign Reviews</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.pendingCampaigns} Pending</div>
-            </div>
-            <div className="p-3 bg-[#E5EEE8] border border-[#355C52]">
-              <div className="font-bold text-[10px] uppercase text-[#355C52]">Verification Rate</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{stats.verificationRate}%</div>
-            </div>
-            <div className="p-3 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <div className="font-bold text-[10px] uppercase text-[#8C7A5B]">Today&apos;s Volume</div>
-              <div className="font-editorial text-2xl text-[#1D2927] mt-1">{formatCurrency(stats.todayDonationVolume)}</div>
-            </div>
-          </div>
-        </PaperLift>
-
-        <PaperLift className="lg:col-span-4 bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3 font-mono text-xs">
-          <div className="flex justify-between items-center border-b border-[#D9D3C7] pb-2 font-bold uppercase text-[#1D2927]">
-            <span>Platform Snapshot</span>
-            <span className="text-[10px] text-[#8C7A5B]">Live DB</span>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <span className="text-[#8C7A5B]">Total Users</span>
-              <span className="font-bold text-[#1D2927]">{stats.totalUsers}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <span className="text-[#8C7A5B]">Total Campaigns</span>
-              <span className="font-bold text-[#1D2927]">{stats.totalCampaigns}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <span className="text-[#8C7A5B]">Active Campaigns</span>
-              <span className="font-bold text-[#1D2927]">{stats.activeCampaigns}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <span className="text-[#8C7A5B]">Total Donations</span>
-              <span className="font-bold text-[#1D2927]">{formatCurrency(stats.totalDonationVolume)}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-[#F7F4ED] border border-[#D9D3C7]">
-              <span className="text-[#8C7A5B]">Total Transactions</span>
-              <span className="font-bold text-[#1D2927]">{stats.totalTransactions}</span>
-            </div>
-          </div>
-        </PaperLift>
-      </div>
+      {/* Global Needs Attention Widget moved to SUPER_ADMIN */}
 
       {/* WORKSPACE 1: SUPER ADMIN */}
       {activeTab === "SUPER_ADMIN" && (
         <div className="space-y-8">
-          <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D9D3C7] pb-4">
-            <div>
-              <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
+            <div className="flex-1">
+              <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
                 {navTab === "campaigns" ? "All Campaigns Desk" :
                  navTab === "creators" ? "Creator Profiles & Users" :
                  navTab === "audit_logs" ? "Platform Audit Logs" :
                  navTab === "flags" ? "Feature Flags & System Controls" :
                  "Executive Command Center"}
               </h1>
-              <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-500 mt-1">
                 Live Database Operational Status • Persisted Audit Logs
               </p>
             </div>
+            
+            {navTab === "overview" && (
+              <button
+                onClick={() => setIsImpersonateOpen(true)}
+                className="h-10 px-4 bg-blue-600 text-white text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2 hover:bg-slate-900 transition-colors"
+              >
+                <Eye className="h-4 w-4" /> Impersonate User
+              </button>
+            )}
           </FadeIn>
+
+          {navTab === "overview" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-8 bg-white border border-slate-200 p-6 space-y-4">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+                  <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-blue-600" /> Global Needs Attention Queue
+                  </h3>
+                  <span className="text-xs font-medium uppercase text-blue-600 font-bold">{stats.pendingTransactions + stats.pendingCampaigns} Action Items</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-medium">
+                  <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+                    <div className="font-bold text-[10px] uppercase text-blue-600">Pending MFS Verifications</div>
+                    <div className="font-sans font-semibold tracking-tight text-2xl text-slate-900 mt-1">{stats.pendingTransactions} Tx</div>
+                  </div>
+                  <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+                    <div className="font-bold text-[10px] uppercase text-slate-400">Campaign Reviews</div>
+                    <div className="font-sans font-semibold tracking-tight text-2xl text-slate-900 mt-1">{stats.pendingCampaigns} Pending</div>
+                  </div>
+                  <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+                    <div className="font-bold text-[10px] uppercase text-emerald-700">Verification Rate</div>
+                    <div className="font-sans font-semibold tracking-tight text-2xl text-slate-900 mt-1">{stats.verificationRate}%</div>
+                  </div>
+                  <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm">
+                    <div className="font-bold text-[10px] uppercase text-slate-400">Today's Volume</div>
+                    <div className="font-sans font-semibold tracking-tight text-2xl text-slate-900 mt-1">{formatCurrency(stats.todayDonationVolume)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 bg-white border border-slate-200 p-6 space-y-3 text-xs font-medium">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2 font-bold uppercase text-slate-900">
+                  <span>Platform Snapshot</span>
+                  <span className="text-[10px] text-slate-400">Live DB</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-400">Total Users</span>
+                    <span className="font-bold text-slate-900">{stats.totalUsers}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-400">Total Campaigns</span>
+                    <span className="font-bold text-slate-900">{stats.totalCampaigns}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-400">Active Campaigns</span>
+                    <span className="font-bold text-slate-900">{stats.activeCampaigns}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-400">Total Donations</span>
+                    <span className="font-bold text-slate-900">{formatCurrency(stats.totalDonationVolume)}</span>
+                  </div>
+                  <div className="flex justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-400">Total Transactions</span>
+                    <span className="font-bold text-slate-900">{stats.totalTransactions}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Live Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -302,17 +278,17 @@ function AdminClientHubContent({
               { label: "Verified Tx", value: stats.verifiedTransactions.toString(), color: "#355C52" },
               { label: "Pending Tx", value: stats.pendingTransactions.toString(), color: "#A84D2A" },
             ].map((s, i) => (
-              <PaperLift key={i} className="bg-[#FAF8F3] border border-[#D9D3C7] p-4">
-                <div className="font-mono text-[10px] uppercase font-bold" style={{ color: s.color }}>{s.label}</div>
-                <div className="font-editorial text-2xl text-[#1D2927] mt-1">{s.value}</div>
-              </PaperLift>
+              <div key={i} className="bg-white border border-slate-200 p-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500" style={{ color: s.color }}>{s.label}</div>
+                <div className="font-sans font-semibold tracking-tight text-2xl text-slate-900 mt-1">{s.value}</div>
+              </div>
             ))}
           </div>
 
           {/* Campaigns Section */}
           {(navTab === "overview" || navTab === "campaigns") && (
             <div className="space-y-4">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">All Platform Campaigns</h3>
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">All Platform Campaigns</h3>
               <AdvancedTable
                 title="Campaigns"
                 columns={[
@@ -326,7 +302,7 @@ function AdminClientHubContent({
                     header: "Investigate",
                     accessorKey: "id",
                     cell: (r) => (
-                      <Link href={`/admin/campaigns/${r.id}`} className="px-2 py-1 bg-[#355C52] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                      <Link href={`/admin/campaigns/${r.id}`} className="px-2 py-1 bg-emerald-600 text-white font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
                         <Search className="h-3 w-3" /> Open
                       </Link>
                     )
@@ -341,7 +317,7 @@ function AdminClientHubContent({
           {/* Audit Trail from DB */}
           {(navTab === "overview" || navTab === "audit_logs") && (
             <div className="space-y-4">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">Platform Audit Trail (Persisted)</h3>
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Platform Audit Trail (Persisted)</h3>
               <AdvancedTable
                 title="Audit Logs"
                 columns={[
@@ -360,7 +336,7 @@ function AdminClientHubContent({
           {/* Users Table with Investigate Links */}
           {(navTab === "overview" || navTab === "creators") && (
             <div className="space-y-4">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">All Creator & User Profiles</h3>
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">All Creator & User Profiles</h3>
               <AdvancedTable
                 title="Users"
                 columns={[
@@ -373,7 +349,7 @@ function AdminClientHubContent({
                     header: "Investigate",
                     accessorKey: "id",
                     cell: (r) => (
-                      <Link href={`/admin/users/${r.id}`} className="px-2 py-1 bg-[#1D2927] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                      <Link href={`/admin/users/${r.id}`} className="px-2 py-1 bg-slate-900 text-white font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
                         <Search className="h-3 w-3" /> Open
                       </Link>
                     )
@@ -387,23 +363,23 @@ function AdminClientHubContent({
 
           {/* System Controls & Feature Flags */}
           {(navTab === "overview" || navTab === "flags") && (
-            <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-6 shadow-paper space-y-6">
-              <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4">
+            <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 shadow-md rounded-xl space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div>
-                  <h4 className="font-editorial text-xl text-[#1D2927]">System Maintenance Mode & Feature Flags</h4>
-                  <p className="font-mono text-xs text-[#53605C] mt-1">Pauses public submissions for scheduled system updates.</p>
+                  <h4 className="font-sans font-semibold tracking-tight text-xl text-slate-900">System Maintenance Mode & Feature Flags</h4>
+                  <p className="text-xs font-medium text-slate-500 mt-1">Pauses public submissions for scheduled system updates.</p>
                 </div>
                 <button
                   onClick={() => {
                     setMaintenanceMode(!maintenanceMode);
                     showToast(`Maintenance mode turned ${!maintenanceMode ? 'ON' : 'OFF'}`);
                   }}
-                  className={`h-10 px-6 font-mono text-[10px] font-bold uppercase tracking-widest border transition-all ${maintenanceMode ? 'bg-[#A84D2A] text-[#FAF8F3] border-[#A84D2A]' : 'bg-[#FAF8F3] text-[#1D2927] border-[#1D2927]'}`}
+                  className={`h-10 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 border transition-all ${maintenanceMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-900 border-slate-900'}`}
                 >
                   {maintenanceMode ? "Maintenance Active" : "Enable Maintenance"}
                 </button>
               </div>
-            </PaperLift>
+            </div>
           )}
         </div>
       )}
@@ -411,39 +387,39 @@ function AdminClientHubContent({
       {/* WORKSPACE 2: FINANCE */}
       {activeTab === "FINANCE" && (
         <div className="space-y-8">
-          <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#D9D3C7] pb-4">
+          <FadeIn className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
             <div>
-              <h1 className="font-editorial text-4xl text-[#1D2927]">
+              <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
                 {navTab === "verification_queue" ? "Manual MFS Verification Queue" :
                  navTab === "statement_import" ? "Statement Import & Reconciliation" :
                  navTab === "withdrawals" ? "Withdrawals & Payouts Queue" :
                  navTab === "audit" ? "Financial Audit Trail" :
                  "Finance & Treasury Workspace"}
               </h1>
-              <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
                 Manual MFS verification, statement matching & payout logs • Actions Persist to DB
               </p>
             </div>
           </FadeIn>
 
           {(navTab === "statement_import") && (
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4 font-mono text-xs">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">Bank & MFS Statement Import</h3>
-              <p className="text-[#53605C]">Upload bKash/Nagad daily CSV or Excel statements for automated batch reconciliation.</p>
+            <div className="bg-white border border-slate-200 p-6 space-y-4 text-xs font-medium">
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Bank & MFS Statement Import</h3>
+              <p className="text-slate-500">Upload bKash/Nagad daily CSV or Excel statements for automated batch reconciliation.</p>
               <div className="flex items-center gap-3">
-                <input type="file" className="text-xs text-[#53605C] file:bg-[#1D2927] file:text-[#FAF8F3] file:border-0 file:px-3 file:py-1.5 file:font-mono file:text-[10px] file:uppercase" />
-                <button onClick={() => showToast("Statement uploaded for batch matching.")} className="px-4 py-2 bg-[#355C52] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase">Import Statement</button>
+                <input type="file" className="text-xs text-slate-500 file:bg-slate-900 file:text-white file:border-0 file:px-3 file:py-1.5 file:font-mono file:text-[10px] file:uppercase" />
+                <button onClick={() => showToast("Statement uploaded for batch matching.")} className="px-4 py-2 bg-emerald-600 text-white text-sm font-medium font-bold uppercase">Import Statement</button>
               </div>
-            </PaperLift>
+            </div>
           )}
 
           {(navTab === "withdrawals") && (
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4 font-mono text-xs">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">Withdrawal Payout Requests</h3>
-              <div className="p-3 bg-[#E5EEE8] border border-[#355C52] text-[#355C52]">
+            <div className="bg-white border border-slate-200 p-6 space-y-4 text-xs font-medium">
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Withdrawal Payout Requests</h3>
+              <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm text-emerald-700">
                 5 pending withdrawal requests totaling ৳145,000 awaiting treasury release.
               </div>
-            </PaperLift>
+            </div>
           )}
 
           <AdvancedTable
@@ -460,7 +436,7 @@ function AdminClientHubContent({
                 header: "Investigate",
                 accessorKey: "id",
                 cell: (r) => (
-                  <Link href={`/admin/transactions/${r.id}`} className="px-2 py-1 bg-[#355C52] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                  <Link href={`/admin/transactions/${r.id}`} className="px-2 py-1 bg-emerald-600 text-white font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
                     <Search className="h-3 w-3" /> Open
                   </Link>
                 )
@@ -469,14 +445,14 @@ function AdminClientHubContent({
                 header: "Action",
                 accessorKey: "status",
                 cell: (r) => r.status === "verified" ? (
-                  <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified</span>
+                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[9px] font-bold uppercase border border-emerald-600">Verified</span>
                 ) : r.status === "rejected" ? (
-                  <span className="px-2 py-0.5 bg-[#FDF4F0] text-[#A84D2A] font-mono text-[9px] font-bold uppercase border border-[#A84D2A]">Rejected</span>
+                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 font-mono text-[9px] font-bold uppercase border border-blue-600">Rejected</span>
                 ) : (
                   <button
                     onClick={() => handleVerifyTransaction(r.id)}
                     disabled={isPending}
-                    className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+                    className="px-3 py-1 bg-slate-900 text-white hover:bg-emerald-600 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors disabled:opacity-50"
                   >
                     Verify Tx
                   </button>
@@ -492,23 +468,23 @@ function AdminClientHubContent({
       {/* WORKSPACE 3: MODERATION */}
       {activeTab === "MODERATION" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "pending_campaigns" ? "Pending Campaign Reviews" :
                navTab === "nid_verification" ? "Creator NID & Passport Verification Desk" :
                navTab === "log" ? "Moderation Activity Log" :
                "Campaign Moderation Workspace"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
               Review Submitted Campaigns • NID & Identity Document Inspection
             </p>
           </FadeIn>
 
           {(navTab === "nid_verification") && (
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3 font-mono text-xs">
-              <h3 className="font-editorial text-2xl text-[#1D2927]">NID / Passport Review Queue</h3>
-              <p className="text-[#53605C]">7 creators have uploaded government identity documents awaiting manual verification.</p>
-            </PaperLift>
+            <div className="bg-white border border-slate-200 p-6 space-y-3 text-xs font-medium">
+              <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">NID / Passport Review Queue</h3>
+              <p className="text-slate-500">7 creators have uploaded government identity documents awaiting manual verification.</p>
+            </div>
           )}
 
           <AdvancedTable
@@ -524,7 +500,7 @@ function AdminClientHubContent({
                 header: "Investigate",
                 accessorKey: "id",
                 cell: (r) => (
-                  <Link href={`/admin/campaigns/${r.id}`} className="px-2 py-1 bg-[#355C52] text-[#FAF8F3] font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
+                  <Link href={`/admin/campaigns/${r.id}`} className="px-2 py-1 bg-emerald-600 text-white font-mono text-[9px] font-bold uppercase flex items-center gap-1 w-fit">
                     <Search className="h-3 w-3" /> Open
                   </Link>
                 )
@@ -533,22 +509,22 @@ function AdminClientHubContent({
                 header: "Action",
                 accessorKey: "id",
                 cell: (r) => r.status === "active" ? (
-                  <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Approved</span>
+                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[9px] font-bold uppercase border border-emerald-600">Approved</span>
                 ) : r.status === "rejected" ? (
-                  <span className="px-2 py-0.5 bg-[#FDF4F0] text-[#A84D2A] font-mono text-[9px] font-bold uppercase border border-[#A84D2A]">Rejected</span>
+                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 font-mono text-[9px] font-bold uppercase border border-blue-600">Rejected</span>
                 ) : (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleApproveCampaign(r.id)}
                       disabled={isPending}
-                      className="px-3 py-1 bg-[#1D2927] text-[#FAF8F3] hover:bg-[#355C52] font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+                      className="px-3 py-1 bg-slate-900 text-white hover:bg-emerald-600 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors disabled:opacity-50"
                     >
                       Approve
                     </button>
                     <button
                       onClick={() => handleRejectCampaign(r.id)}
                       disabled={isPending}
-                      className="px-2 py-1 bg-[#FDF4F0] text-[#A84D2A] border border-[#A84D2A] font-mono text-[10px] font-bold uppercase disabled:opacity-50"
+                      className="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-600 text-sm font-medium font-bold uppercase disabled:opacity-50"
                     >
                       Reject
                     </button>
@@ -565,32 +541,32 @@ function AdminClientHubContent({
       {/* WORKSPACE 4: TRUST & SAFETY */}
       {activeTab === "TRUST_SAFETY" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "flagged" ? "Flagged & High Risk Campaigns" :
                navTab === "suspicious_tx" ? "Suspicious Transactions Monitoring" :
                navTab === "blacklist" ? "Blacklisted Users & IPs Registry" :
                "Trust & Safety Risk Center"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Fraud & Risk Analysis • IP & User Suspicious Patterns</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Fraud & Risk Analysis • IP & User Suspicious Patterns</p>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-2">
-              <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Platform Risk Score</div>
-              <div className="font-editorial text-3xl text-[#1D2927]">0.01 / 1.0</div>
-              <p className="font-mono text-[9px] uppercase text-[#355C52]">Low Risk Profile</p>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-2">
-              <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Rejected Campaigns</div>
-              <div className="font-editorial text-3xl text-[#1D2927]">{stats.rejectedCampaigns}</div>
-              <p className="font-mono text-[9px] uppercase text-[#53605C]">All time</p>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-2">
-              <div className="font-mono text-[10px] uppercase font-bold text-[#8C7A5B]">Verification Rate</div>
-              <div className="font-editorial text-3xl text-[#1D2927]">{stats.verificationRate}%</div>
-              <p className="font-mono text-[9px] uppercase text-[#53605C]">Transactions verified</p>
-            </PaperLift>
+            <div className="bg-white border border-slate-200 p-6 space-y-2">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Platform Risk Score</div>
+              <div className="font-sans font-semibold tracking-tight text-3xl text-slate-900">0.01 / 1.0</div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-emerald-700">Low Risk Profile</p>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-2">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Rejected Campaigns</div>
+              <div className="font-sans font-semibold tracking-tight text-3xl text-slate-900">{stats.rejectedCampaigns}</div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">All time</p>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-2">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Verification Rate</div>
+              <div className="font-sans font-semibold tracking-tight text-3xl text-slate-900">{stats.verificationRate}%</div>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Transactions verified</p>
+            </div>
           </div>
 
           <AdvancedTable
@@ -610,67 +586,67 @@ function AdminClientHubContent({
       {/* WORKSPACE 5: SUPPORT */}
       {activeTab === "SUPPORT" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "tickets" ? "Open Support Tickets Queue" :
                navTab === "appeals" ? "Campaign Verification Appeals" :
                navTab === "kb" ? "Support Knowledge Base & FAQs" :
                "Customer Support Helpdesk"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">User Inquiries, Creator Appeals & Helpdesk</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">User Inquiries, Creator Appeals & Helpdesk</p>
           </FadeIn>
 
-          <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-12 text-center">
-            <Headphones className="h-12 w-12 text-[#8C7A5B] mx-auto mb-4" />
-            <h3 className="font-editorial text-2xl text-[#1D2927]">
+          <div className="bg-white border border-slate-200 p-12 text-center">
+            <Headphones className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">
               {navTab === "appeals" ? "No Active Campaign Appeals" : "Support Queue Clear"}
             </h3>
-            <p className="font-mono text-xs text-[#53605C] mt-2">All creator and donor tickets are currently up to date.</p>
-          </PaperLift>
+            <p className="text-xs font-medium text-slate-500 mt-2">All creator and donor tickets are currently up to date.</p>
+          </div>
         </div>
       )}
 
       {/* WORKSPACE 6: ANALYTICS */}
       {activeTab === "ANALYTICS" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "growth" ? "Platform Growth Trends & Revenue Velocity" :
                navTab === "categories" ? "Category Performance Leaderboard" :
                "Business Analytics & BI"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Live Database Intelligence & Performance Metrics</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Live Database Intelligence & Performance Metrics</p>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Revenue</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{formatCurrency(stats.totalDonationVolume)}</div>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Campaigns</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalCampaigns}</div>
-              <div className="text-[#53605C]">{stats.activeCampaigns} active • {stats.rejectedCampaigns} rejected</div>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Users</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalUsers}</div>
-            </PaperLift>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-medium">
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Total Revenue</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-slate-900">{formatCurrency(stats.totalDonationVolume)}</div>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Total Campaigns</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-slate-900">{stats.totalCampaigns}</div>
+              <div className="text-slate-500">{stats.activeCampaigns} active • {stats.rejectedCampaigns} rejected</div>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Total Users</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-slate-900">{stats.totalUsers}</div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Total Transactions</div>
-              <div className="font-editorial text-4xl text-[#1D2927]">{stats.totalTransactions}</div>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Verified Tx</div>
-              <div className="font-editorial text-4xl text-[#355C52]">{stats.verifiedTransactions}</div>
-            </PaperLift>
-            <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-3">
-              <div className="font-bold text-[#1D2927] uppercase text-[10px]">Today&apos;s Volume</div>
-              <div className="font-editorial text-4xl text-[#A84D2A]">{formatCurrency(stats.todayDonationVolume)}</div>
-            </PaperLift>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-medium">
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Total Transactions</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-slate-900">{stats.totalTransactions}</div>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Verified Tx</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-emerald-700">{stats.verifiedTransactions}</div>
+            </div>
+            <div className="bg-white border border-slate-200 p-6 space-y-3">
+              <div className="font-bold text-slate-900 uppercase text-[10px]">Today&apos;s Volume</div>
+              <div className="font-sans font-semibold tracking-tight text-4xl text-blue-600">{formatCurrency(stats.todayDonationVolume)}</div>
+            </div>
           </div>
         </div>
       )}
@@ -678,39 +654,39 @@ function AdminClientHubContent({
       {/* WORKSPACE 7: CONTENT */}
       {activeTab === "CONTENT" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "homepage" ? "Homepage Curator & Featured Stories" :
                navTab === "emails" ? "Resend Email & Communication Center" :
                "Platform Content & CMS"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">Homepage & Content Controls</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Homepage & Content Controls</p>
           </FadeIn>
 
           {navTab === "emails" ? (
             <EmailCenterHub showToast={showToast} />
           ) : (
             <>
-              <PaperLift className="bg-[#FAF8F3] border border-[#D9D3C7] p-6 space-y-4">
-                <h3 className="font-editorial text-2xl text-[#1D2927]">Global Announcement Banner</h3>
+              <div className="bg-white border border-slate-200 p-6 space-y-4">
+                <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Global Announcement Banner</h3>
                 <input
                   type="text"
                   defaultValue="Emergency Sylhet Flood Relief: 100% of contributions reach families directly."
-                  className="w-full h-10 px-4 border border-[#D9D3C7] bg-[#F7F4ED] font-mono text-xs focus:outline-none focus:border-[#1D2927]"
+                  className="w-full h-10 px-4 border border-slate-200 bg-slate-50 text-xs font-medium focus:outline-none focus:border-slate-900"
                 />
                 <button
                   onClick={() => showToast("Announcement bar updated!")}
-                  className="h-9 px-4 bg-[#1D2927] text-[#FAF8F3] font-mono text-[10px] font-bold uppercase"
+                  className="h-9 px-4 bg-slate-900 text-white text-sm font-medium font-bold uppercase"
                 >
                   Update Banner Text
                 </button>
-              </PaperLift>
+              </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="font-editorial text-2xl text-[#1D2927]">Featured Dreams & Stories Curator Desk</h3>
-                    <p className="font-mono text-xs text-[#53605C]">Manage which verified campaigns are featured on the homepage carousel and cards.</p>
+                    <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Featured Dreams & Stories Curator Desk</h3>
+                    <p className="text-xs font-medium text-slate-500">Manage which verified campaigns are featured on the homepage carousel and cards.</p>
                   </div>
                 </div>
 
@@ -726,9 +702,9 @@ function AdminClientHubContent({
                       header: "Featured Status",
                       accessorKey: "isFeatured",
                       cell: (r) => r.isFeatured ? (
-                        <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Featured Story</span>
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[9px] font-bold uppercase border border-emerald-600">Featured Story</span>
                       ) : (
-                        <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">Standard</span>
+                        <span className="px-2 py-0.5 bg-slate-50 text-slate-500 font-mono text-[9px] font-bold uppercase border border-slate-200">Standard</span>
                       )
                     },
                     {
@@ -738,7 +714,7 @@ function AdminClientHubContent({
                         <button
                           onClick={() => handleToggleFeatured(r.id, !!r.isFeatured)}
                           disabled={isPending}
-                          className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.isFeatured ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#1D2927] text-[#FAF8F3] hover:bg-[#A84D2A]'}`}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors disabled:opacity-50 ${r.isFeatured ? 'bg-white text-blue-600 border border-blue-600 hover:bg-blue-50' : 'bg-slate-900 text-white hover:bg-blue-600'}`}
                         >
                           {r.isFeatured ? "Remove Featured" : "Make Featured Story"}
                         </button>
@@ -750,10 +726,10 @@ function AdminClientHubContent({
                 />
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-[#D9D3C7]">
+              <div className="space-y-4 pt-6 border-t border-slate-200">
                 <div>
-                  <h3 className="font-editorial text-2xl text-[#1D2927]">Success Stories Curator (&quot;The pages we write together&quot;)</h3>
-                  <p className="font-mono text-xs text-[#53605C]">Manage completed campaigns featured on the homepage Success Stories carousel.</p>
+                  <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Success Stories Curator (&quot;The pages we write together&quot;)</h3>
+                  <p className="text-xs font-medium text-slate-500">Manage completed campaigns featured on the homepage Success Stories carousel.</p>
                 </div>
 
                 <AdvancedTable
@@ -768,9 +744,9 @@ function AdminClientHubContent({
                       header: "Success Story Badge",
                       accessorKey: "status",
                       cell: (r) => r.status === "completed" ? (
-                        <span className="px-2 py-0.5 bg-[#E5EEE8] text-[#355C52] font-mono text-[9px] font-bold uppercase border border-[#355C52]">Verified Success</span>
+                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[9px] font-bold uppercase border border-emerald-600">Verified Success</span>
                       ) : (
-                        <span className="px-2 py-0.5 bg-[#F7F4ED] text-[#53605C] font-mono text-[9px] font-bold uppercase border border-[#D9D3C7]">In Progress</span>
+                        <span className="px-2 py-0.5 bg-slate-50 text-slate-500 font-mono text-[9px] font-bold uppercase border border-slate-200">In Progress</span>
                       )
                     },
                     {
@@ -780,7 +756,7 @@ function AdminClientHubContent({
                         <button
                           onClick={() => handleToggleSuccessStory(r.id, r.status)}
                           disabled={isPending}
-                          className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 ${r.status === "completed" ? 'bg-[#FAF8F3] text-[#A84D2A] border border-[#A84D2A] hover:bg-[#FDF4F0]' : 'bg-[#355C52] text-[#FAF8F3] hover:bg-[#1D2927]'}`}
+                          className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors disabled:opacity-50 ${r.status === "completed" ? 'bg-white text-blue-600 border border-blue-600 hover:bg-blue-50' : 'bg-emerald-600 text-white hover:bg-slate-900'}`}
                         >
                           {r.status === "completed" ? "Remove Success Story" : "Mark as Success Story"}
                         </button>
@@ -799,42 +775,42 @@ function AdminClientHubContent({
       {/* WORKSPACE 8: PLATFORM */}
       {activeTab === "PLATFORM" && (
         <div className="space-y-8">
-          <FadeIn className="border-b border-[#D9D3C7] pb-4">
-            <h1 className="font-editorial text-4xl text-[#1D2927]">
+          <FadeIn className="border-b border-slate-200 pb-4">
+            <h1 className="font-sans font-semibold tracking-tight text-4xl text-slate-900">
               {navTab === "maintenance" ? "Maintenance Mode & Feature Flags" :
                navTab === "verification_settings" ? "Document Verification Settings" :
                "Platform Configuration"}
             </h1>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#53605C]">System Controls & Feature Flags</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">System Controls & Feature Flags</p>
           </FadeIn>
 
           <VerificationSettingsHub showToast={showToast} />
           
-          <div className="pt-6 border-t border-[#D9D3C7]">
+          <div className="pt-6 border-t border-slate-200">
             <FeatureFlagsHub showToast={showToast} />
           </div>
 
-          <div className="pt-6 border-t border-[#D9D3C7]">
+          <div className="pt-6 border-t border-slate-200">
             <SeoSettingsHub showToast={showToast} />
           </div>
 
-          <PaperLift className="bg-[#FAF8F3] border border-[#1D2927] p-6 shadow-paper space-y-6">
-            <div className="flex items-center justify-between border-b border-[#D9D3C7] pb-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 shadow-md rounded-xl space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
-                <h4 className="font-editorial text-xl text-[#1D2927]">System Maintenance Mode</h4>
-                <p className="font-mono text-xs text-[#53605C] mt-1">Pauses public submissions for scheduled system updates.</p>
+                <h4 className="font-sans font-semibold tracking-tight text-xl text-slate-900">System Maintenance Mode</h4>
+                <p className="text-xs font-medium text-slate-500 mt-1">Pauses public submissions for scheduled system updates.</p>
               </div>
               <button
                 onClick={() => {
                   setMaintenanceMode(!maintenanceMode);
                   showToast(`Maintenance mode turned ${!maintenanceMode ? 'ON' : 'OFF'}`);
                 }}
-                className={`h-10 px-6 font-mono text-[10px] font-bold uppercase tracking-widest border transition-all ${maintenanceMode ? 'bg-[#A84D2A] text-[#FAF8F3] border-[#A84D2A]' : 'bg-[#FAF8F3] text-[#1D2927] border-[#1D2927]'}`}
+                className={`h-10 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 border transition-all ${maintenanceMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-900 border-slate-900'}`}
               >
                 {maintenanceMode ? "Maintenance Active" : "Enable Maintenance"}
               </button>
             </div>
-          </PaperLift>
+          </div>
         </div>
       )}
 
@@ -850,7 +826,7 @@ export function AdminClientHub(props: {
   initialAuditLogs?: any[];
 }) {
   return (
-    <Suspense fallback={<div className="p-8 font-mono text-xs">Loading Admin Workspace Stage...</div>}>
+    <Suspense fallback={<div className="p-8 text-xs font-medium">Loading Admin Workspace Stage...</div>}>
       <AdminClientHubContent {...props} />
     </Suspense>
   );
