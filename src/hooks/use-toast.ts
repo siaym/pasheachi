@@ -1,1 +1,0 @@
-export function useToast() { return { showToast: (msg: string, type?: string) => alert(msg) }; }
