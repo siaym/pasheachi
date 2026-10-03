@@ -23,9 +23,6 @@ export type WorkspaceId =
   | "SUPER_ADMIN"
   | "FINANCE"
   | "MODERATION"
-  | "TRUST_SAFETY"
-  | "SUPPORT"
-  | "ANALYTICS"
   | "CONTENT"
   | "PLATFORM";
 
@@ -95,53 +92,6 @@ export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
       { name: "Pending Approval", id: "pending_campaigns", icon: Megaphone, badge: 12 },
       { name: "NID / Passport Review", id: "nid_verification", icon: Users, badge: 7 },
       { name: "Moderation Log", id: "log", icon: FileText },
-    ]
-  },
-  TRUST_SAFETY: {
-    id: "TRUST_SAFETY",
-    name: "Trust & Safety",
-    shortName: "Trust & Safety",
-    icon: ShieldAlert,
-    color: "#A84D2A",
-    bgColor: "#FDF4F0",
-    description: "Risk score calculations, fraud investigations, fake campaigns & IP alerts.",
-    requiredPermission: "trust.investigate",
-    navItems: [
-      { name: "Risk & Fraud Center", id: "overview", icon: ShieldAlert },
-      { name: "Flagged Campaigns", id: "flagged", icon: AlertTriangle, badge: 4 },
-      { name: "Suspicious Transactions", id: "suspicious_tx", icon: Wallet, badge: 9 },
-      { name: "Blacklist Registry", id: "blacklist", icon: Users },
-    ]
-  },
-  SUPPORT: {
-    id: "SUPPORT",
-    name: "Customer Support",
-    shortName: "Support",
-    icon: Headphones,
-    color: "#1D2927",
-    bgColor: "#FAF8F3",
-    description: "Support ticket management, creator & donor helpdesk, appeals & live chat.",
-    requiredPermission: "support.tickets",
-    navItems: [
-      { name: "Support Desk", id: "overview", icon: Headphones },
-      { name: "Open Tickets", id: "tickets", icon: HelpCircle, badge: 22 },
-      { name: "Campaign Appeals", id: "appeals", icon: ShieldAlert, badge: 3 },
-      { name: "Knowledge Base", id: "kb", icon: FileText },
-    ]
-  },
-  ANALYTICS: {
-    id: "ANALYTICS",
-    name: "Business Analytics",
-    shortName: "Analytics",
-    icon: BarChart3,
-    color: "#355C52",
-    bgColor: "#E5EEE8",
-    description: "Business Intelligence, revenue metrics, conversion funnels & donor retention.",
-    requiredPermission: "analytics.view",
-    navItems: [
-      { name: "BI Performance", id: "overview", icon: BarChart3 },
-      { name: "Growth Trends", id: "growth", icon: TrendingUp },
-      { name: "Category Leaderboard", id: "categories", icon: Globe },
     ]
   },
   CONTENT: {
