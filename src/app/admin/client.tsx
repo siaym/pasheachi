@@ -315,7 +315,7 @@ function AdminClientHubContent({
           </div>
 
           {/* Campaigns Section */}
-          {(navTab === "overview" || navTab === "campaigns") && (
+          {(navTab === "campaigns") && (
             <div className="space-y-4">
               <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">All Platform Campaigns</h3>
               <AdvancedTable
@@ -344,7 +344,7 @@ function AdminClientHubContent({
           )}
 
           {/* Audit Trail from DB */}
-          {(navTab === "overview" || navTab === "audit_logs") && (
+          {(navTab === "audit_logs") && (
             <div className="space-y-4">
               <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">Platform Audit Trail (Persisted)</h3>
               <AdvancedTable
@@ -363,7 +363,7 @@ function AdminClientHubContent({
           )}
 
           {/* Users Table with Investigate Links */}
-          {(navTab === "overview" || navTab === "creators") && (
+          {(navTab === "creators") && (
             <div className="space-y-4">
               <h3 className="font-sans font-semibold tracking-tight text-2xl text-slate-900">All Creator & User Profiles</h3>
               <AdvancedTable
@@ -391,7 +391,7 @@ function AdminClientHubContent({
           )}
 
           {/* System Controls & Feature Flags */}
-          {(navTab === "overview" || navTab === "flags") && (
+          {(navTab === "flags") && (
             <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 shadow-md rounded-xl space-y-6">
               <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div>
