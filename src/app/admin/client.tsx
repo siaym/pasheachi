@@ -451,6 +451,7 @@ function AdminClientHubContent({
             </div>
           )}
 
+          {(navTab === "overview" || navTab === "verification_queue" || navTab === "audit") && (
           <AdvancedTable
             title={navTab === "verification_queue" ? "Pending Verifications Queue" : "MFS Verification Ledger"}
             bulkActions={navTab === "verification_queue" ? [{ label: "Verify Selected", action: handleBulkVerifyTransactions }] : []}
@@ -492,6 +493,7 @@ function AdminClientHubContent({
             data={navTab === "verification_queue" ? transactions.filter(t => t.status === "pending" || t.status === "PENDING") : transactions}
             searchPlaceholder="Filter transactions by ID or donor name..."
           />
+          )}
         </div>
       )}
 
@@ -517,6 +519,7 @@ function AdminClientHubContent({
             </div>
           )}
 
+          {(navTab === "overview" || navTab === "pending_campaigns" || navTab === "log") && (
           <AdvancedTable
             title="Campaign Approval Desk"
             bulkActions={navTab === "pending_campaigns" ? [{ label: "Approve Selected", action: handleBulkApproveCampaigns }] : []}
@@ -566,6 +569,7 @@ function AdminClientHubContent({
             data={navTab === "pending_campaigns" ? campaigns.filter(c => c.status !== "active" && c.status !== "rejected") : campaigns}
             searchPlaceholder="Filter campaigns by title..."
           />
+          )}
         </div>
       )}
       {/* WORKSPACE 7: CONTENT */}
@@ -701,33 +705,41 @@ function AdminClientHubContent({
             <p className="text-xs font-medium uppercase tracking-wider text-slate-500">System Controls & Feature Flags</p>
           </FadeIn>
 
-          <VerificationSettingsHub showToast={showToast} />
-          
-          <div className="pt-6 border-t border-slate-200">
-            <FeatureFlagsHub showToast={showToast} />
-          </div>
-
-          <div className="pt-6 border-t border-slate-200">
-            <SeoSettingsHub showToast={showToast} />
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 shadow-md rounded-xl space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <h4 className="font-sans font-semibold tracking-tight text-xl text-slate-900">System Maintenance Mode</h4>
-                <p className="text-xs font-medium text-slate-500 mt-1">Pauses public submissions for scheduled system updates.</p>
+          {(navTab === "overview" || navTab === "security") && (
+            <>
+              <VerificationSettingsHub showToast={showToast} />
+              
+              <div className="pt-6 border-t border-slate-200">
+                <SeoSettingsHub showToast={showToast} />
               </div>
-              <button
-                onClick={() => {
-                  setMaintenanceMode(!maintenanceMode);
-                  showToast(`Maintenance mode turned ${!maintenanceMode ? 'ON' : 'OFF'}`);
-                }}
-                className={`h-10 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 border transition-all ${maintenanceMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-900 border-slate-900'}`}
-              >
-                {maintenanceMode ? "Maintenance Active" : "Enable Maintenance"}
-              </button>
-            </div>
-          </div>
+            </>
+          )}
+
+          {(navTab === "overview" || navTab === "maintenance") && (
+            <>
+              <div className="pt-6 border-t border-slate-200">
+                <FeatureFlagsHub showToast={showToast} />
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 shadow-md rounded-xl space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+                  <div>
+                    <h4 className="font-sans font-semibold tracking-tight text-xl text-slate-900">System Maintenance Mode</h4>
+                    <p className="text-xs font-medium text-slate-500 mt-1">Pauses public submissions for scheduled system updates.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setMaintenanceMode(!maintenanceMode);
+                      showToast(`Maintenance mode turned ${!maintenanceMode ? 'ON' : 'OFF'}`);
+                    }}
+                    className={`h-10 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 border transition-all ${maintenanceMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-900 border-slate-900'}`}
+                  >
+                    {maintenanceMode ? "Maintenance Active" : "Enable Maintenance"}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
