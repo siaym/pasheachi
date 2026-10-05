@@ -95,6 +95,22 @@ export default async function CampaignDetailPage({
     raisedAmount: liveRaisedAmount
   };
 
+  // Fetch verified support messages
+  const supportMessages = await prisma.transaction.findMany({
+    where: {
+      campaignId: campaign.id,
+      status: "verified",
+      message: { not: null }
+    },
+    select: {
+      donorName: true,
+      message: true,
+      date: true,
+    },
+    orderBy: { date: "desc" },
+    take: 20
+  });
+
   const canonicalPath = `/${cleanUsername}/${campaign.slug}`;
 
   return (
@@ -121,6 +137,7 @@ export default async function CampaignDetailPage({
       <CampaignDetailClient 
         campaign={campaignWithLiveAmount as any} 
         creator={campaign.creator as any} 
+        supportMessages={supportMessages}
       />
     </>
   );

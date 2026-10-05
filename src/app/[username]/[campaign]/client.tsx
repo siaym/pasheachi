@@ -23,9 +23,11 @@ import {
 export function CampaignDetailClient({
   campaign,
   creator,
+  supportMessages = [],
 }: {
   campaign: any;
   creator: any;
+  supportMessages?: any[];
 }) {
   const [selectedAmount, setSelectedAmount] = useState<number>(250);
   const [customAmount, setCustomAmount] = useState<string>("");
@@ -147,19 +149,33 @@ export function CampaignDetailClient({
               </h3>
 
               <div className="space-y-4">
-                <div className="p-5 border border-[#D9D3C7] bg-[#FAF8F3] relative">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-[#EAE5DB]"></div>
-                  <div className="flex items-center justify-between mb-3 pl-2">
-                    <div className="flex items-center gap-3">
-                      <div className="font-bold text-sm text-[#1D2927]">Arif Ahmed</div>
-                      <span className="editorial-stamp !text-[8px]">Supporter</span>
-                    </div>
-                    <span className="font-mono text-[10px] uppercase text-[#53605C]">2 hours ago</span>
+                {supportMessages.length > 0 ? (
+                  supportMessages.map((msg, idx) => {
+                    const dateObj = new Date(msg.date);
+                    const diffInHours = Math.floor((new Date().getTime() - dateObj.getTime()) / 3600000);
+                    const timeString = diffInHours < 24 ? (diffInHours === 0 ? 'Just now' : `${diffInHours} hours ago`) : dateObj.toLocaleDateString();
+
+                    return (
+                      <div key={idx} className="p-5 border border-[#D9D3C7] bg-[#FAF8F3] relative">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-[#EAE5DB]"></div>
+                        <div className="flex items-center justify-between mb-3 pl-2">
+                          <div className="flex items-center gap-3">
+                            <div className="font-bold text-sm text-[#1D2927]">{msg.donorName}</div>
+                            <span className="editorial-stamp !text-[8px]">Supporter</span>
+                          </div>
+                          <span className="font-mono text-[10px] uppercase text-[#53605C]">{timeString}</span>
+                        </div>
+                        <p className="text-[#1D2927] italic font-editorial text-lg pl-2">
+                          "{msg.message}"
+                        </p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="p-5 border border-dashed border-[#D9D3C7] bg-[#F7F4ED] text-center">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-[#53605C]">No messages yet. Be the first to show support!</p>
                   </div>
-                  <p className="text-[#1D2927] italic font-editorial text-lg pl-2">
-                    "Praying for your mother's successful surgery and speedy recovery. Stay strong!"
-                  </p>
-                </div>
+                )}
               </div>
             </FadeIn>
           </div>

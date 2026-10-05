@@ -81,7 +81,8 @@ export function PaymentModal({ campaign, isOpen, onClose }: PaymentModalProps) {
       formData.append("phone", senderNumber);
       formData.append("amount", currentAmount.toString());
       formData.append("method", paymentMethod);
-      formData.append("referenceId", trxId);
+      if (trxId) formData.append("referenceId", trxId);
+      if (message && message.trim()) formData.append("message", message.trim());
 
       const result = await submitDonationAction(formData);
       

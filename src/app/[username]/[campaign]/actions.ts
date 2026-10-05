@@ -10,6 +10,7 @@ export async function submitDonationAction(formData: FormData) {
     const amountStr = formData.get("amount") as string;
     const method = formData.get("method") as string;
     const referenceId = formData.get("referenceId") as string || null;
+    const message = formData.get("message") as string || null;
 
     if (!campaignId || !amountStr || !method || !phone) {
       return { error: "Missing required fields" };
@@ -29,6 +30,7 @@ export async function submitDonationAction(formData: FormData) {
         amount,
         method,
         referenceId,
+        message,
         status: "pending",
       }
     });

@@ -99,6 +99,7 @@ model Transaction {
   amount      Float
   method      String
   referenceId String?
+  message     String?  // Optional support message from the donor
   status      String   @default("pending")
   
   date        DateTime @default(now())
