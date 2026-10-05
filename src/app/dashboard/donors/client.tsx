@@ -152,16 +152,35 @@ export function DonorsClient({ initialDonors, stats }: { initialDonors: any[], s
                         </span>
                       </td>
                       <td className="p-4">
-                        <button
-                          onClick={() => {
-                            setActiveNotesDonor(donor);
-                            setCreatorNote(donorNotes[donor.id] || "");
-                          }}
-                          className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-[#8C7A5B] hover:text-[#1D2927]"
-                        >
-                          <StickyNote className="h-3.5 w-3.5" />
-                          {donorNotes[donor.id] ? "View Note" : "+ Add Note"}
-                        </button>
+                        <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => {
+                              setActiveNotesDonor(donor);
+                              setCreatorNote(donorNotes[donor.id] || "");
+                            }}
+                            className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-[#8C7A5B] hover:text-[#1D2927]"
+                          >
+                            <StickyNote className="h-3.5 w-3.5" />
+                            {donorNotes[donor.id] ? "View Note" : "+ Add Note"}
+                          </button>
+                          
+                          {donor.status === "pending" && (
+                            <button
+                              onClick={async () => {
+                                const { verifyTransactionAsCreatorAction } = await import("./actions");
+                                const res = await verifyTransactionAsCreatorAction(donor.id);
+                                if (res.error) alert(res.error);
+                                else {
+                                  alert("Transaction Verified!");
+                                  window.location.reload();
+                                }
+                              }}
+                              className="w-max inline-flex items-center bg-[#A84D2A] text-white px-2 py-1 text-[9px] uppercase font-bold hover:bg-[#843B20]"
+                            >
+                              Verify Tx
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
