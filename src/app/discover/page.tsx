@@ -44,9 +44,26 @@ export default async function DiscoverPage({
 
   const filteredCampaignsRaw = await prisma.campaign.findMany({
     where: whereClause,
-    include: {
-      creator: true,
-      _count: { select: { transactions: { where: { status: "verified" } } } },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      category: true,
+      location: true,
+      coverImageUrl: true,
+      goalAmount: true,
+      raisedAmount: true,
+      status: true,
+      creator: {
+        select: {
+          username: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
+      _count: {
+        select: { transactions: { where: { status: "verified" } } },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: 50,

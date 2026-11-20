@@ -23,7 +23,19 @@ export default async function SearchPage({
           { location: { contains: query, mode: "insensitive" } },
         ]
       },
-      include: { creator: true },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        category: true,
+        raisedAmount: true,
+        creator: {
+          select: {
+            username: true,
+            name: true,
+          }
+        }
+      },
       take: 20
     });
 
@@ -33,6 +45,13 @@ export default async function SearchPage({
           { name: { contains: query, mode: "insensitive" } },
           { username: { contains: query, mode: "insensitive" } },
         ]
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        avatarUrl: true,
+        location: true,
       },
       take: 10
     });

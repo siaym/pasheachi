@@ -62,7 +62,14 @@ export default async function CampaignDetailPage({
       creator: { username: cleanUsername }
     },
     include: {
-      creator: true,
+      creator: {
+        select: {
+          username: true,
+          name: true,
+          avatarUrl: true,
+          role: true,
+        },
+      },
       _count: { select: { transactions: { where: { status: "verified" } } } }
     }
   });

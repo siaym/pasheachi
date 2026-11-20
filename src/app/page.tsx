@@ -25,18 +25,61 @@ export default async function HomePage() {
     completedCampaignsRaw,
   ] = await Promise.all([
     prisma.campaign.findMany({
-      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
-      take: 10,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        category: true,
+        location: true,
+        description: true,
+        coverImageUrl: true,
+        goalAmount: true,
+        raisedAmount: true,
+        status: true,
+        creator: {
+          select: {
+            username: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        _count: { select: { transactions: { where: { status: "verified" } } } },
+      },
+      take: 3,
       orderBy: { createdAt: "desc" },
     }),
     prisma.campaign.findFirst({
       where: { isFeatured: true },
-      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        location: true,
+        coverImageUrl: true,
+        goalAmount: true,
+        raisedAmount: true,
+        creator: {
+          select: {
+            username: true,
+            name: true,
+          },
+        },
+        _count: { select: { transactions: { where: { status: "verified" } } } },
+      },
       orderBy: { createdAt: "desc" },
     }),
     prisma.transaction.findMany({
       where: { status: "verified" },
-      include: { campaign: true },
+      select: {
+        id: true,
+        donorName: true,
+        amount: true,
+        date: true,
+        campaign: {
+          select: { title: true },
+        },
+      },
       take: 10,
       orderBy: { date: "desc" },
     }),
@@ -50,8 +93,23 @@ export default async function HomePage() {
     prisma.campaign.count(),
     prisma.campaign.findMany({
       where: { status: "completed" },
-      include: { creator: true, _count: { select: { transactions: { where: { status: "verified" } } } } },
-      take: 10,
+      select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        description: true,
+        location: true,
+        coverImageUrl: true,
+        raisedAmount: true,
+        creator: {
+          select: {
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        _count: { select: { transactions: { where: { status: "verified" } } } },
+      },
+      take: 5,
       orderBy: { updatedAt: "desc" },
     }),
   ]);

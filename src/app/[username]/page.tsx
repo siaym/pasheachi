@@ -49,9 +49,19 @@ export default async function UserProfilePage({
     redirect(`/${cleanUsername}`);
   }
 
-  // Fetch user from DB
+  // Fetch user from DB with only public profile fields
   const user = await prisma.user.findUnique({
-    where: { username: cleanUsername }
+    where: { username: cleanUsername },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      bio: true,
+      location: true,
+      avatarUrl: true,
+      coverUrl: true,
+      createdAt: true,
+    },
   });
 
   if (!user) {
@@ -59,20 +69,43 @@ export default async function UserProfilePage({
   }
 
   // Get user's public campaigns only
-  const userCampaigns = await prisma.campaign.findMany({
+  const userCampaignsRaw = await prisma.campaign.findMany({
     where: {
       creator: { username: cleanUsername },
       status: { in: ["active", "completed"] },
-      deletedAt: null
+      deletedAt: null,
     },
-    include: {
-      creator: true,
-      transactions: true
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      category: true,
+      location: true,
+      coverImageUrl: true,
+      goalAmount: true,
+      raisedAmount: true,
+      status: true,
+      isPinned: true,
+      creator: {
+        select: {
+          username: true,
+          name: true,
+          avatarUrl: true,
+        },
+      },
+      _count: {
+        select: { transactions: { where: { status: "verified" } } },
+      },
     },
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
+
+  const userCampaigns = userCampaignsRaw.map((c) => ({
+    ...c,
+    transactions: { length: c._count?.transactions || 0 },
+  }));
 
   return (
     <>

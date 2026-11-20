@@ -19,6 +19,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const navUser = user ? { id: user.id, username: user.username, name: user.name, role: user.role } : null;
 
   return (
     <html
@@ -36,10 +37,10 @@ export default async function RootLayout({
         <OrganizationJsonLd />
         <WebSiteJsonLd />
         <BackgroundSystem />
-        <Navbar user={user as any} />
+        <Navbar user={navUser as any} />
         <main className="flex-1 pb-16 md:pb-0 relative z-10">{children}</main>
         <Footer />
-        <MobileNav user={user as any} />
+        <MobileNav user={navUser as any} />
       </body>
     </html>
   );

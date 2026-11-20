@@ -63,6 +63,7 @@ export function Navbar({ user }: { user?: User | null }) {
                 <Link
                   key={link.label}
                   href={link.href}
+                  prefetch={link.href === "/discover" ? false : undefined}
                   className={`relative text-[10px] xl:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${
                     active ? "text-[#A84D2A]" : "text-[#1D2927] hover:text-[#A84D2A]"
                   }`}
@@ -80,6 +81,7 @@ export function Navbar({ user }: { user?: User | null }) {
           <div className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/search"
+              prefetch={false}
               className="group hidden sm:flex items-center justify-center text-[#1D2927]"
               aria-label="Search"
             >
