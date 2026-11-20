@@ -2,9 +2,6 @@ import {
   Building2, 
   Wallet, 
   ShieldCheck, 
-  ShieldAlert, 
-  Headphones, 
-  BarChart3, 
   FileText, 
   Settings,
   Megaphone,
@@ -12,9 +9,6 @@ import {
   FileSpreadsheet,
   CheckCircle2,
   Clock,
-  AlertTriangle,
-  HelpCircle,
-  TrendingUp,
   Globe,
   Sliders
 } from "lucide-react";
@@ -46,19 +40,19 @@ export interface WorkspaceConfig {
 export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
   SUPER_ADMIN: {
     id: "SUPER_ADMIN",
-    name: "Super Admin",
+    name: "Executive Command",
     shortName: "Admin",
     icon: Building2,
     color: "#1D2927",
     bgColor: "#FAF8F3",
-    description: "Complete platform control, system health, revenue & cross-departmental operations.",
+    description: "Executive control, action items, system health, revenue & cross-departmental operations.",
     requiredPermission: "system.manage",
     navItems: [
-      { name: "Executive Dashboard", id: "overview", icon: Building2 },
-      { name: "All Campaigns", id: "campaigns", icon: Megaphone, badge: 14 },
-      { name: "Creator Profiles", id: "creators", icon: Users },
-      { name: "Audit Logs", id: "audit_logs", icon: FileText },
-      { name: "Feature Flags", id: "flags", icon: Sliders },
+      { name: "Command Dashboard", id: "overview", icon: Building2 },
+      { name: "All Campaigns", id: "campaigns", icon: Megaphone },
+      { name: "Creators & Users", id: "creators", icon: Users },
+      { name: "Audit Trail", id: "audit_logs", icon: FileText },
+      { name: "Feature Controls", id: "flags", icon: Sliders },
     ]
   },
   FINANCE: {
@@ -68,14 +62,13 @@ export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
     icon: Wallet,
     color: "#355C52",
     bgColor: "#E5EEE8",
-    description: "Manual MFS verification, statement matching, duplicate detection & withdrawal payouts.",
+    description: "Manual MFS verification (bKash/Nagad/Rocket), bank statement matching & payouts.",
     requiredPermission: "finance.verify",
     navItems: [
-      { name: "Finance Overview", id: "overview", icon: Wallet },
-      { name: "Manual MFS Verification", id: "verification_queue", icon: CheckCircle2, badge: 18 },
+      { name: "Finance Ledger", id: "overview", icon: Wallet },
+      { name: "MFS Verification Queue", id: "verification_queue", icon: CheckCircle2 },
       { name: "Statement Import", id: "statement_import", icon: FileSpreadsheet },
-      { name: "Withdrawals Queue", id: "withdrawals", icon: Clock, badge: 5 },
-      { name: "Financial Audit", id: "audit", icon: FileText },
+      { name: "Withdrawals Queue", id: "withdrawals", icon: Clock },
     ]
   },
   MODERATION: {
@@ -85,13 +78,12 @@ export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
     icon: ShieldCheck,
     color: "#8C7A5B",
     bgColor: "#FAF8F3",
-    description: "Review campaign submissions, government ID evidence & creator verification.",
+    description: "Review campaign filings, identity documents inspection & creator verification.",
     requiredPermission: "campaign.approve",
     navItems: [
       { name: "Moderation Desk", id: "overview", icon: ShieldCheck },
-      { name: "Pending Approval", id: "pending_campaigns", icon: Megaphone, badge: 12 },
-      { name: "NID / Passport Review", id: "nid_verification", icon: Users, badge: 7 },
-      { name: "Moderation Log", id: "log", icon: FileText },
+      { name: "Pending Approvals", id: "pending_campaigns", icon: Megaphone },
+      { name: "Creator NID & Identity", id: "nid_verification", icon: Users },
     ]
   },
   CONTENT: {
@@ -101,12 +93,11 @@ export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
     icon: FileText,
     color: "#8C7A5B",
     bgColor: "#FAF8F3",
-    description: "Platform homepage banners, featured stories, announcement bar & email templates.",
+    description: "Homepage banners, featured dreams curation, success stories & email communication.",
     requiredPermission: "content.manage",
     navItems: [
-      { name: "CMS Manager", id: "overview", icon: FileText },
       { name: "Homepage Curator", id: "homepage", icon: Globe },
-      { name: "Email Templates", id: "emails", icon: FileText },
+      { name: "Email Center", id: "emails", icon: FileText },
     ]
   },
   PLATFORM: {
@@ -116,10 +107,10 @@ export const WORKSPACES: Record<WorkspaceId, WorkspaceConfig> = {
     icon: Settings,
     color: "#1D2927",
     bgColor: "#FAF8F3",
-    description: "System parameters, gateway limits, maintenance mode, security keys & sessions.",
+    description: "System parameters, verification requirements, SEO configuration & maintenance mode.",
     requiredPermission: "settings.edit",
     navItems: [
-      { name: "System Config", id: "overview", icon: Settings },
+      { name: "Verification Rules", id: "overview", icon: Settings },
       { name: "Maintenance & Flags", id: "maintenance", icon: Sliders },
       { name: "Security & Sessions", id: "security", icon: ShieldCheck },
     ]
